@@ -16,6 +16,10 @@ public class MainViewController {
         this.mainViewModel = mainViewModel;
     }
 
+    public void initialize() {
+
+    }
+
     public void onCreateSessionButtonPressed(ActionEvent actionEvent) {
         // Tries to create a session
     }

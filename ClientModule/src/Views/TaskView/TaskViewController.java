@@ -1,8 +1,6 @@
 package Views.TaskView;
 
-import Views.MainView.MainViewModel;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
@@ -14,6 +12,10 @@ public class TaskViewController {
     private TaskViewModel taskViewModel;
     public TaskViewController(TaskViewModel taskViewModel) {
         this.taskViewModel = taskViewModel;
+    }
+
+    public void initialize() {
+
     }
 
     public void onCreateTaskButtonPressed(ActionEvent actionEvent) {

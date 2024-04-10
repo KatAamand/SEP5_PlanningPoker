@@ -15,6 +15,10 @@ public class LoginViewController {
         this.loginViewModel = loginViewModel;
     }
 
+    public void initialize() {
+
+    }
+
     public void onLoginButtonPressed()
     {
         // tries to login
