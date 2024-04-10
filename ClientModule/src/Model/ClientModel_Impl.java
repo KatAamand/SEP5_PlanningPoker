@@ -24,19 +24,18 @@ public class ClientModel_Impl implements ClientModel
 
   /** Primary constructor. Defers most of the declarations and definitions to the init method,
    * which is run inside a Platform.runLater statement for increased thread safety while using javaFx. */
-  public ClientModel_Impl(/* ???Any relevant attributes??? */)
-  {
-    Platform.runLater(this::init);
-  }
-
-
-
-  @Override public void init(/* ???Any relevant attributes??? */)
-  {
+  public ClientModel_Impl(ClientConnection_RMI client) {
     //Assign the network connection:
     try
     {
-      clientConnection = (Client_RMI) ClientFactory.getInstance().getClient();
+      if(client != null)
+      {
+        clientConnection = (Client_RMI) client;
+      }
+      else
+      {
+        clientConnection = (Client_RMI) ClientFactory.getInstance().getClient();
+      }
     }
     catch (RemoteException e)
     {
@@ -44,6 +43,14 @@ public class ClientModel_Impl implements ClientModel
       e.printStackTrace();
     }
 
+    //Initialize remaining data:
+    Platform.runLater(this::init);
+  }
+
+
+
+  @Override public void init()
+  {
     //TODO Initialize relevant data that might affect the javaFx thread here.
 
 
@@ -65,7 +72,7 @@ public class ClientModel_Impl implements ClientModel
   /** Assigns all the required listeners to the clientConnection allowing for Observable behavior betweeen these classes. */
   private void assignListeners()
   {
-    //TODO define the listerners that should be added to the Client here.
+    //TODO define the listeners that should be added to the Client here.
     //Example:
     clientConnection.addPropertyChangeListener("DataChanged", evt -> {
       System.out.println("This is an example");});
@@ -76,8 +83,7 @@ public class ClientModel_Impl implements ClientModel
 
 
 
-  public ClientModel_Impl(ClientConnection_RMI client) {
-  }
+
 
 
   @Override public void addPropertyChangeListener(PropertyChangeListener listener)
