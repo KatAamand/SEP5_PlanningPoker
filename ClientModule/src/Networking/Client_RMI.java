@@ -1,5 +1,7 @@
 package Networking;
 
+import Util.PropertyChangeSubject;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -9,7 +11,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
-public class Client_RMI implements ClientConnection_RMI, PropertyChangeSubject{
+public class Client_RMI implements ClientConnection_RMI, PropertyChangeSubject {
 
     private ServerConnection_RMI server;
     private PropertyChangeSupport propertyChangeSupport;
