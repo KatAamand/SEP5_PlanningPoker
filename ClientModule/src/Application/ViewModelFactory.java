@@ -1,7 +1,9 @@
 package Application;
 
+import Views.LobbyView.LobbyViewModel;
 import Views.LoginView.LoginViewModel;
 import Views.MainView.MainViewModel;
+import Views.SessionView.SessionViewModel;
 
 import java.rmi.RemoteException;
 import java.util.concurrent.locks.Lock;
