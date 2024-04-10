@@ -104,6 +104,9 @@ public class ViewFactory {
                 }
             });
 
+            loadChatView();
+            loadTaskView();
+
             Scene sessionViewScene = new Scene(fxmlLoader.load());
             Stage sessionViewStage = new Stage();
             sessionViewStage.setTitle("Session");
@@ -127,11 +130,6 @@ public class ViewFactory {
                 }
             });
 
-            Scene lobbyViewScene = new Scene(fxmlLoader.load());
-            Stage lobbyViewStage = new Stage();
-            lobbyViewStage.setTitle("Lobby");
-            lobbyViewStage.setScene(lobbyViewScene);
-            lobbyViewStage.show();
             lobbyViewController = fxmlLoader.getController();
         }
 
@@ -149,12 +147,7 @@ public class ViewFactory {
                     throw new RuntimeException(e);
                 }
             });
-
-            Scene taskViewScene = new Scene(fxmlLoader.load());
-            Stage taskViewStage = new Stage();
-            taskViewStage.setTitle("Tasks");
-            taskViewStage.setScene(taskViewScene);
-            taskViewStage.show();
+            
             taskViewController = fxmlLoader.getController();
         }
 
