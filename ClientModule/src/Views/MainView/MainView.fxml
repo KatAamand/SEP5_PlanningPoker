@@ -1,14 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="Views.MainView.MainView"
-            prefHeight="400.0" prefWidth="600.0">
 
-</AnchorPane>
+<VBox prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #D5E8D4;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Views.MainView.MainViewController">
+   <children>
+      <HBox prefHeight="400.0" prefWidth="600.0">
+         <children>
+            <VBox alignment="CENTER" prefHeight="400.0" prefWidth="600.0" spacing="50.0">
+               <children>
+                  <HBox alignment="CENTER_RIGHT" spacing="20.0">
+                     <children>
+                        <Label text="Klar til at starte en ny session? Klik her">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                        <Button fx:id="createSessionButton" mnemonicParsing="false" onAction="#onCreateSessionButtonPressed" prefWidth="100.0" style="-fx-background-color: #fff; -fx-border-color: #ccc;" text="Opret session" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER_RIGHT" prefHeight="67.0" prefWidth="500.0" spacing="20.0">
+                     <children>
+                        <Label text="Vil du deltage i en session? ">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="sessionIdTextField" alignment="CENTER_RIGHT" promptText="sessions id" />
+                        <Button fx:id="connectToSessionButton" mnemonicParsing="false" onAction="#onConnectToSessionButtonPressed" prefWidth="100.0" style="-fx-background-color: #fff; -fx-border-color: #ccc;" text="Tilslut session" />
+                     </children>
+                  </HBox>
+               </children>
+               <padding>
+                  <Insets bottom="60.0" left="60.0" right="60.0" top="60.0" />
+               </padding>
+            </VBox>
+         </children>
+      </HBox>
+   </children>
+</VBox>
