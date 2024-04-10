@@ -1,5 +1,7 @@
 package Networking;
 
+import Model.ServerModel;
+
 import java.util.ArrayList;
 import java.util.List;
 
