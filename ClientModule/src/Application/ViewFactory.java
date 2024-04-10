@@ -1,7 +1,9 @@
 package Application;
 
+import Views.LobbyView.LobbyViewController;
 import Views.LoginView.LoginViewController;
 import Views.MainView.MainViewController;
+import Views.SessionView.SessionViewController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
