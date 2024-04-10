@@ -1,9 +1,12 @@
 package Application;
 
+
+import Views.ChatView.ChatViewModel;
 import Views.LobbyView.LobbyViewModel;
 import Views.LoginView.LoginViewModel;
 import Views.MainView.MainViewModel;
 import Views.SessionView.SessionViewModel;
+import Views.TaskView.TaskViewModel;
 
 import java.rmi.RemoteException;
 import java.util.concurrent.locks.Lock;
@@ -68,7 +71,7 @@ public class ViewModelFactory {
         return sessionViewModel;
     }
 
-    public TaskViewModel taskViewModel() throws RemoteException {
+    public TaskViewModel getTaskViewModel() throws RemoteException {
         if (taskViewModel == null) {
             taskViewModel = new TaskViewModel(modelFactory.getClientModel());
         }

@@ -1,9 +1,11 @@
 package Application;
 
+import Views.ChatView.ChatViewController;
 import Views.LobbyView.LobbyViewController;
 import Views.LoginView.LoginViewController;
 import Views.MainView.MainViewController;
 import Views.SessionView.SessionViewController;
+import Views.TaskView.TaskViewController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -96,7 +98,7 @@ public class ViewFactory {
             fxmlLoader = new FXMLLoader(getClass().getResource("../Views/SessionsView/SessionView.fxml"));
             fxmlLoader.setControllerFactory(controllerClass -> {
                 try {
-                    return new SessionViewController(viewModelFactory.getMainViewModel());
+                    return new SessionViewController(viewModelFactory.getSessionViewModel());
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
                 }
@@ -119,7 +121,7 @@ public class ViewFactory {
             fxmlLoader = new FXMLLoader(getClass().getResource("../Views/LobbyView/LobbyView.fxml"));
             fxmlLoader.setControllerFactory(controllerClass -> {
                 try {
-                    return new LobbyViewController(viewModelFactory.getMainViewModel());
+                    return new LobbyViewController(viewModelFactory.getLobbyViewModel());
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
                 }
@@ -142,7 +144,7 @@ public class ViewFactory {
             fxmlLoader = new FXMLLoader(getClass().getResource("../Views/LobbyView/LobbyView.fxml"));
             fxmlLoader.setControllerFactory(controllerClass -> {
                 try {
-                    return new TaskViewController(viewModelFactory.getMainViewModel());
+                    return new TaskViewController(viewModelFactory.getTaskViewModel());
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
                 }
@@ -165,7 +167,7 @@ public class ViewFactory {
             fxmlLoader = new FXMLLoader(getClass().getResource("../Views/LobbyView/LobbyView.fxml"));
             fxmlLoader.setControllerFactory(controllerClass -> {
                 try {
-                    return new ChatViewController(viewModelFactory.getMainViewModel());
+                    return new ChatViewController(viewModelFactory.getChatViewModel());
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
                 }
