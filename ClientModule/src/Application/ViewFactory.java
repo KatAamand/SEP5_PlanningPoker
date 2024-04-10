@@ -21,6 +21,8 @@ public class ViewFactory {
     private MainViewController mainViewController;
     private SessionViewController sessionViewController;
     private LobbyViewController lobbyViewController;
+    private TaskViewController taskViewController;
+    private ChatViewController chatViewController;
 
     private final Stage loginViewStage;
     private FXMLLoader fxmlLoader;
@@ -130,6 +132,52 @@ public class ViewFactory {
         }
 
         return lobbyViewController;
+    }
+
+    // Load TaskView
+    public TaskViewController loadTaskView() throws IOException {
+        if (taskViewController == null) {
+            fxmlLoader = new FXMLLoader(getClass().getResource("../Views/LobbyView/LobbyView.fxml"));
+            fxmlLoader.setControllerFactory(controllerClass -> {
+                try {
+                    return new TaskViewController(viewModelFactory.getMainViewModel());
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+            Scene taskViewScene = new Scene(fxmlLoader.load());
+            Stage taskViewStage = new Stage();
+            taskViewStage.setTitle("Tasks");
+            taskViewStage.setScene(taskViewScene);
+            taskViewStage.show();
+            taskViewController = fxmlLoader.getController();
+        }
+
+        return taskViewController;
+    }
+
+    // Load LobbyView
+    public ChatViewController loadChatView() throws IOException {
+        if (chatViewController == null) {
+            fxmlLoader = new FXMLLoader(getClass().getResource("../Views/LobbyView/LobbyView.fxml"));
+            fxmlLoader.setControllerFactory(controllerClass -> {
+                try {
+                    return new ChatViewController(viewModelFactory.getMainViewModel());
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+            Scene chatViewScene = new Scene(fxmlLoader.load());
+            Stage chatViewStage = new Stage();
+            chatViewStage.setTitle("Chat");
+            chatViewStage.setScene(chatViewScene);
+            chatViewStage.show();
+            chatViewController = fxmlLoader.getController();
+        }
+
+        return chatViewController;
     }
 
 
