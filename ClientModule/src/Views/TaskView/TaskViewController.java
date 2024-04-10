@@ -18,9 +18,11 @@ public class TaskViewController {
 
     }
 
-    public void onCreateTaskButtonPressed(ActionEvent actionEvent) {
+    public void onCreateTaskButtonPressed() {
+
     }
 
-    public void onEditTaskButtonPressed(ActionEvent actionEvent) {
+    public void onEditTaskButtonPressed() {
+
     }
 }

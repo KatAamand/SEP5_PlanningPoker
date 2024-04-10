@@ -6,7 +6,7 @@ import java.rmi.RemoteException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class ClientFactory {
+public class ClientFactory implements Runnable {
     private static ClientFactory instance;
     private ClientConnection_RMI client;
     private static final Lock lock = new ReentrantLock();
@@ -30,5 +30,10 @@ public class ClientFactory {
             client = new Client_RMI();
         }
         return client;
+    }
+
+    @Override
+    public void run() {
+
     }
 }
