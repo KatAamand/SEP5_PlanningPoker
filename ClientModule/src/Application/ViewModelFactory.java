@@ -15,6 +15,8 @@ public class ViewModelFactory {
     private MainViewModel mainViewModel;
     private LobbyViewModel lobbyViewModel;
     private SessionViewModel sessionViewModel;
+    private TaskViewModel taskViewModel;
+    private ChatViewModel chatViewModel;
 
     private ViewModelFactory(ModelFactory modelFactory) {
         this.modelFactory = modelFactory;
@@ -62,6 +64,22 @@ public class ViewModelFactory {
         }
 
         return sessionViewModel;
+    }
+
+    public TaskViewModel taskViewModel() throws RemoteException {
+        if (taskViewModel == null) {
+            taskViewModel = new TaskViewModel(modelFactory.getClientModel());
+        }
+
+        return taskViewModel;
+    }
+
+    public ChatViewModel getChatViewModel() throws RemoteException {
+        if (chatViewModel == null) {
+            chatViewModel = new ChatViewModel(modelFactory.getClientModel());
+        }
+
+        return chatViewModel;
     }
 
 }
