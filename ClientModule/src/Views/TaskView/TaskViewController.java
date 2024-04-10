@@ -11,9 +11,9 @@ public class TaskViewController {
     public VBox taskContainer;
     public Label taskHeaderLabel;
     public Label taskDescLabel;
-    private MainViewModel mainViewModel;
-    public TaskViewController(MainViewModel mainViewModel) {
-        this.mainViewModel = mainViewModel;
+    private TaskViewModel taskViewModel;
+    public TaskViewController(TaskViewModel taskViewModel) {
+        this.taskViewModel = taskViewModel;
     }
 
     public void onCreateTaskButtonPressed(ActionEvent actionEvent) {
