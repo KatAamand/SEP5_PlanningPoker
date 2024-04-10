@@ -1,7 +1,11 @@
 package Application;
 
+import Views.ChatView.ChatViewModel;
+import Views.LobbyView.LobbyViewModel;
 import Views.LoginView.LoginViewModel;
 import Views.MainView.MainViewModel;
+import Views.SessionView.SessionViewModel;
+import Views.TaskView.TaskViewModel;
 
 import java.rmi.RemoteException;
 import java.util.concurrent.locks.Lock;

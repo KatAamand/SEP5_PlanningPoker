@@ -1,7 +1,11 @@
 package Application;
 
+import Views.ChatView.ChatViewController;
+import Views.LobbyView.LobbyViewController;
 import Views.LoginView.LoginViewController;
 import Views.MainView.MainViewController;
+import Views.SessionView.SessionViewController;
+import Views.TaskView.TaskViewController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
