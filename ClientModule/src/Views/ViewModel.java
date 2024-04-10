@@ -1,4 +1,4 @@
 package Views;
 
-public interface ViewModel {
+public abstract class ViewModel {
 }
