@@ -1,10 +1,7 @@
 package Application;
 
-import Client.Network.Client;
-import Client.Network.RMIClient;
 import Networking.ClientConnection_RMI;
 import Networking.Client_RMI;
-
 import java.rmi.RemoteException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;

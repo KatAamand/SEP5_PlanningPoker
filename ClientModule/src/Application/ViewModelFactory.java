@@ -1,7 +1,7 @@
 package Application;
 
-import Client.Login.LoginViewModel;
-import Client.MainView.MainViewModel;
+import Views.LoginView.LoginViewModel;
+import Views.MainView.MainViewModel;
 
 import java.rmi.RemoteException;
 import java.util.concurrent.locks.Lock;
@@ -13,11 +13,9 @@ public class ViewModelFactory {
     private ModelFactory modelFactory;
     private LoginViewModel loginViewModel;
     private MainViewModel mainViewModel;
-    private final Session session;
 
     private ViewModelFactory(ModelFactory modelFactory) {
         this.modelFactory = modelFactory;
-        this.session = new Session();
     }
 
     public static ViewModelFactory getInstance(ModelFactory modelFactory) {
@@ -34,7 +32,7 @@ public class ViewModelFactory {
 
     public LoginViewModel getLoginViewModel() throws RemoteException {
         if (loginViewModel == null) {
-            loginViewModel = new LoginViewModel(modelFactory.getLoginModel(), session);
+            loginViewModel = new LoginViewModel(modelFactory.getClientModel());
         }
 
         return loginViewModel;
@@ -42,7 +40,7 @@ public class ViewModelFactory {
 
     public MainViewModel getMainViewModel() throws RemoteException {
         if (mainViewModel == null) {
-            mainViewModel = new MainViewModel(modelFactory.getVinylLibraryModel(), session);
+            mainViewModel = new MainViewModel(modelFactory.getClientModel());
         }
 
         return mainViewModel;

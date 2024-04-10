@@ -39,7 +39,7 @@ public class ViewFactory {
 
     public LoginViewController loadLoginView() throws IOException {
         if (loginViewController == null) {
-            fxmlLoader = new FXMLLoader(getClass().getResource("../Login/LoginView.fxml"));
+            fxmlLoader = new FXMLLoader(getClass().getResource("../Views/LoginView/LoginView.fxml"));
             fxmlLoader.setControllerFactory(controllerClass -> {
                 try {
                     return new LoginViewController(viewModelFactory.getLoginViewModel());
@@ -59,7 +59,7 @@ public class ViewFactory {
 
     public MainViewController loadMainView() throws IOException {
         if (mainViewController == null) {
-            fxmlLoader = new FXMLLoader(getClass().getResource("../MainView/Views/MainView.fxml"));
+            fxmlLoader = new FXMLLoader(getClass().getResource("../Views/MainView/MainView.fxml"));
             fxmlLoader.setControllerFactory(controllerClass -> {
                 try {
                     return new MainViewController(viewModelFactory.getMainViewModel());

@@ -1,11 +1,16 @@
 package Model;
 
+import Networking.ClientConnection_RMI;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 public class ClientModel_Impl implements ClientModel
 {
   private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+
+  public ClientModel_Impl(ClientConnection_RMI client) {
+  }
 
 
   @Override public void addPropertyChangeListener(PropertyChangeListener listener)

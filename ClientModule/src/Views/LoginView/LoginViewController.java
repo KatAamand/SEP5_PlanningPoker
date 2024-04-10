@@ -1,5 +1,7 @@
 package Views.LoginView;
 
+import Views.LoginView.LoginViewModel;
+
 public class LoginViewController {
     private LoginViewModel loginViewModel;
 
