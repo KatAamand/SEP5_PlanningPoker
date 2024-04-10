@@ -1,5 +1,6 @@
 package Application;
 
+
 import Views.ChatView.ChatViewModel;
 import Views.LobbyView.LobbyViewModel;
 import Views.LoginView.LoginViewModel;
@@ -70,7 +71,7 @@ public class ViewModelFactory {
         return sessionViewModel;
     }
 
-    public TaskViewModel taskViewModel() throws RemoteException {
+    public TaskViewModel getTaskViewModel() throws RemoteException {
         if (taskViewModel == null) {
             taskViewModel = new TaskViewModel(modelFactory.getClientModel());
         }
