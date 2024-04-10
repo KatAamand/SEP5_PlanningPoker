@@ -8,7 +8,6 @@ import javafx.scene.control.TextField;
 
 public class ChatViewController {
     private ChatViewModel viewModel;
-
     @FXML public TextField messageInputTextField;
     @FXML public TextArea chatTextArea;
     @FXML public Label userIdLabel;
