@@ -15,14 +15,19 @@ public class ViewFactory {
     private static ViewFactory instance;
     private final static Lock lock = new ReentrantLock();
     private ViewModelFactory viewModelFactory;
+
+    // Controller variables
     private LoginViewController loginViewController; 
-    private MainViewController mainViewController; 
-    private final Stage loginStage;
+    private MainViewController mainViewController;
+    private SessionViewController sessionViewController;
+    private LobbyViewController lobbyViewController;
+
+    private final Stage loginViewStage;
     private FXMLLoader fxmlLoader;
 
     private ViewFactory(ViewModelFactory viewModelFactory, Stage stage) {
         this.viewModelFactory = viewModelFactory;
-        this.loginStage = stage;
+        this.loginViewStage = stage;
     }
 
     public static ViewFactory getInstance(ViewModelFactory viewModelFactory, Stage stage) {
@@ -37,6 +42,7 @@ public class ViewFactory {
         return instance;
     }
 
+    // Load LoginView as first view
     public LoginViewController loadLoginView() throws IOException {
         if (loginViewController == null) {
             fxmlLoader = new FXMLLoader(getClass().getResource("../Views/LoginView/LoginView.fxml"));
@@ -48,15 +54,16 @@ public class ViewFactory {
                 }
             });
 
-            Scene loginScene = new Scene(fxmlLoader.load());
-            loginStage.setTitle("Login");
-            loginStage.setScene(loginScene);
-            loginStage.show();
+            Scene loginViewScene = new Scene(fxmlLoader.load());
+            loginViewStage.setTitle("Login");
+            loginViewStage.setScene(loginViewScene);
+            loginViewStage.show();
             loginViewController = fxmlLoader.getController();
         }
         return loginViewController;
     }
 
+    // Load MainView
     public MainViewController loadMainView() throws IOException {
         if (mainViewController == null) {
             fxmlLoader = new FXMLLoader(getClass().getResource("../Views/MainView/MainView.fxml"));
@@ -69,18 +76,66 @@ public class ViewFactory {
             });
 
             Scene mainViewScene = new Scene(fxmlLoader.load());
-            Stage mainStage = new Stage();
-            mainStage.setTitle("Vinyl Library");
-            mainStage.setScene(mainViewScene);
-            mainStage.show();
+            Stage mainViewStage = new Stage();
+            mainViewStage.setTitle("Main");
+            mainViewStage.setScene(mainViewScene);
+            mainViewStage.show();
             mainViewController = fxmlLoader.getController();
         }
 
         return mainViewController;
     }
 
+    // Load SessionView
+    public SessionViewController loadSessionView() throws IOException {
+        if (sessionViewController == null) {
+            fxmlLoader = new FXMLLoader(getClass().getResource("../Views/SessionsView/SessionView.fxml"));
+            fxmlLoader.setControllerFactory(controllerClass -> {
+                try {
+                    return new SessionViewController(viewModelFactory.getMainViewModel());
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+            Scene sessionViewScene = new Scene(fxmlLoader.load());
+            Stage sessionViewStage = new Stage();
+            sessionViewStage.setTitle("Session");
+            sessionViewStage.setScene(sessionViewScene);
+            sessionViewStage.show();
+            sessionViewController = fxmlLoader.getController();
+        }
+
+        return sessionViewController;
+    }
+
+    // Load LobbyView
+    public LobbyViewController loadLobbyView() throws IOException {
+        if (lobbyViewController == null) {
+            fxmlLoader = new FXMLLoader(getClass().getResource("../Views/LobbyView/LobbyView.fxml"));
+            fxmlLoader.setControllerFactory(controllerClass -> {
+                try {
+                    return new LobbyViewController(viewModelFactory.getMainViewModel());
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+            Scene lobbyViewScene = new Scene(fxmlLoader.load());
+            Stage lobbyViewStage = new Stage();
+            lobbyViewStage.setTitle("Lobby");
+            lobbyViewStage.setScene(lobbyViewScene);
+            lobbyViewStage.show();
+            lobbyViewController = fxmlLoader.getController();
+        }
+
+        return lobbyViewController;
+    }
+
+
+    // For closing loginView upon login
     public void closeLoginView() {
-        loginStage.close();
+        loginViewStage.close();
     }
 
 }

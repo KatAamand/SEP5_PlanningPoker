@@ -13,6 +13,8 @@ public class ViewModelFactory {
     private ModelFactory modelFactory;
     private LoginViewModel loginViewModel;
     private MainViewModel mainViewModel;
+    private LobbyViewModel lobbyViewModel;
+    private SessionViewModel sessionViewModel;
 
     private ViewModelFactory(ModelFactory modelFactory) {
         this.modelFactory = modelFactory;
@@ -44,6 +46,22 @@ public class ViewModelFactory {
         }
 
         return mainViewModel;
+    }
+
+    public LobbyViewModel getLobbyViewModel() throws RemoteException {
+        if (lobbyViewModel == null) {
+            lobbyViewModel = new LobbyViewModel(modelFactory.getClientModel());
+        }
+
+        return lobbyViewModel;
+    }
+
+    public SessionViewModel getSessionViewModel() throws RemoteException {
+        if (sessionViewModel == null) {
+            sessionViewModel = new SessionViewModel(modelFactory.getClientModel());
+        }
+
+        return sessionViewModel;
     }
 
 }
