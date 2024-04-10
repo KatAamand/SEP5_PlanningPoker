@@ -18,7 +18,7 @@ public class ChatViewController {
     }
 
     public void initialize() {
-        chatViewModel.messageProperty().addListener((obs, oldMessage, newMessage) -> {
+        viewModel.messageProperty().addListener((obs, oldMessage, newMessage) -> {
             onMessageRecieved(newMessage);
         });
     }
@@ -33,7 +33,8 @@ public class ChatViewController {
     public void onMessageSendButtonPressed()
     {
         String message = messageInputTextField.getText();
-        chatViewModel.sendMessage(chatViewModel.getCurrentClient(), message);
+        String userId = userIdLabel.getText();
+        viewModel.sendMessage(message + userId);
         messageInputTextField.clear();
     }
 }
