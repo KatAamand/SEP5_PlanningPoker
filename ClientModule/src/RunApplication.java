@@ -17,7 +17,7 @@ public class RunApplication extends Application {
         ViewModelFactory viewModelFactory = ViewModelFactory.getInstance(modelFactory);
         ViewFactory viewFactory = ViewFactory.getInstance(viewModelFactory, primaryStage);
 
-        clientFactory.getClient().startClient();
+        clientFactory.getClient();
         viewFactory.loadLoginView();
     }
 
