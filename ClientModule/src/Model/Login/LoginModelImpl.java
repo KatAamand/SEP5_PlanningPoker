@@ -16,8 +16,6 @@ public class LoginModelImpl implements LoginModel
 {
   private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
   private Client_RMI clientConnection;
-  private User localUser;
-  private Session session;
 
 
 

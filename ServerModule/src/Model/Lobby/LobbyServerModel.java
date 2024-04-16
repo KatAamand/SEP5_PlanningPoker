@@ -1,4 +1,7 @@
 package Model.Lobby;
 
-public interface LobbyServerModel {
+import Util.PropertyChangeSubject;
+
+public interface LobbyServerModel extends PropertyChangeSubject
+{
 }

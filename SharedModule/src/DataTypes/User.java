@@ -45,4 +45,10 @@ public class User implements Serializable
     return (this.getUserName().equals(user.getUserName())
         && this.getPassword().equals(user.getPassword()));
   }
+
+
+  public User copy()
+  {
+    return new User(this.getUserName(), this.getPassword());
+  }
 }

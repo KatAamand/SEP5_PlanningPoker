@@ -35,4 +35,14 @@ public class Message
     Message msg = (Message) obj;
     return (this.getMessage().equals(msg.getMessage()));
   }
+
+
+
+  public Message copy()
+  {
+    Message newMessage = new Message();
+    newMessage.setMessage(this.getMessage());
+
+    return newMessage;
+  }
 }

@@ -63,4 +63,17 @@ public class Chat
     Chat newChat = (Chat) obj;
     return newChat.getChatHistory().equals(this.getChatHistory());
   }
+
+
+
+  public Chat copy()
+  {
+    Chat newChat = new Chat();
+
+    for (int i = 0; i < getChatHistory().size(); i++)
+    {
+      newChat.addMessage(this.getMessage(i));
+    }
+    return newChat;
+  }
 }

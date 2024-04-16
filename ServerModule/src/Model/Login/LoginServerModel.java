@@ -1,4 +1,7 @@
 package Model.Login;
 
-public interface LoginServerModel {
+import Util.PropertyChangeSubject;
+
+public interface LoginServerModel extends PropertyChangeSubject
+{
 }
