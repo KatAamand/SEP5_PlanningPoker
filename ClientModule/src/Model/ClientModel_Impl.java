@@ -102,4 +102,9 @@ public class ClientModel_Impl implements ClientModel
   {
     propertyChangeSupport.removePropertyChangeListener(name, listener);
   }
+
+  @Override
+  public void sendMessage(String message) {
+    
+  }
 }
