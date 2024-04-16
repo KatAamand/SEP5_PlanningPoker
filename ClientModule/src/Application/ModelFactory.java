@@ -30,7 +30,7 @@ public class ModelFactory {
 
     public ClientModel getClientModel() throws RemoteException {
         if (model == null) {
-            model = new ClientModel_Impl(clientFactory.getClient());
+            model = new ClientModel_Impl();
         }
         return model;
     }
