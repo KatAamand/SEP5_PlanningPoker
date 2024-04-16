@@ -1,4 +1,8 @@
 package Model.Chat;
 
-public class ChatServerModelImpl {
+import java.beans.PropertyChangeListener;
+
+public class ChatServerModelImpl implements ChatServerModel
+{
+  //TODO
 }

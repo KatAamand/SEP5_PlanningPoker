@@ -1,5 +1,5 @@
 package Model.Login;
 
-public class LoginServerModelImpl {
+public class LoginServerModelImpl implements LoginServerModel{
     // TODO Implement as Singleton
 }
