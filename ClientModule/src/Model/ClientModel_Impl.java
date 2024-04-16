@@ -1,6 +1,7 @@
 package Model;
 
 import Application.ClientFactory;
+import DataTypes.Session;
 import Networking.ClientConnection_RMI;
 
 import DataTypes.User;
