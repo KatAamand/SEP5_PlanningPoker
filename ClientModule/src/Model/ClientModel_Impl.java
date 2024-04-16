@@ -24,18 +24,11 @@ public class ClientModel_Impl implements ClientModel
 
   /** Primary constructor. Defers most of the declarations and definitions to the init method,
    * which is run inside a Platform.runLater statement for increased thread safety while using javaFx. */
-  public ClientModel_Impl(ClientConnection_RMI client) {
+  public ClientModel_Impl() {
     //Assign the network connection:
     try
     {
-      if(client != null)
-      {
-        clientConnection = (Client_RMI) client;
-      }
-      else
-      {
-        clientConnection = (Client_RMI) ClientFactory.getInstance().getClient();
-      }
+      clientConnection = (Client_RMI) ClientFactory.getInstance().getClient();
     }
     catch (RemoteException e)
     {
