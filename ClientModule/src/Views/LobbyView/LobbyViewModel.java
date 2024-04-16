@@ -1,14 +1,15 @@
 package Views.LobbyView;
 
 import Model.Lobby.LobbyModel;
-import Model.Login.LoginModel;
+import Views.ViewModel;
 
-public class LobbyViewModel
+public class LobbyViewModel extends ViewModel
 {
-  private final LoginModel clientModel;
+  private final LobbyModel lobbyModel;
 
-  public LobbyViewModel(LobbyModel clientModel)
+  public LobbyViewModel(LobbyModel lobbyModel)
   {
-    this.clientModel = clientModel;
+    super();
+    this.lobbyModel = lobbyModel;
   }
 }

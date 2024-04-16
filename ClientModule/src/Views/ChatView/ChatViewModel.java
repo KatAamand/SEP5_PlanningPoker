@@ -6,10 +6,12 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class ChatViewModel extends ViewModel {
+    private final ChatModel chatModel;
     private StringProperty message = new SimpleStringProperty();
 
-    public ChatViewModel(ChatModel model) {
+    public ChatViewModel(ChatModel chatModel) {
         super();
+        this.chatModel = chatModel;
 
         super.getModel().addPropertyChangeListener("message", event -> {
             String message = (String) event.getNewValue();

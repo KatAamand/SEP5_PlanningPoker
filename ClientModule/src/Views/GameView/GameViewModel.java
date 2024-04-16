@@ -1,14 +1,15 @@
 package Views.GameView;
 
 import Model.Game.GameModel;
-import Model.Login.LoginModel;
+import Views.ViewModel;
 
-public class GameViewModel
+public class GameViewModel extends ViewModel
 {
-  private final LoginModel clientModel;
+  private final GameModel gameModel;
 
-  public GameViewModel(GameModel clientModel)
+  public GameViewModel(GameModel gameModel)
   {
-    this.clientModel = clientModel;
+    super();
+    this.gameModel = gameModel;
   }
 }
