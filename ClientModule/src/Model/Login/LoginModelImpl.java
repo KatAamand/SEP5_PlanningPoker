@@ -52,30 +52,16 @@ public class LoginModelImpl implements LoginModel
 
 
 
-
-  @Override public void sendMessage(String message)
-  {
-    //TODO
-  }
-
-
-
-
   /** Assigns all the required listeners to the clientConnection allowing for Observable behavior betweeen these classes. */
   private void assignListeners()
   {
     //TODO define the listeners that should be added to the Client here.
+
     //Example:
     clientConnection.addPropertyChangeListener("DataChanged", evt -> {
       System.out.println("This is an example");});
     //End of example
   }
-
-
-
-
-
-
 
 
   @Override public void addPropertyChangeListener(PropertyChangeListener listener)
