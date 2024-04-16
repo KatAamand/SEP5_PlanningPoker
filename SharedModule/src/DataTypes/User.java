@@ -6,6 +6,7 @@ public class User implements Serializable
 {
   private String userName;
   private String password;
+  private Session session;
 
   public User(String userName, String password)
   {
