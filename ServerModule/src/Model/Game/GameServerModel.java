@@ -1,4 +1,7 @@
 package Model.Game;
 
-public interface GameServerModel {
+import Util.PropertyChangeSubject;
+
+public interface GameServerModel extends PropertyChangeSubject
+{
 }

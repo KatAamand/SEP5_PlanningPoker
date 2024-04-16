@@ -1,4 +1,7 @@
 package Model.Main;
 
-public interface MainServerModel {
+import Util.PropertyChangeSubject;
+
+public interface MainServerModel extends PropertyChangeSubject
+{
 }

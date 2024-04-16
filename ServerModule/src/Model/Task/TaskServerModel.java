@@ -1,4 +1,7 @@
 package Model.Task;
 
-public interface TaskServerModel {
+import Util.PropertyChangeSubject;
+
+public interface TaskServerModel extends PropertyChangeSubject
+{
 }

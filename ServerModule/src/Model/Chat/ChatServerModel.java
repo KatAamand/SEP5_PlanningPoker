@@ -1,4 +1,7 @@
 package Model.Chat;
 
-public interface ChatServerModel {
+import Util.PropertyChangeSubject;
+
+public interface ChatServerModel extends PropertyChangeSubject
+{
 }
