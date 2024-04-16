@@ -1,14 +1,11 @@
 package Model.Task;
 
-import Model.Main.MainServerModel;
-import Model.Main.MainServerModelImpl;
-
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class TaskServerModelImpl implements TaskServerModel{
+public class TaskServerModelImpl implements TaskServerModel, Runnable{
 
   private PropertyChangeSupport propertyChangeSupport;
   private static TaskServerModel instance;
@@ -46,5 +43,10 @@ public class TaskServerModelImpl implements TaskServerModel{
   }
   @Override public void removePropertyChangeListener(String name, PropertyChangeListener listener) {
     propertyChangeSupport.removePropertyChangeListener(name, listener);
+  }
+
+  @Override public void run()
+  {
+    //TODO
   }
 }

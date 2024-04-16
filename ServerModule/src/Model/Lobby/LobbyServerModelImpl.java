@@ -1,14 +1,11 @@
 package Model.Lobby;
 
-import Model.Game.GameServerModel;
-import Model.Game.GameServerModelImpl;
-
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class LobbyServerModelImpl implements LobbyServerModel{
+public class LobbyServerModelImpl implements LobbyServerModel, Runnable{
 
   private PropertyChangeSupport propertyChangeSupport;
   private static LobbyServerModel instance;
@@ -47,5 +44,10 @@ public class LobbyServerModelImpl implements LobbyServerModel{
   }
   @Override public void removePropertyChangeListener(String name, PropertyChangeListener listener) {
     propertyChangeSupport.removePropertyChangeListener(name, listener);
+  }
+
+  @Override public void run()
+  {
+    //TODO
   }
 }

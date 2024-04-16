@@ -1,14 +1,11 @@
 package Model.Game;
 
-import Model.Chat.ChatServerModel;
-import Model.Chat.ChatServerModelImpl;
-
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class GameServerModelImpl implements GameServerModel{
+public class GameServerModelImpl implements GameServerModel, Runnable{
 
   private PropertyChangeSupport propertyChangeSupport;
   private static GameServerModel instance;
@@ -47,5 +44,10 @@ public class GameServerModelImpl implements GameServerModel{
   }
   @Override public void removePropertyChangeListener(String name, PropertyChangeListener listener) {
     propertyChangeSupport.removePropertyChangeListener(name, listener);
+  }
+
+  @Override public void run()
+  {
+    //TODO
   }
 }

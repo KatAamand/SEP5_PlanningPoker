@@ -1,14 +1,11 @@
 package Model.Main;
 
-import Model.Login.LoginServerModel;
-import Model.Login.LoginServerModelImpl;
-
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class MainServerModelImpl implements MainServerModel{
+public class MainServerModelImpl implements MainServerModel, Runnable{
 
   private PropertyChangeSupport propertyChangeSupport;
   private static MainServerModel instance;
@@ -46,5 +43,10 @@ public class MainServerModelImpl implements MainServerModel{
   }
   @Override public void removePropertyChangeListener(String name, PropertyChangeListener listener) {
     propertyChangeSupport.removePropertyChangeListener(name, listener);
+  }
+
+  @Override public void run()
+  {
+    //TODO
   }
 }

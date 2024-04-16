@@ -1,7 +1,5 @@
 package Model.Chat;
 
-import Networking.ClientConnection_RMI;
-
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.concurrent.locks.Lock;
