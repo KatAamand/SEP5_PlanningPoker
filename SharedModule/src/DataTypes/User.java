@@ -6,13 +6,11 @@ public class User implements Serializable
 {
   private String userName;
   private String password;
-  private Session session;
 
   public User(String userName, String password)
   {
     setUserName(userName);
     setPassword(password);
-    setCurrentSession(null);
   }
 
 
@@ -28,7 +26,6 @@ public class User implements Serializable
   }
 
 
-
   public void setPassword(String pswd)
   {
     this.password = pswd;
@@ -38,45 +35,6 @@ public class User implements Serializable
   {
     return this.password;
   }
-
-
-
-  public void setCurrentSession(Session session)
-  {
-    this.session = session;
-  }
-
-  public Session getCurrentSession()
-  {
-    return this.session;
-  }
-
-
-  public void WriteMessage(Message message)
-  {
-    //TODO
-  }
-
-
-
-  public void joinSession(Session session, String connectionCode)
-  {
-    //TODO
-  }
-
-
-
-  public void createTask(Task task)
-  {
-    //TODO
-  }
-
-
-  public void estimateEffort(String effortValue)
-  {
-    //TODO
-  }
-
 
 
   @Override public boolean equals(Object obj)
