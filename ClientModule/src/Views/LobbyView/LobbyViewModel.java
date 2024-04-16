@@ -1,12 +1,13 @@
 package Views.LobbyView;
 
-import Model.ClientModel;
+import Model.Lobby.LobbyModel;
+import Model.Login.LoginModel;
 
 public class LobbyViewModel
 {
-  private final ClientModel clientModel;
+  private final LoginModel clientModel;
 
-  public LobbyViewModel(ClientModel clientModel)
+  public LobbyViewModel(LobbyModel clientModel)
   {
     this.clientModel = clientModel;
   }

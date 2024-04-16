@@ -4,7 +4,7 @@ import Views.ChatView.ChatViewController;
 import Views.LobbyView.LobbyViewController;
 import Views.LoginView.LoginViewController;
 import Views.MainView.MainViewController;
-import Views.SessionView.SessionViewController;
+import Views.GameView.GameViewController;
 import Views.TaskView.TaskViewController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -23,7 +23,7 @@ public class ViewFactory {
     // Controller variables
     private LoginViewController loginViewController; 
     private MainViewController mainViewController;
-    private SessionViewController sessionViewController;
+    private GameViewController gameViewController;
     private LobbyViewController lobbyViewController;
     private TaskViewController taskViewController;
     private ChatViewController chatViewController;
@@ -93,12 +93,12 @@ public class ViewFactory {
     }
 
     // Load SessionView
-    public SessionViewController loadSessionView() throws IOException {
-        if (sessionViewController == null) {
-            fxmlLoader = new FXMLLoader(getClass().getResource("../Views/SessionsView/SessionView.fxml"));
+    public GameViewController loadSessionView() throws IOException {
+        if (gameViewController == null) {
+            fxmlLoader = new FXMLLoader(getClass().getResource("../Views/SessionsView/GameView.fxml"));
             fxmlLoader.setControllerFactory(controllerClass -> {
                 try {
-                    return new SessionViewController(viewModelFactory.getSessionViewModel());
+                    return new GameViewController(viewModelFactory.getGameViewModel());
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
                 }
@@ -112,10 +112,10 @@ public class ViewFactory {
             sessionViewStage.setTitle("Session");
             sessionViewStage.setScene(sessionViewScene);
             sessionViewStage.show();
-            sessionViewController = fxmlLoader.getController();
+            gameViewController = fxmlLoader.getController();
         }
 
-        return sessionViewController;
+        return gameViewController;
     }
 
     // Load LobbyView

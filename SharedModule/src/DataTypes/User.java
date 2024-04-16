@@ -43,6 +43,6 @@ public class User implements Serializable
     }
     User user = (User) obj;
     return (this.getUserName().equals(user.getUserName())
-        && this.getPassword().equals(user.getPassword())
+        && this.getPassword().equals(user.getPassword()));
   }
 }

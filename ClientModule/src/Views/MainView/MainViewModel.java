@@ -1,12 +1,12 @@
 package Views.MainView;
 
-import Model.ClientModel;
+import Model.MainView.MainModel;
 import Views.ViewModel;
 
 public class MainViewModel extends ViewModel {
-    private final ClientModel clientModel;
-    public MainViewModel(ClientModel clientModel) {
+    private final MainModel mainModel;
+    public MainViewModel(MainModel mainModel) {
         super();
-        this.clientModel = clientModel;
+        this.mainModel = mainModel;
     }
 }

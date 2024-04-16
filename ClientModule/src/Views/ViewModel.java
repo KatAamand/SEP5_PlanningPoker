@@ -1,15 +1,15 @@
 package Views;
 
-import Model.ClientModel;
+import Model.Login.LoginModel;
 
 public abstract class ViewModel {
-    private ClientModel model;
+    private LoginModel model;
 
-    public ViewModel(ClientModel model) {
+    public ViewModel() {
         this.model = model;
     }
 
-    public ClientModel getModel() {
+    public LoginModel getModel() {
         return model;
     }
 }

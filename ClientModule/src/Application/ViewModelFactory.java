@@ -5,7 +5,7 @@ import Views.ChatView.ChatViewModel;
 import Views.LobbyView.LobbyViewModel;
 import Views.LoginView.LoginViewModel;
 import Views.MainView.MainViewModel;
-import Views.SessionView.SessionViewModel;
+import Views.GameView.GameViewModel;
 import Views.TaskView.TaskViewModel;
 
 import java.rmi.RemoteException;
@@ -19,7 +19,7 @@ public class ViewModelFactory {
     private LoginViewModel loginViewModel;
     private MainViewModel mainViewModel;
     private LobbyViewModel lobbyViewModel;
-    private SessionViewModel sessionViewModel;
+    private GameViewModel gameViewModel;
     private TaskViewModel taskViewModel;
     private ChatViewModel chatViewModel;
 
@@ -41,7 +41,7 @@ public class ViewModelFactory {
 
     public LoginViewModel getLoginViewModel() throws RemoteException {
         if (loginViewModel == null) {
-            loginViewModel = new LoginViewModel(modelFactory.getClientModel());
+            loginViewModel = new LoginViewModel(modelFactory.getLoginModel());
         }
 
         return loginViewModel;
@@ -49,7 +49,7 @@ public class ViewModelFactory {
 
     public MainViewModel getMainViewModel() throws RemoteException {
         if (mainViewModel == null) {
-            mainViewModel = new MainViewModel(modelFactory.getClientModel());
+            mainViewModel = new MainViewModel(modelFactory.getMainViewModel());
         }
 
         return mainViewModel;
@@ -57,23 +57,23 @@ public class ViewModelFactory {
 
     public LobbyViewModel getLobbyViewModel() throws RemoteException {
         if (lobbyViewModel == null) {
-            lobbyViewModel = new LobbyViewModel(modelFactory.getClientModel());
+            lobbyViewModel = new LobbyViewModel(modelFactory.getLobbyModel());
         }
 
         return lobbyViewModel;
     }
 
-    public SessionViewModel getSessionViewModel() throws RemoteException {
-        if (sessionViewModel == null) {
-            sessionViewModel = new SessionViewModel(modelFactory.getClientModel());
+    public GameViewModel getGameViewModel() throws RemoteException {
+        if (gameViewModel == null) {
+            gameViewModel = new GameViewModel(modelFactory.getGameModel());
         }
 
-        return sessionViewModel;
+        return gameViewModel;
     }
 
     public TaskViewModel getTaskViewModel() throws RemoteException {
         if (taskViewModel == null) {
-            taskViewModel = new TaskViewModel(modelFactory.getClientModel());
+            taskViewModel = new TaskViewModel(modelFactory.getTaskModel());
         }
 
         return taskViewModel;
@@ -81,7 +81,7 @@ public class ViewModelFactory {
 
     public ChatViewModel getChatViewModel() throws RemoteException {
         if (chatViewModel == null) {
-            chatViewModel = new ChatViewModel(modelFactory.getClientModel());
+            chatViewModel = new ChatViewModel(modelFactory.getChatModel());
         }
 
         return chatViewModel;

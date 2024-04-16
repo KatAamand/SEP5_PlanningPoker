@@ -1,11 +1,12 @@
 package Views.TaskView;
 
-import Model.ClientModel;
+import Model.Login.LoginModel;
+import Model.Task.TaskModel;
 import Views.ViewModel;
 
 public class TaskViewModel extends ViewModel {
-    private ClientModel clientModel;
-    public TaskViewModel(ClientModel clientModel) {
+    private LoginModel clientModel;
+    public TaskViewModel(TaskModel clientModel) {
         super();
         this.clientModel = clientModel;
     }

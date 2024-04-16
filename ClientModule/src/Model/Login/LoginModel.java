@@ -1,9 +1,9 @@
-package Model;
+package Model.Login;
 
 import Util.PropertyChangeSubject;
 
 /** Client-side interface that bridges the UI related elements with the data related elements. */
-public interface ClientModel extends PropertyChangeSubject
+public interface LoginModel extends PropertyChangeSubject
 {
   /** Primary initialization method. Should be initialized shortly after any constructor, or run inside a
    * Platform.runLater() method to ensure increase thread safety with javaFx.*/

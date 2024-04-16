@@ -1,13 +1,13 @@
 package Views.LoginView;
 
-import Model.ClientModel;
+import Model.Login.LoginModel;
 import Views.ViewModel;
 
 public class LoginViewModel extends ViewModel {
-    private final ClientModel clientModel;
+    private final LoginModel loginModel;
 
-    public LoginViewModel(ClientModel clientModel) {
+    public LoginViewModel(LoginModel loginModel) {
         super();
-        this.clientModel = clientModel; 
+        this.loginModel = loginModel;
     }
 }

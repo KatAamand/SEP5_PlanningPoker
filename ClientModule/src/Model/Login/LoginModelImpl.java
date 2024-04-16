@@ -1,7 +1,6 @@
-package Model;
+package Model.Login;
 
 import Application.ClientFactory;
-import Networking.ClientConnection_RMI;
 
 import DataTypes.User;
 import Networking.Client_RMI;
@@ -13,7 +12,7 @@ import java.rmi.RemoteException;
 
 /** Implementation of the client side model. This class handles data related logical operations on the client side,
  * and queries server related data through the Client_RMI network class.*/
-public class ClientModel_Impl implements ClientModel
+public class LoginModelImpl implements LoginModel
 {
   private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
   private Client_RMI clientConnection;
@@ -24,7 +23,7 @@ public class ClientModel_Impl implements ClientModel
 
   /** Primary constructor. Defers most of the declarations and definitions to the init method,
    * which is run inside a Platform.runLater statement for increased thread safety while using javaFx. */
-  public ClientModel_Impl(ClientConnection_RMI client) {
+  public LoginModelImpl() {
     //Assign the network connection:
     try
     {
