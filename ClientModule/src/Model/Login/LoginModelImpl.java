@@ -27,7 +27,7 @@ public class LoginModelImpl implements LoginModel
     //Assign the network connection:
     try
     {
-      clientConnection = (Client_RMI) ClientFactory.getInstance().getClient(); 
+      clientConnection = (Client_RMI) ClientFactory.getInstance().getClient();
     }
     catch (RemoteException e)
     {
