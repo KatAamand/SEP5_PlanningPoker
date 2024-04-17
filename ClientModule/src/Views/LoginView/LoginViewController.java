@@ -1,30 +1,80 @@
 package Views.LoginView;
 
-import Views.LoginView.LoginViewModel;
+import Application.ViewFactory;
+import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+
+import java.io.IOException;
 
 public class LoginViewController {
     public TextField usernameTextField;
     public TextField passwordTextField;
     public Button loginButton;
     public Button createUserButton;
-    private LoginViewModel loginViewModel;
+    private final LoginViewModel loginViewModel;
+    private final ViewFactory viewFactory;
 
-    public LoginViewController(LoginViewModel loginViewModel) {
+    public LoginViewController(LoginViewModel loginViewModel, ViewFactory viewFactory) {
         this.loginViewModel = loginViewModel;
+        this.viewFactory = viewFactory;
     }
 
     public void initialize() {
+        loginViewModel.setOnLoginResult(this::onLoginResult);
+        loginViewModel.setOnLoginResult(this::onUserCreatedResult);
+    }
 
+    public void onLoginResult(Boolean success) {
+        Platform.runLater(() -> {
+            if (success) {
+                try {
+                    viewFactory.loadMainView();
+                    viewFactory.closeLoginView();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+    }
+
+
+    public void onUserCreatedResult(Boolean success) {
+        Platform.runLater(() -> {
+            if (success) {
+                try {
+                    viewFactory.loadMainView();
+                    viewFactory.closeLoginView();
+
+                    // Create alert that let's the user know that the user has been created
+                    Alert alert = new Alert(AlertType.INFORMATION);
+                    alert.setTitle("Bruger oprettet");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Din bruger er nu oprettet og du kan logge ind.");
+                    alert.showAndWait();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
     }
 
     public void onLoginButtonPressed()
     {
-        // tries to login
+        String username = usernameTextField.getText();
+        String password = passwordTextField.getText();
+
+        loginViewModel.requestLogin(username, password);
+        usernameTextField.clear();
+        passwordTextField.clear();
     }
 
     public void onCreateUserButtonPressed() {
-        // tries to create a user
+        String username = usernameTextField.getText();
+        String password = passwordTextField.getText();
+
+        loginViewModel.requestCreateUser(username, password);
     }
 }

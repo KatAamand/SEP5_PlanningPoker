@@ -54,7 +54,7 @@ public class ViewFactory {
             fxmlLoader = new FXMLLoader(getClass().getResource("../Views/LoginView/LoginView.fxml"));
             fxmlLoader.setControllerFactory(controllerClass -> {
                 try {
-                    return new LoginViewController(viewModelFactory.getLoginViewModel());
+                    return new LoginViewController(viewModelFactory.getLoginViewModel(), this);
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
                 }

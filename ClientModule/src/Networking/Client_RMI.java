@@ -28,6 +28,23 @@ public class Client_RMI implements ClientConnection_RMI, PropertyChangeSubject {
         }
     }
 
+
+    // Requests for Login
+    @Override
+    public void validateUser(String username, String password) {
+        server.validateUser(username, password);
+        System.out.println("Client_RMI: user trying to validate");
+    }
+
+    @Override
+    public void createUser(String username, String password) {
+        server.createUser(username, password);
+        System.out.println("Client_RMI: user trying to create user");
+    }
+
+
+
+
     @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         propertyChangeSupport.addPropertyChangeListener(listener);
@@ -54,5 +71,6 @@ public class Client_RMI implements ClientConnection_RMI, PropertyChangeSubject {
     public void receiveMessage(String message) {
         propertyChangeSupport.firePropertyChange("messageReceived", null, message);
     }
+
 
 }

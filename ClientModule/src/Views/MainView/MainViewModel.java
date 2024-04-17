@@ -9,7 +9,7 @@ public class MainViewModel extends ViewModel {
     private final Session session;
     public MainViewModel(MainModel mainModel, Session session) {
         super();
-        this.session = session; 
+        this.session = session;
         this.mainModel = mainModel;
     }
 }
