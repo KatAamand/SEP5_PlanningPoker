@@ -1,6 +1,7 @@
 package Networking;
 
 import DataTypes.Task;
+import DataTypes.PlanningPoker;
 import DataTypes.User;
 
 import java.beans.PropertyChangeListener;
@@ -34,57 +35,101 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
         }
     }
 
+  // Requests for Login
+  @Override public void validateUser(String username, String password)
+  {
+    try
+    {
+      server.validateUser(username, password);
+    }
+    catch (RemoteException e)
+    {
+      throw new RuntimeException(e);
+    }
+    System.out.println("Client_RMI: user trying to validate");
+  }
 
-    // Requests for Login
-    @Override
-    public void validateUser(String username, String password) {
-        try {
-            server.validateUser(username, password);
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
-        System.out.println("Client_RMI: user trying to validate");
+  @Override public void createUser(String username, String password)
+  {
+    try
+    {
+      server.createUser(username, password);
     }
+    catch (RemoteException e)
+    {
+      throw new RuntimeException(e);
+    }
+    System.out.println("Client_RMI: user trying to create user");
+  }
 
-    @Override
-    public void createUser(String username, String password) {
-        try {
-            server.createUser(username, password);
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
-        System.out.println("Client_RMI: user trying to create user");
-    }
+  @Override public void userCreatedSuccessfully()
+  {
+    System.out.println("Opdatering fra server: user is created succesfully");
+    propertyChangeSupport.firePropertyChange("userCreatedSuccess", null, null);
+  }
 
-    @Override
-    public void userCreatedSuccessfully() {
-        System.out.println("Opdatering fra server: user is created succesfully");
-        propertyChangeSupport.firePropertyChange("userCreatedSuccess", null, null);
-    }
+  @Override public void updateUser(User user)
+  {
+    System.out.println("Opdatering fra server: user is logged in succesfully");
+    propertyChangeSupport.firePropertyChange("userLoginSuccess", null, user);
+  }
 
-    @Override
-    public void updateUser(User user) {
-        System.out.println("Opdatering fra server: user is logged in succesfully");
-        propertyChangeSupport.firePropertyChange("userLoginSuccess", null, user);
+  @Override public void validatePlanningPokerID(String planningPokerID)
+  {
+    try
+    {
+      server.validatePlanningPokerID(planningPokerID);
     }
+    catch (RemoteException e)
+    {
+      throw new RuntimeException(e);
+    }
+    System.out.println("Client_RMI: planningPokerID trying to validate");
+  }
+
+  @Override public void createPlanningPoker()
+  {
+    try
+    {
+      server.createPlanningPoker();
+    }
+    catch (RemoteException e)
+    {
+      throw new RuntimeException(e);
+    }
+    System.out.println("Client_RMI: user trying to create planningPoker");
+  }
 
 
-    @Override
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.addPropertyChangeListener(listener);
-    }
-    @Override
-    public void addPropertyChangeListener(String name, PropertyChangeListener listener) {
-        propertyChangeSupport.addPropertyChangeListener(name, listener);
-    }
-    @Override
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.removePropertyChangeListener(listener);
-    }
-    @Override
-    public void removePropertyChangeListener(String name, PropertyChangeListener listener) {
-        propertyChangeSupport.removePropertyChangeListener(name, listener);
-    }
+  @Override public void updatePlanningPoker(PlanningPoker planningPoker)
+      throws RemoteException
+  {
+    // Needs logic.
+  }
+
+  @Override public void addPropertyChangeListener(
+      PropertyChangeListener listener)
+  {
+    propertyChangeSupport.addPropertyChangeListener(listener);
+  }
+
+  @Override public void addPropertyChangeListener(String name,
+      PropertyChangeListener listener)
+  {
+    propertyChangeSupport.addPropertyChangeListener(name, listener);
+  }
+
+  @Override public void removePropertyChangeListener(
+      PropertyChangeListener listener)
+  {
+    propertyChangeSupport.removePropertyChangeListener(listener);
+  }
+
+  @Override public void removePropertyChangeListener(String name,
+      PropertyChangeListener listener)
+  {
+    propertyChangeSupport.removePropertyChangeListener(name, listener);
+  }
 
     @Override public void loadTaskList() throws RemoteException
     {
@@ -118,10 +163,9 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
         }
     }
 
-    @Override
-    public void receiveMessage(String message) {
-        propertyChangeSupport.firePropertyChange("messageReceived", null, message);
-    }
-
+  @Override public void receiveMessage(String message)
+  {
+    propertyChangeSupport.firePropertyChange("messageReceived", null, message);
+  }
 
 }

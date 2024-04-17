@@ -2,7 +2,7 @@ package Model.MainView;
 
 import Application.ClientFactory;
 import Networking.Client;
-import Networking.ClientInterfaces.MainClientInterface;
+
 import Util.PropertyChangeSubject;
 import javafx.application.Platform;
 
@@ -12,14 +12,16 @@ import java.rmi.RemoteException;
 
 public class MainModelImpl implements MainModel, PropertyChangeSubject
 {
-  private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+  private PropertyChangeSupport support;
   private Client clientConnection;
 
 
 
   /** Primary constructor. Defers most of the declarations and definitions to the init method,
    * which is run inside a Platform.runLater statement for increased thread safety while using javaFx. */
+
   public MainModelImpl() {
+    support = new PropertyChangeSupport(this);
     //Assign the network connection:
     try
     {
@@ -43,27 +45,50 @@ public class MainModelImpl implements MainModel, PropertyChangeSubject
 
 
     //Assign all PropertyChangeListeners:
-    this.assignListeners();
+    try
+    {
+      this.assignListeners();
+    }
+    catch (RemoteException e)
+    {
+      throw new RuntimeException(e);
+    }
   }
+
+  @Override public void requestCreatePlanningPokerID()
+  {
+    clientConnection.createPlanningPoker();
+  }
+
+  @Override public void requestConnectPlanningPoker(String planningPokerID)
+  {
+clientConnection.validatePlanningPokerID(planningPokerID);
+  }
+
 
 
 
   /** Assigns all the required listeners to the clientConnection allowing for Observable behavior betweeen these classes. */
-  private void assignListeners()
+  private void assignListeners() throws RemoteException
   {
     //TODO define the listeners that should be added to the Client here.
+
+    //Example:
+    clientConnection.addPropertyChangeListener("DataChanged", evt -> {
+      System.out.println("This is an example");});
+    //End of example
   }
 
   @Override public void addPropertyChangeListener(PropertyChangeListener listener) {
-    propertyChangeSupport.addPropertyChangeListener(listener);
+    support.addPropertyChangeListener(listener);
   }
   @Override public void addPropertyChangeListener(String name, PropertyChangeListener listener) {
-    propertyChangeSupport.addPropertyChangeListener(name, listener);
+    support.addPropertyChangeListener(name, listener);
   }
   @Override public void removePropertyChangeListener(PropertyChangeListener listener) {
-    propertyChangeSupport.removePropertyChangeListener(listener);
+    support.removePropertyChangeListener(listener);
   }
   @Override public void removePropertyChangeListener(String name, PropertyChangeListener listener) {
-    propertyChangeSupport.removePropertyChangeListener(name, listener);
+    support.removePropertyChangeListener(name, listener);
   }
 }
