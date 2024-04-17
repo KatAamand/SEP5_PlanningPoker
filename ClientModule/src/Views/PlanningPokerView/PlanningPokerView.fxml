@@ -9,6 +9,7 @@
     <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="761.0" prefWidth="382.0">
          <children>
             <VBox fx:id="gameViewWrapper" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="392.0" prefWidth="383.0" />
+            <VBox fx:id="lobbyViewWrapper" prefHeight="200.0" prefWidth="100.0" />
             <HBox prefHeight="100.0" prefWidth="200.0" />
          </children>
     </VBox>

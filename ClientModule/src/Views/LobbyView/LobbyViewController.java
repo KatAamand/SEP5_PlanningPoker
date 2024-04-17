@@ -1,9 +1,12 @@
 package Views.LobbyView;
 
+import Application.ViewModelFactory;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
+
+import java.rmi.RemoteException;
 
 public class LobbyViewController
 {
@@ -14,9 +17,13 @@ public class LobbyViewController
   @FXML public VBox chatViewWrapper;
   @FXML public VBox taskViewWrapper;
 
-  public LobbyViewController(LobbyViewModel lobbyViewModel)
+  public LobbyViewController()
   {
-    this.lobbyViewModel = lobbyViewModel;
+      try {
+          this.lobbyViewModel = ViewModelFactory.getInstance().getLobbyViewModel();
+      } catch (RemoteException e) {
+          throw new RuntimeException(e);
+      }
   }
 
   public void initialize() {

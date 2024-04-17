@@ -3,6 +3,7 @@ package Views.PlanningPokerView;
 import Application.ViewFactory;
 import Views.ChatView.ChatViewController;
 import Views.GameView.GameViewController;
+import Views.LobbyView.LobbyViewController;
 import Views.TaskView.TaskViewController;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -18,14 +19,16 @@ public class PlanningPokerViewController
     @FXML VBox taskViewWrapper;
     @FXML VBox gameViewWrapper;
     @FXML VBox chatViewWrapper;
+    @FXML VBox lobbyViewWrapper;
     private GameViewController gameViewController;
     private TaskViewController taskViewController;
     private ChatViewController chatViewController;
+    private LobbyViewController lobbyViewController;
 
     public void initialize()
     {
         try {
-            VBox taskView = ViewFactory.getInstance().loadTaskView();
+            Parent taskView = ViewFactory.getInstance().loadTaskView();
             taskViewWrapper.getChildren().add(taskView);
 
             Parent gameView = ViewFactory.getInstance().loadGameView();
@@ -34,9 +37,13 @@ public class PlanningPokerViewController
             Parent chatView = ViewFactory.getInstance().loadChatView();
             chatViewWrapper.getChildren().add(chatView);
 
+            Parent lobbyView = ViewFactory.getInstance().loadLobbyView();
+            lobbyViewWrapper.getChildren().add(lobbyView);
+
             gameViewController = ViewFactory.getInstance().loadGameViewController();
             taskViewController = ViewFactory.getInstance().loadTaskViewController();
             chatViewController = ViewFactory.getInstance().loadChatViewController();
+            lobbyViewController = ViewFactory.getInstance().loadLobbyViewController();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -13,8 +13,6 @@ public class RunApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         ClientFactory clientFactory = ClientFactory.getInstance();
-        ModelFactory modelFactory = ModelFactory.getInstance();
-        ViewModelFactory viewModelFactory = ViewModelFactory.getInstance();
         ViewFactory viewFactory = ViewFactory.getInstance();
 
         clientFactory.getClient();

@@ -117,13 +117,7 @@ public class ViewFactory {
     public LobbyViewController loadLobbyViewController() throws IOException {
         if (lobbyViewController == null) {
             fxmlLoader = new FXMLLoader(getClass().getResource("../Views/LobbyView/LobbyView.fxml"));
-            fxmlLoader.setControllerFactory(controllerClass -> {
-                try {
-                    return new LobbyViewController(viewModelFactory.getLobbyViewModel());
-                } catch (RemoteException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+            fxmlLoader.setControllerFactory(controllerClass -> new LobbyViewController());
 
             lobbyViewController = fxmlLoader.getController();
         }
@@ -147,7 +141,7 @@ public class ViewFactory {
         return taskViewController;
     }
 
-    public VBox loadTaskView() throws IOException {
+    public Parent loadTaskView() throws IOException {
         fxmlLoader = new FXMLLoader(getClass().getResource("../Views/TaskView/TaskView.fxml"));
         return fxmlLoader.load();
     }
