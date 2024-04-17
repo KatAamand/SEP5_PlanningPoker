@@ -35,6 +35,13 @@ public class User implements Serializable
     return this.password;
   }
 
+  public PlanningPoker getPlanningPoker() {
+    return planningPoker;
+  }
+
+  public void setPlanningPoker(PlanningPoker planningPoker) {
+    this.planningPoker = planningPoker;
+  }
 
   @Override public boolean equals(Object obj)
   {

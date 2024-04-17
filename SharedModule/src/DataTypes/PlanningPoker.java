@@ -9,9 +9,15 @@ public class PlanningPoker
     private String connectionCode;
     private ArrayList<User> connectedUsers;
     private PlanningPokerState currentState;
+    private Chat chat;
     public PlanningPoker()
     {
         connectedUsers = new ArrayList<>();
+        chat = new Chat();
+    }
+
+    public Chat getChat() {
+        return chat;
     }
 
     public void setCurrentState(PlanningPokerState planningPokerState)
