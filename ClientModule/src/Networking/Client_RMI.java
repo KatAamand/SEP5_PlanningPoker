@@ -1,5 +1,6 @@
 package Networking;
 
+import DataTypes.User;
 import Util.PropertyChangeSubject;
 
 import java.beans.PropertyChangeListener;
@@ -42,5 +43,21 @@ public class Client_RMI implements ClientConnection_RMI, PropertyChangeSubject {
     @Override
     public void removePropertyChangeListener(String name, PropertyChangeListener listener) {
         propertyChangeSupport.removePropertyChangeListener(name, listener);
+    }
+
+    @Override
+    public void sendMessage(String message, User sender) {
+        server.sendMessage(message, sender);
+    }
+
+    @Override
+    public void receiveMessage(String message) {
+        propertyChangeSupport.firePropertyChange("messageReceived", null, message);
+    }
+
+
+    @Override
+    public User getCurrentUser() {
+        return Session.getCurrentUser;
     }
 }

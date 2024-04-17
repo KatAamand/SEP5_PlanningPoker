@@ -1,7 +1,11 @@
 package Model.Chat;
 
+import DataTypes.User;
+import Networking.ClientConnection_RMI;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -51,4 +55,23 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
   {
     //TODO
   }
+
+  @Override
+  public void receiveAndBroadcastMessage(String message, User sender, ArrayList<ClientConnection_RMI> connectedClients) {
+    ArrayList<User> usersToReceive = sender.getPlanningPoker().getConnectedUsers();
+
+    for (ClientConnection_RMI client : connectedClients)
+    {
+      for (User user : usersToReceive)
+      {
+        if (client.getCurrentUser().equals(user))
+        {
+          client.receiveMessage(message);
+          break;
+        }
+      }
+    }
+  }
+
+
 }

@@ -13,8 +13,8 @@ public class ChatViewModel extends ViewModel {
         super();
         this.chatModel = chatModel;
 
-        super.getModel().addPropertyChangeListener("message", event -> {
-            String message = (String) event.getNewValue();
+        chatModel.addPropertyChangeListener("messageReceived", evt -> {
+            String message = (String) evt.getNewValue();
             messageProperty().set(message);
         });
     }
@@ -26,7 +26,7 @@ public class ChatViewModel extends ViewModel {
 
     public void sendMessage(String message)
     {
-        super.getModel().sendMessage(message);
+        chatModel.sendMessage(Session.getCurrentUser.getUserName + ": " + message, Session.getCurrentUser);
     }
 
 

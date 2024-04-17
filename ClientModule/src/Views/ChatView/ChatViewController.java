@@ -32,8 +32,7 @@ public class ChatViewController {
     public void onMessageSendButtonPressed()
     {
         String message = messageInputTextField.getText();
-        String userId = userIdLabel.getText();
-        viewModel.sendMessage(message + userId);
+        viewModel.sendMessage(message);
         messageInputTextField.clear();
     }
 }

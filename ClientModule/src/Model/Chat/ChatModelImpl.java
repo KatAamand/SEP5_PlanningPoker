@@ -1,6 +1,7 @@
 package Model.Chat;
 
 import Application.ClientFactory;
+import DataTypes.User;
 import Networking.ClientInterfaces.ChatClientInterface;
 import Networking.Client_RMI;
 import Util.PropertyChangeSubject;
@@ -10,7 +11,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
 
-public class ChatModelImpl implements ChatModel, PropertyChangeSubject
+public class ChatModelImpl implements ChatModel
 {
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
@@ -47,12 +48,19 @@ public class ChatModelImpl implements ChatModel, PropertyChangeSubject
     this.assignListeners();
   }
 
+  @Override
+  public void sendMessage(String message, User sender) {
+    clientConnection.sendMessage(message, sender);
+  }
 
 
   /** Assigns all the required listeners to the clientConnection allowing for Observable behavior betweeen these classes. */
   private void assignListeners()
   {
     //TODO define the listeners that should be added to the Client here.
+    clientConnection.addPropertyChangeListener("messageReceived", evt -> {
+      propertyChangeSupport.firePropertyChange("messageReceived", null, evt.getNewValue());
+     });
 
     //Example:
     clientConnection.addPropertyChangeListener("DataChanged", evt -> {
