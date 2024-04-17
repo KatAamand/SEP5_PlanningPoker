@@ -10,4 +10,6 @@ public interface Client extends PropertyChangeSubject {
     void updateUser(User user);
     void sendMessage(String message, User sender);
     void receiveMessage(String message);
+    void validatePlanningPokerID(String planningPokerID);
+    void createPlanningPoker();
 }

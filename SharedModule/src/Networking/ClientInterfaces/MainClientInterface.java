@@ -1,8 +1,23 @@
 package Networking.ClientInterfaces;
 
-import Util.PropertyChangeSubject;
-
+import DataTypes.PlanningPoker;
 import java.rmi.Remote;
+import java.beans.PropertyChangeListener;
+import java.rmi.RemoteException;
 
 public interface MainClientInterface extends Remote {
+
+  void validatePlanningPokerID(int planningPokerID) throws RemoteException;
+  void createPlanningPokerID(int planningPokerID) throws RemoteException;
+  void updatePlanningPoker(PlanningPoker planningPoker) throws RemoteException;
+
+  void addPropertyChangeListener(PropertyChangeListener listener) throws RemoteException;
+
+  void addPropertyChangeListener(String name, PropertyChangeListener listener) throws RemoteException;
+
+  void removePropertyChangeListener(PropertyChangeListener listener) throws RemoteException;
+
+  void removePropertyChangeListener(String name, PropertyChangeListener listener) throws RemoteException;
+
+
 }

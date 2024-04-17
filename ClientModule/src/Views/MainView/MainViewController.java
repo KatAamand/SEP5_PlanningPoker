@@ -1,7 +1,5 @@
 package Views.MainView;
 
-import Views.MainView.MainViewModel;
-import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
@@ -20,11 +18,21 @@ public class MainViewController {
 
     }
 
-    public void onCreatePlanningPokerPressed(ActionEvent actionEvent) {
-        // Tries to create a session
+    public void onCreatePlanningPokerPressed() {
+       mainViewModel.requestCreatePlanningPokerID();
+
     }
 
-    public void onConnectToPlanningPokerPressed(ActionEvent actionEvent) {
-        // Tries to connect to a session
+    public void onConnectToPlanningPokerPressed() {
+        try
+        {
+            String planningPokerID = null;
+            mainViewModel.requestConnectPlanningPokerID(planningPokerID);
+        }
+        catch (NumberFormatException e)
+        {
+            System.out.println("Invalid PlaningPoker_ID format.");
+        }
+
     }
 }

@@ -1,5 +1,6 @@
 package Networking;
 
+import DataTypes.PlanningPoker;
 import DataTypes.User;
 import Util.PropertyChangeSubject;
 
@@ -68,6 +69,23 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
         propertyChangeSupport.firePropertyChange("userLoginSuccess", null, user);
     }
 
+    @Override public void validatePlanningPokerID(int planningPokerID)
+        throws RemoteException
+    {
+
+    }
+
+    @Override public void createPlanningPokerID(int planningPokerID)
+        throws RemoteException
+    {
+
+    }
+
+    @Override public void updatePlanningPoker(PlanningPoker planningPoker)
+        throws RemoteException
+    {
+
+    }
 
     @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -100,5 +118,14 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
         propertyChangeSupport.firePropertyChange("messageReceived", null, message);
     }
 
+    @Override public void validatePlanningPoker(String planningPokerID)
+    {
+
+    }
+
+    @Override public void createPlanningPoker()
+    {
+
+    }
 
 }
