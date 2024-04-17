@@ -1,6 +1,6 @@
 package Networking.ClientInterfaces;
 
-import Util.PropertyChangeSubject;
+import java.rmi.Remote;
 
-public interface TaskClientInterface extends PropertyChangeSubject {
+public interface TaskClientInterface extends Remote {
 }

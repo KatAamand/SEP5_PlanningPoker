@@ -27,47 +27,63 @@ public class Server_RMI implements ServerConnection_RMI {
     private Map<ClientConnection_RMI, PropertyChangeListener> listeners = new HashMap<>();
 
     public Server_RMI() throws RemoteException {
+        UnicastRemoteObject.exportObject(this, 0);
+
         connectedClients = new ArrayList<>();
         chatServerModel = ChatServerModelImpl.getInstance();
-
-        UnicastRemoteObject.exportObject(this, 0);
     }
 
     @Override
-    public void registerClient(ClientConnection_RMI client) throws RemoteException {
+    public void registerClient(ClientConnection_RMI client) {
         connectedClients.add(client);
     }
 
     @Override
-    public void unRegisterClient(ClientConnection_RMI client) throws RemoteException {
+    public void unRegisterClient(ClientConnection_RMI client) {
         connectedClients.remove(client);
     }
 
     @Override
-    public void sendMessage(String message, User sender) throws RemoteException {
+    public void sendMessage(String message, User sender) {
         chatServerModel.receiveAndBroadcastMessage(message, sender, connectedClients);
     }
 
     // Requests for login
     @Override
-    public void validateUser(String username, String password) throws RemoteException {
-        loginServerModel.validateUser(username, password);
+    public void validateUser(String username, String password) {
+        try {
+            loginServerModel.validateUser(username, password);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void createUser(String username, String password) throws RemoteException {
-        loginServerModel.createUser(username, password);
+    public void createUser(String username, String password) {
+        try {
+            loginServerModel.createUser(username, password);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void registerClientListener(ClientConnection_RMI client) throws RemoteException {
+    public void registerClientListener(ClientConnection_RMI client) {
         PropertyChangeListener listener = event -> {
              switch (event.getPropertyName()) {
                 case "userLoginSuccess":
-                    client.updateUser((User) event.getNewValue());
+                    try {
+                        client.updateUser((User) event.getNewValue());
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
                     break;
                 case "userCreatedSuccess":
-                    client.userCreatedSuccessfully();
+                    try {
+                        client.userCreatedSuccessfully();
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
                     break;
                 default:
                     System.out.println("Unrecognized event: " + event.getPropertyName());

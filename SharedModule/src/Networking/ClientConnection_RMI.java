@@ -5,7 +5,7 @@ import Networking.ClientInterfaces.*;
 
 import java.rmi.Remote;
 
-public interface ClientConnection_RMI extends Remote, ChatClientInterface, LoginClientInterface, MainClientInterface, TaskClientInterface, GameClientInterface, LobbyClientInterface {
+public interface ClientConnection_RMI extends ChatClientInterface, LoginClientInterface, MainClientInterface, TaskClientInterface, GameClientInterface, LobbyClientInterface {
     // Extends all the client-interfaces
 
 }

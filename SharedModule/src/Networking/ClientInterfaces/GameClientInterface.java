@@ -1,6 +1,7 @@
 package Networking.ClientInterfaces;
 
-import Util.PropertyChangeSubject;
 
-public interface GameClientInterface extends PropertyChangeSubject {
+import java.rmi.Remote;
+
+public interface GameClientInterface extends Remote {
 }

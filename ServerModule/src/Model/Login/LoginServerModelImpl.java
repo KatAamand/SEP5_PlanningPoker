@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class LoginServerModelImpl implements LoginServerModel, Runnable{
+public class LoginServerModelImpl implements LoginServerModel, Runnable {
 
   private PropertyChangeSupport support;
   private static LoginServerModel instance;

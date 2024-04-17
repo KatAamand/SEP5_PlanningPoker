@@ -1,7 +1,7 @@
 package Application;
 
 import Networking.ClientConnection_RMI;
-import Networking.Client_RMI;
+import Networking.Client_RMI_Impl;
 import java.rmi.RemoteException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -27,7 +27,7 @@ public class ClientFactory implements Runnable {
 
     public ClientConnection_RMI getClient() throws RemoteException {
         if (client == null) {
-            client = new Client_RMI();
+            client = new Client_RMI_Impl();
         }
         return client;
     }

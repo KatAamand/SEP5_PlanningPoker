@@ -1,9 +1,8 @@
 package Model.Game;
 
 import Application.ClientFactory;
+import Networking.Client;
 import Networking.ClientInterfaces.GameClientInterface;
-import Networking.ClientInterfaces.LobbyClientInterface;
-import Networking.Client_RMI;
 import Util.PropertyChangeSubject;
 import javafx.application.Platform;
 
@@ -14,7 +13,7 @@ import java.rmi.RemoteException;
 public class GameModelImpl implements GameModel, PropertyChangeSubject
 {
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-  private GameClientInterface clientConnection;
+  private Client clientConnection;
 
 
 
@@ -24,7 +23,7 @@ public class GameModelImpl implements GameModel, PropertyChangeSubject
     //Assign the network connection:
     try
     {
-      clientConnection = (GameClientInterface) ClientFactory.getInstance().getClient();
+      clientConnection = (Client) ClientFactory.getInstance().getClient();
     }
     catch (RemoteException e)
     {
@@ -54,10 +53,6 @@ public class GameModelImpl implements GameModel, PropertyChangeSubject
   {
     //TODO define the listeners that should be added to the Client here.
 
-    //Example:
-    clientConnection.addPropertyChangeListener("DataChanged", evt -> {
-      System.out.println("This is an example");});
-    //End of example
   }
 
   @Override public void addPropertyChangeListener(PropertyChangeListener listener) {

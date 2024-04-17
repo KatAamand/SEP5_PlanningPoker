@@ -5,19 +5,22 @@ import Util.PropertyChangeSubject;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.Serializable;
 import java.rmi.NotBoundException;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
-public class Client_RMI implements ClientConnection_RMI, PropertyChangeSubject {
+public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializable {
 
     private ServerConnection_RMI server;
     private PropertyChangeSupport propertyChangeSupport;
 
-    public Client_RMI()
+    public Client_RMI_Impl()
     {
+        propertyChangeSupport = new PropertyChangeSupport(this);
         try {
             UnicastRemoteObject.exportObject(this, 0);
             Registry registry = LocateRegistry.getRegistry("localhost", 1099);
@@ -26,6 +29,7 @@ public class Client_RMI implements ClientConnection_RMI, PropertyChangeSubject {
         } catch (RemoteException | NotBoundException e) {
             throw new RuntimeException(e);
         }
+        System.out.println("user is connected");
     }
 
 
@@ -82,7 +86,11 @@ public class Client_RMI implements ClientConnection_RMI, PropertyChangeSubject {
 
     @Override
     public void sendMessage(String message, User sender) {
-        server.sendMessage(message, sender);
+        try {
+            server.sendMessage(message, sender);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

@@ -2,9 +2,8 @@ package Model.Login;
 
 import Application.ClientFactory;
 
-import DataTypes.User;
+import Networking.Client;
 import Networking.ClientInterfaces.LoginClientInterface;
-import Networking.Client_RMI;
 import javafx.application.Platform;
 
 import java.beans.PropertyChangeListener;
@@ -16,14 +15,14 @@ import java.rmi.RemoteException;
 public class LoginModelImpl implements LoginModel
 {
   private final PropertyChangeSupport support;
-  private LoginClientInterface clientConnection;
+  private Client clientConnection;
 
   public LoginModelImpl() {
     support = new PropertyChangeSupport(this);
 
     //Assign the network connection:
     try {
-      clientConnection = ClientFactory.getInstance().getClient();
+      clientConnection = (Client) ClientFactory.getInstance().getClient();
     } catch (RemoteException e) {
       //TODO: Properly handle this error!
       e.printStackTrace();
