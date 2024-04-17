@@ -1,6 +1,8 @@
 package Networking;
 
+import DataTypes.User;
 import Model.Chat.ChatServerModel;
+import Model.Chat.ChatServerModelImpl;
 import Model.Game.GameServerModel;
 import Model.Login.LoginServerModel;
 import Model.Main.MainServerModel;
@@ -16,10 +18,11 @@ public class Server_RMI implements ServerConnection_RMI {
     private GameServerModel gameServerModel;
     private MainServerModel mainServerModel;
 
-    private List<ClientConnection_RMI> connectedClients;
+    private ArrayList<ClientConnection_RMI> connectedClients;
 
     public Server_RMI() {
         connectedClients = new ArrayList<>();
+        chatServerModel = ChatServerModelImpl.getInstance();
     }
 
     @Override
@@ -30,5 +33,10 @@ public class Server_RMI implements ServerConnection_RMI {
     @Override
     public void unRegisterClient(ClientConnection_RMI client) {
         connectedClients.remove(client);
+    }
+
+    @Override
+    public void sendMessage(String message, User sender) {
+        chatServerModel.receiveAndBroadcastMessage(message, sender, connectedClients);
     }
 }

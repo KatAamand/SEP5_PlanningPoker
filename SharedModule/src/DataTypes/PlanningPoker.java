@@ -2,16 +2,35 @@ package DataTypes;
 
 import DataTypes.States.PlanningPokerState;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class PlanningPoker
+public class PlanningPoker implements Serializable
 {
     private String connectionCode;
     private ArrayList<User> connectedUsers;
     private PlanningPokerState currentState;
+    private PlanningPoker planningPoker;
+    private Chat chat;
     public PlanningPoker()
     {
         connectedUsers = new ArrayList<>();
+        chat = new Chat();
+        this.planningPoker = new PlanningPoker();
+    }
+
+
+    public Chat getChat() {
+        return chat;
+    }
+
+    public ArrayList<User> getConnectedUsers() {
+        return connectedUsers;
+    }
+
+    public void addUserToSession(User user)
+    {
+        connectedUsers.add(user);
     }
 
     public void setCurrentState(PlanningPokerState planningPokerState)

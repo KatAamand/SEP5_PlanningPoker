@@ -15,21 +15,16 @@ import java.rmi.RemoteException;
  * and queries server related data through the Client_RMI network class.*/
 public class LoginModelImpl implements LoginModel
 {
-  private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+  private final PropertyChangeSupport support;
   private LoginClientInterface clientConnection;
 
-
-
-  /** Primary constructor. Defers most of the declarations and definitions to the init method,
-   * which is run inside a Platform.runLater statement for increased thread safety while using javaFx. */
   public LoginModelImpl() {
+    support = new PropertyChangeSupport(this);
+
     //Assign the network connection:
-    try
-    {
-      clientConnection = (LoginClientInterface) ClientFactory.getInstance().getClient();
-    }
-    catch (RemoteException e)
-    {
+    try {
+      clientConnection = ClientFactory.getInstance().getClient();
+    } catch (RemoteException e) {
       //TODO: Properly handle this error!
       e.printStackTrace();
     }
@@ -39,49 +34,51 @@ public class LoginModelImpl implements LoginModel
   }
 
 
-
   @Override public void init()
   {
-    //TODO Initialize relevant data that might affect the javaFx thread here.
-
 
     //Assign all PropertyChangeListeners:
     this.assignListeners();
   }
 
 
+  @Override
+  public void requestLogin(String username, String password) {
+    clientConnection.validateUser(username, password);
+  }
+
+  @Override
+  public void requestCreateUser(String username, String password) {
+    clientConnection.createUser(username, password);
+  }
+
+
+
+  @Override public void addPropertyChangeListener(PropertyChangeListener listener)
+  {
+    support.addPropertyChangeListener(listener);
+  }
+  @Override public void addPropertyChangeListener(String name, PropertyChangeListener listener)
+  {
+    support.addPropertyChangeListener(name, listener);
+  }
+  @Override public void removePropertyChangeListener(PropertyChangeListener listener)
+  {
+    support.removePropertyChangeListener(listener);
+  }
+  @Override public void removePropertyChangeListener(String name, PropertyChangeListener listener)
+  {
+    support.removePropertyChangeListener(name, listener);
+  }
+
 
   /** Assigns all the required listeners to the clientConnection allowing for Observable behavior betweeen these classes. */
   private void assignListeners()
   {
-    //TODO define the listeners that should be added to the Client here.
-
     //Example:
     clientConnection.addPropertyChangeListener("DataChanged", evt -> {
       System.out.println("This is an example");});
     //End of example
   }
 
-
-  @Override public void addPropertyChangeListener(PropertyChangeListener listener)
-  {
-    propertyChangeSupport.addPropertyChangeListener(listener);
-  }
-  @Override public void addPropertyChangeListener(String name, PropertyChangeListener listener)
-  {
-    propertyChangeSupport.addPropertyChangeListener(name, listener);
-  }
-  @Override public void removePropertyChangeListener(PropertyChangeListener listener)
-  {
-    propertyChangeSupport.removePropertyChangeListener(listener);
-  }
-  @Override public void removePropertyChangeListener(String name, PropertyChangeListener listener)
-  {
-    propertyChangeSupport.removePropertyChangeListener(name, listener);
-  }
-
-  @Override
-  public void sendMessage(String message) {
-    
-  }
 }
