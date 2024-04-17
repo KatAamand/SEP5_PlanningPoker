@@ -31,11 +31,6 @@ public class LoginModelImpl implements LoginModel
     assignListeners();
   }
 
-
-
-  public void init() {
-  }
-
   @Override
   public void requestLogin(String username, String password) {
     clientConnection.validateUser(username, password);
@@ -66,18 +61,18 @@ public class LoginModelImpl implements LoginModel
   }
 
 
-  /** Assigns all the required listeners to the clientConnection allowing for Observable behavior betweeen these classes. */
+  /** Assigns all the required listeners to the clientConnection allowing for Observable behavior between classes. */
   private void assignListeners()
   {
-    clientConnection.addPropertyChangeListener("loginSuccess", evt -> {
+    clientConnection.addPropertyChangeListener("userLoginSuccess", evt -> {
       Platform.runLater(() -> {
-        support.firePropertyChange("loginSuccess", null, evt.getNewValue());
+        support.firePropertyChange("userLoginSuccess", null, evt.getNewValue());
       });
     });
 
-    clientConnection.addPropertyChangeListener("userCreated", evt -> {
+    clientConnection.addPropertyChangeListener("userCreatedSuccess", evt -> {
       Platform.runLater(() -> {
-        support.firePropertyChange("userCreated", null, null);
+        support.firePropertyChange("userCreatedSuccess", null, null);
       });
     });
   }

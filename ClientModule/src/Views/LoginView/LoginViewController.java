@@ -24,7 +24,7 @@ public class LoginViewController {
 
     public void initialize() {
         loginViewModel.setOnLoginResult(this::onLoginResult);
-        loginViewModel.setOnLoginResult(this::onUserCreatedResult);
+        loginViewModel.setOnUserCreatedResult(this::onUserCreatedResult);
     }
 
     public void onLoginResult(Boolean success) {
@@ -43,6 +43,7 @@ public class LoginViewController {
 
     public void onUserCreatedResult(Boolean success) {
         Platform.runLater(() -> {
+            System.out.println("Controller: User created: " + success);
             if (success) {
                 // Create alert that let's the user know that the user has been created
                 Alert alert = new Alert(AlertType.INFORMATION);

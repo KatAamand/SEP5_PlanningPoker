@@ -21,7 +21,7 @@ public class LoginViewModel extends ViewModel {
         this.session = session;
         this.loginModel = loginModel;
 
-        loginModel.addPropertyChangeListener("LoginSuccess", this::loginUser);
+        loginModel.addPropertyChangeListener("userLoginSuccess", this::loginUser);
         loginModel.addPropertyChangeListener("userCreatedSuccess", this::userCreated);
     }
 
@@ -34,6 +34,7 @@ public class LoginViewModel extends ViewModel {
 
     private void userCreated(PropertyChangeEvent event) {
         Platform.runLater(() -> {
+            System.out.println("VM: User created: " + event.getNewValue());
             onUserCreatedResult.accept(true);
         });
     }
