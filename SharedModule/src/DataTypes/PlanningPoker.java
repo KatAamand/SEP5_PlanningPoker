@@ -9,12 +9,15 @@ public class PlanningPoker
     private String connectionCode;
     private ArrayList<User> connectedUsers;
     private PlanningPokerState currentState;
+    private PlanningPoker planningPoker;
     private Chat chat;
     public PlanningPoker()
     {
         connectedUsers = new ArrayList<>();
         chat = new Chat();
+        this.planningPoker = new PlanningPoker();
     }
+
 
     public Chat getChat() {
         return chat;

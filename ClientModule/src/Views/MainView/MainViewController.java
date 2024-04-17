@@ -8,9 +8,9 @@ import javafx.scene.control.TextField;
 public class MainViewController {
     MainViewModel mainViewModel;
 
-    public Button createSessionButton;
-    public Button connectToSessionButton;
-    public TextField sessionIdTextField;
+    public Button createPlanningPokerButton;
+    public Button connectToPlanningPokerButton;
+    public TextField planningPokerIdTextField;
 
     public MainViewController(MainViewModel mainViewModel) {
         this.mainViewModel = mainViewModel;
@@ -20,11 +20,11 @@ public class MainViewController {
 
     }
 
-    public void onCreateSessionButtonPressed(ActionEvent actionEvent) {
+    public void onCreatePlanningPokerPressed(ActionEvent actionEvent) {
         // Tries to create a session
     }
 
-    public void onConnectToSessionButtonPressed(ActionEvent actionEvent) {
+    public void onConnectToPlanningPokerPressed(ActionEvent actionEvent) {
         // Tries to connect to a session
     }
 }
