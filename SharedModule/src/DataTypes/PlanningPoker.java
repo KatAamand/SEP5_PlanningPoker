@@ -20,6 +20,15 @@ public class PlanningPoker
         return chat;
     }
 
+    public ArrayList<User> getConnectedUsers() {
+        return connectedUsers;
+    }
+
+    public void addUserToSession(User user)
+    {
+        connectedUsers.add(user);
+    }
+
     public void setCurrentState(PlanningPokerState planningPokerState)
     {
         this.currentState = planningPokerState;
