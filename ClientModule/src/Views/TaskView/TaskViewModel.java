@@ -1,6 +1,5 @@
 package Views.TaskView;
 
-import Application.ClientFactory;
 import Application.ModelFactory;
 import Model.Task.TaskModel;
 import javafx.application.Platform;
@@ -11,7 +10,6 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -19,6 +17,7 @@ import java.util.ArrayList;
 public class TaskViewModel {
     private TaskModel taskModel;
     private Button btnEditTask;
+    private Button btnCreateTask;
     private VBox taskWrapper;
     private Property<String> sessionId;
     private Property<String> labelUserId;
@@ -39,9 +38,10 @@ public class TaskViewModel {
         }
     }
 
-    public void initialize(Button btnEditTask, VBox taskWrapper)
+    public void initialize(Button btnCreateTask, Button btnEditTask, VBox taskWrapper)
     {
-        setButtonReferences(btnEditTask);
+        setButtonReferences(btnCreateTask, btnEditTask);
+        assignButtonMethods();
         this.taskWrapper = taskWrapper;
         disableEditButton();
         Platform.runLater(this::refresh);
@@ -49,6 +49,20 @@ public class TaskViewModel {
         //Assign listeners:
         taskModel.addPropertyChangeListener("taskListUpdated", evt -> {
             Platform.runLater(this::refresh);
+        });
+    }
+
+
+
+    public void assignButtonMethods()
+    {
+        btnEditTask.setOnAction(event -> {
+            this.editTask();
+        });
+
+
+        btnCreateTask.setOnAction(event -> {
+            this.createTask();
         });
     }
 
@@ -120,8 +134,9 @@ public class TaskViewModel {
 
 
 
-    private void setButtonReferences(Button btnEditTask)
+    private void setButtonReferences(Button btnCreateTask, Button btnEditTask)
     {
+        this.btnCreateTask = btnCreateTask;
         this.btnEditTask = btnEditTask;
     }
 

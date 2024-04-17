@@ -1,21 +1,20 @@
 package Views.TaskView;
 
-import Application.ClientFactory;
-import Application.ModelFactory;
 import Application.ViewFactory;
 import Application.ViewModelFactory;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
-import java.io.IOException;
+import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
+import java.util.ResourceBundle;
 
-public class TaskViewController {
+public class TaskViewController implements Initializable
+{
     @FXML private Label sessionId;
     @FXML private Label labelUserId;
     @FXML private VBox taskWrapper;
@@ -27,6 +26,7 @@ public class TaskViewController {
         try
         {
             this.taskViewModel = ViewModelFactory.getInstance().getTaskViewModel();
+            System.out.println("created");
         }
         catch (RemoteException e)
         {
@@ -35,25 +35,12 @@ public class TaskViewController {
         }
     }
 
-    public void initialize() {
-        Platform.runLater(() -> {
-            taskViewModel.initialize(btnEditTask, taskWrapper);
-            ViewFactory.getInstance().setTaskViewController(this);
-            //TODO: Implement a listener for any changes in the task lists!
-            refresh();
-        });
-    }
 
-    public void refresh()
+    @Override public void initialize(URL location, ResourceBundle resources)
     {
-
-    }
-
-    public void onCreateTaskButtonPressed() {
-        taskViewModel.createTask();
-    }
-
-    public void onEditTaskButtonPressed() {
-        taskViewModel.editTask();
+        Platform.runLater(() -> {
+            taskViewModel.initialize(btnCreateTask, btnEditTask, taskWrapper);
+            ViewFactory.getInstance().setTaskViewController(this);
+        });
     }
 }

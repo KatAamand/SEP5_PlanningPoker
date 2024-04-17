@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="500.0" prefWidth="170.0" style="-fx-background-color: #D5E8D4;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Views.TaskView.TaskViewController">
+<VBox prefHeight="768.0" prefWidth="170.0" style="-fx-background-color: #D5E8D4;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Views.TaskView.TaskViewController">
    <children>
       <VBox alignment="CENTER_LEFT" prefHeight="60.0" prefWidth="170.0" style="-fx-background-color: #DAE8FC;">
          <children>
@@ -52,7 +52,7 @@
             <Insets right="2.0" />
          </padding>
          <content>
-            <VBox fx:id="taskWrapper" prefHeight="313.0" prefWidth="168.0" style="-fx-border-color: #82B366; -fx-background-color: #D5E8D4;">
+            <VBox fx:id="taskWrapper" prefHeight="571.0" prefWidth="168.0" style="-fx-border-color: #82B366; -fx-background-color: #D5E8D4;">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>
@@ -61,11 +61,11 @@
       </ScrollPane>
       <VBox alignment="CENTER" prefHeight="74.0" prefWidth="170.0" spacing="10.0" style="-fx-border-color: #82B366;">
          <children>
-            <Button fx:id="btnCreateTask" focusTraversable="false" mnemonicParsing="false" onAction="#onCreateTaskButtonPressed" prefWidth="100.0" text="Opret task">
+            <Button fx:id="btnCreateTask" focusTraversable="false" mnemonicParsing="false" prefWidth="100.0" text="Opret task">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font></Button>
-            <Button fx:id="btnEditTask" focusTraversable="false" mnemonicParsing="false" onAction="#onEditTaskButtonPressed" prefWidth="100.0" text="Rediger task">
+            <Button fx:id="btnEditTask" focusTraversable="false" mnemonicParsing="false" prefWidth="100.0" text="Rediger task">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font></Button>

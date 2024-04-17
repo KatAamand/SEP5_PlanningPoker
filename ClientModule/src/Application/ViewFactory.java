@@ -10,7 +10,6 @@ import Views.TaskView.TaskViewController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -130,32 +129,9 @@ public class ViewFactory {
         return fxmlLoader.load();
     }
 
-    // Load TaskView
-    /*public void loadTaskView() {
-        try
-        {
-            fxmlLoader = new FXMLLoader(getClass().getResource("../Views/TaskView/TaskView.fxml"));
-            Scene sessionViewScene = new Scene(fxmlLoader.load());
-            Stage sessionViewStage = new Stage();
-            sessionViewStage.setTitle("Session");
-            sessionViewStage.setScene(sessionViewScene);
-            sessionViewStage.show();
-        }
-        catch (IOException e)
-        {
-            //TODO: Add Proper Exception handling
-            e.printStackTrace();
-        }
-    }*/
-
     public TaskViewController getTaskViewController()
     {
         return taskViewController;
-    }
-
-    public Parent loadTaskView() throws IOException {
-        fxmlLoader = new FXMLLoader(getClass().getResource("../Views/TaskView/TaskView.fxml"));
-        return fxmlLoader.load();
     }
 
     public void setTaskViewController(TaskViewController controller)
@@ -183,7 +159,9 @@ public class ViewFactory {
     public PlanningPokerViewController loadPlanningPokerView() throws IOException {
         if (planningPokerViewController == null) {
             fxmlLoader = new FXMLLoader(getClass().getResource("../Views/PlanningPokerView/PlanningPokerView.fxml"));
-            fxmlLoader.setControllerFactory(controllerClass -> new PlanningPokerViewController());
+            //fxmlLoader.setControllerFactory(controllerClass -> new PlanningPokerViewController());
+            /** BEMÆRK OVENSTÅENDE LINJE DRÆBER NESTED CONTROLLERS! Når et .fxml view bliver loadet bliver den pr. standard assigned en controller som defineret i fx:controller i .fxml filen.
+             *  Den her fremgangsmåde skaber bare unødige problemer, hvis ikke der aktuelt er behov for at sende attributter med til controllerens constructor! */
 
             Scene planningPokerViewScene = new Scene(fxmlLoader.load());
             Stage planningPokerViewStage = new Stage();

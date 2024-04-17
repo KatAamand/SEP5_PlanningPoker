@@ -8,28 +8,32 @@ import Views.TaskView.TaskViewController;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.layout.VBox;
-
 import java.io.IOException;
 
 public class PlanningPokerViewController
 {
+    @FXML private Parent taskView;
+    @FXML private TaskViewController taskViewController;
+    /** Bemærk: Tilføjede de 2 ovenstående linjer for at vise hvordan nested controllers kan indarbejdes i .fxml filen. Se også selve .fxml filen! mvh. Kristian*/
+
+    @FXML private VBox gameViewWrapper;
+    @FXML private VBox chatViewWrapper;
+    @FXML private VBox lobbyViewWrapper;
+    private GameViewController gameViewController;
+    private ChatViewController chatViewController;
+    private LobbyViewController lobbyViewController;
+
+
     public PlanningPokerViewController() {
 
     }
-    @FXML VBox taskViewWrapper;
-    @FXML VBox gameViewWrapper;
-    @FXML VBox chatViewWrapper;
-    @FXML VBox lobbyViewWrapper;
-    private GameViewController gameViewController;
-    //private TaskViewController taskViewController;
-    private ChatViewController chatViewController;
-    private LobbyViewController lobbyViewController;
+
 
     public void initialize()
     {
         try {
-            Parent taskView = ViewFactory.getInstance().loadTaskView();
-            taskViewWrapper.getChildren().add(taskView);
+            /** Her kører jeg en hurtig test for at vise at taskViewets controller rigtig nok er blevet injected og initialiseret! Bør slettes :) */
+            System.out.println(taskViewController + " has succesfully been injected into PlanningPokerViewControlleren as a nested controller!");
 
             Parent gameView = ViewFactory.getInstance().loadGameView();
             gameViewWrapper.getChildren().add(gameView);
@@ -47,6 +51,10 @@ public class PlanningPokerViewController
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        catch (NullPointerException e)
+        {
+            //Do nothing. Simple disabled for testing individual elements.
+        }
 
 
     }
@@ -55,15 +63,6 @@ public class PlanningPokerViewController
     public void onsetEffortButtonPressed() {
         gameViewController.onsetEffortButtonPressed();
     }
-
-    //Task View Buttons
-    /*public void onCreateTaskButtonPressed() {
-        taskViewController.onCreateTaskButtonPressed();
-    }
-
-    public void onEditTaskButtonPressed() {
-        taskViewController.onEditTaskButtonPressed();
-    }*/
 
     //Chat View Buttons
     public void onMessageSendButtonPressed()

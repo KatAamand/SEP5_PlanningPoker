@@ -13,12 +13,12 @@ public class GameViewController
 {
   private GameViewModel gameViewModel;
 
-  public Label taskHeaderLabel;
-  public Label taskDescLabel;
-  @FXML public Button setEffortButton;
-  @FXML public TextField insertEffortField;
-  @FXML public VBox chatViewWrapper;
-  @FXML public VBox taskViewWrapper;
+  @FXML private Label taskHeaderLabel;
+  @FXML private Label taskDescLabel;
+  @FXML private Button setEffortButton;
+  @FXML private TextField insertEffortField;
+  @FXML private VBox chatViewWrapper;
+  @FXML private VBox taskViewWrapper;
 
   public GameViewController()
   {
