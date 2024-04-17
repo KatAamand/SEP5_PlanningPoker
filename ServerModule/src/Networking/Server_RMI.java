@@ -157,4 +157,14 @@ public class Server_RMI implements ServerConnection_RMI {
         //TODO: Add proper session handling here. Tasks should be assigned to a specific session.
         taskServerModel.addTask(task);
     }
+
+    @Override public void validatePlanningPokerID(String planningPokerID) throws RemoteException
+    {
+        //TODO: Missing implementation
+    }
+
+    @Override public void createPlanningPoker() throws RemoteException
+    {
+        //TODO: Missing implementation
+    }
 }
