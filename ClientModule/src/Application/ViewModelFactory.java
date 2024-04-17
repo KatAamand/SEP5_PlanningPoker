@@ -22,9 +22,11 @@ public class ViewModelFactory {
     private GameViewModel gameViewModel;
     private TaskViewModel taskViewModel;
     private ChatViewModel chatViewModel;
+    private Session session;
 
     private ViewModelFactory(ModelFactory modelFactory) {
         this.modelFactory = modelFactory;
+        this.session = new Session();
     }
 
     public static ViewModelFactory getInstance(ModelFactory modelFactory) {
@@ -41,7 +43,7 @@ public class ViewModelFactory {
 
     public LoginViewModel getLoginViewModel() throws RemoteException {
         if (loginViewModel == null) {
-            loginViewModel = new LoginViewModel(modelFactory.getLoginModel());
+            loginViewModel = new LoginViewModel(modelFactory.getLoginModel(), session);
         }
 
         return loginViewModel;
@@ -49,7 +51,7 @@ public class ViewModelFactory {
 
     public MainViewModel getMainViewModel() throws RemoteException {
         if (mainViewModel == null) {
-            mainViewModel = new MainViewModel(modelFactory.getMainViewModel());
+            mainViewModel = new MainViewModel(modelFactory.getMainViewModel(), session);
         }
 
         return mainViewModel;
@@ -57,7 +59,7 @@ public class ViewModelFactory {
 
     public LobbyViewModel getLobbyViewModel() throws RemoteException {
         if (lobbyViewModel == null) {
-            lobbyViewModel = new LobbyViewModel(modelFactory.getLobbyModel());
+            lobbyViewModel = new LobbyViewModel(modelFactory.getLobbyModel(), session);
         }
 
         return lobbyViewModel;
@@ -65,7 +67,7 @@ public class ViewModelFactory {
 
     public GameViewModel getGameViewModel() throws RemoteException {
         if (gameViewModel == null) {
-            gameViewModel = new GameViewModel(modelFactory.getGameModel());
+            gameViewModel = new GameViewModel(modelFactory.getGameModel(), session);
         }
 
         return gameViewModel;
@@ -81,7 +83,7 @@ public class ViewModelFactory {
 
     public ChatViewModel getChatViewModel() throws RemoteException {
         if (chatViewModel == null) {
-            chatViewModel = new ChatViewModel(modelFactory.getChatModel());
+            chatViewModel = new ChatViewModel(modelFactory.getChatModel(), session);
         }
 
         return chatViewModel;
