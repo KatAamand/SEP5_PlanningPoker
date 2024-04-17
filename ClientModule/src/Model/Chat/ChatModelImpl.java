@@ -24,7 +24,7 @@ public class ChatModelImpl implements ChatModel, PropertyChangeSubject
     //Assign the network connection:
     try
     {
-      clientConnection = ClientFactory.getInstance().getClient();
+      clientConnection = (ChatClientInterface) ClientFactory.getInstance().getClient();
     }
     catch (RemoteException e)
     {
