@@ -13,4 +13,6 @@ public interface ServerConnection_RMI extends Remote {
     void validateUser(String username, String password);
 
     void createUser(String username, String password);
+
+    void registerClientListener(ClientConnection_RMI client);
 }

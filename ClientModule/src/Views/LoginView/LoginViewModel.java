@@ -14,6 +14,7 @@ public class LoginViewModel extends ViewModel {
     private final Session session;
 
     private Consumer<Boolean> onLoginResult;
+    private Consumer<Boolean> onUserCreatedResult;
 
     public LoginViewModel(LoginModel loginModel, Session session) {
         super();
@@ -21,6 +22,7 @@ public class LoginViewModel extends ViewModel {
         this.loginModel = loginModel;
 
         loginModel.addPropertyChangeListener("LoginSuccess", this::loginUser);
+        loginModel.addPropertyChangeListener("userCreatedSuccess", this::userCreated);
     }
 
     private void loginUser(PropertyChangeEvent event) {
@@ -30,8 +32,17 @@ public class LoginViewModel extends ViewModel {
         });
     }
 
+    private void userCreated(PropertyChangeEvent event) {
+        Platform.runLater(() -> {
+            onUserCreatedResult.accept(true);
+        });
+    }
+
     public void setOnLoginResult(Consumer<Boolean> onLoginResult) {
         this.onLoginResult = onLoginResult;
+    }
+    public void setOnUserCreatedResult(Consumer<Boolean> onUserCreatedResult) {
+        this.onUserCreatedResult = onUserCreatedResult;
     }
 
     public void requestLogin(String username, String password) {

@@ -29,16 +29,7 @@ public class LoginModelImpl implements LoginModel
       e.printStackTrace();
     }
 
-    //Initialize remaining data:
-    Platform.runLater(this::init);
-  }
-
-
-  @Override public void init()
-  {
-
-    //Assign all PropertyChangeListeners:
-    this.assignListeners();
+    assignListeners();
   }
 
 
@@ -75,10 +66,17 @@ public class LoginModelImpl implements LoginModel
   /** Assigns all the required listeners to the clientConnection allowing for Observable behavior betweeen these classes. */
   private void assignListeners()
   {
-    //Example:
-    clientConnection.addPropertyChangeListener("DataChanged", evt -> {
-      System.out.println("This is an example");});
-    //End of example
+    clientConnection.addPropertyChangeListener("loginSuccess", evt -> {
+      Platform.runLater(() -> {
+        support.firePropertyChange("loginSuccess", null, evt.getNewValue());
+      });
+    });
+
+    clientConnection.addPropertyChangeListener("userCreated", evt -> {
+      Platform.runLater(() -> {
+        support.firePropertyChange("userCreated", null, null);
+      });
+    });
   }
 
 }

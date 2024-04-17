@@ -42,7 +42,17 @@ public class Client_RMI implements ClientConnection_RMI, PropertyChangeSubject {
         System.out.println("Client_RMI: user trying to create user");
     }
 
+    @Override
+    public void userCreatedSuccessfully() {
+        System.out.println("Opdatering fra server: user is created succesfully");
+        propertyChangeSupport.firePropertyChange("userCreatedSuccess", null, null);
+    }
 
+    @Override
+    public void updateUser(User user) {
+        System.out.println("Opdatering fra server: user is logged in succesfully");
+        propertyChangeSupport.firePropertyChange("userLoginSuccess", null, user);
+    }
 
 
     @Override
