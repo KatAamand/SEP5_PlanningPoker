@@ -1,4 +1,7 @@
 package Networking.ClientInterfaces;
 
-public interface ChatClientInterface {
+import Util.PropertyChangeSubject;
+
+public interface ChatClientInterface extends PropertyChangeSubject
+{
 }

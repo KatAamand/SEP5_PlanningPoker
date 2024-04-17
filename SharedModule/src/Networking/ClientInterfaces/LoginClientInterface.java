@@ -1,4 +1,7 @@
 package Networking.ClientInterfaces;
 
-public interface LoginClientInterface {
+import Util.PropertyChangeSubject;
+
+public interface LoginClientInterface extends PropertyChangeSubject
+{
 }
