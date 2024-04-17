@@ -105,10 +105,6 @@ public class Client_RMI_Impl
     System.out.println("Client_RMI: user trying to create planningPoker");
   }
 
-  @Override public void createPlanningPokerID() throws RemoteException
-  {
-
-  }
 
   @Override public void updatePlanningPoker(PlanningPoker planningPoker)
       throws RemoteException
