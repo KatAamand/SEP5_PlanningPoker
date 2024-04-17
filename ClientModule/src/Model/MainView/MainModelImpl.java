@@ -23,7 +23,7 @@ public class MainModelImpl implements MainModel, PropertyChangeSubject
     //Assign the network connection:
     try
     {
-      clientConnection = ClientFactory.getInstance().getClient();
+      clientConnection = (MainClientInterface) ClientFactory.getInstance().getClient();
     }
     catch (RemoteException e)
     {

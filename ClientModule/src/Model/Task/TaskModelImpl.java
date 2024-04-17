@@ -23,7 +23,7 @@ public class TaskModelImpl implements TaskModel, PropertyChangeSubject
     //Assign the network connection:
     try
     {
-      clientConnection = ClientFactory.getInstance().getClient();
+      clientConnection = (TaskClientInterface) ClientFactory.getInstance().getClient();
     }
     catch (RemoteException e)
     {
