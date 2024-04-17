@@ -40,19 +40,21 @@ public class LoginServerModelImpl implements LoginServerModel, Runnable {
   }
 
   @Override
-  public boolean validateUser(String username, String password) {
+  public void validateUser(String username, String password) {
+    System.out.println("Validating user: " + username + " " + password);
     for (User user : users) {
       if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
         support.firePropertyChange("userLoginSuccess", null, user);
-        return true; // if user found on user list, return true
+        return; // if user found on user list, return true
       }
     }
-    return false; // If no user with matching username and password, return false
   }
 
   @Override
   public void createUser(String username, String password) {
+    System.out.println("Creating user: " + username + " " + password);
     users.add(new User(username, password));
+    support.firePropertyChange("userCreatedSuccess", null, null);
   }
 
   private void addTestUsers() {

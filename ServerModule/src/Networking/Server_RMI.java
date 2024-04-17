@@ -4,16 +4,19 @@ import DataTypes.User;
 import Model.Chat.ChatServerModel;
 import Model.Chat.ChatServerModelImpl;
 import Model.Game.GameServerModel;
+import Model.Game.GameServerModelImpl;
 import Model.Login.LoginServerModel;
+import Model.Login.LoginServerModelImpl;
 import Model.Main.MainServerModel;
+import Model.Main.MainServerModelImpl;
 import Model.Task.TaskServerModel;
+import Model.Task.TaskServerModelImpl;
 
 import java.beans.PropertyChangeListener;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Server_RMI implements ServerConnection_RMI {
@@ -31,6 +34,10 @@ public class Server_RMI implements ServerConnection_RMI {
 
         connectedClients = new ArrayList<>();
         chatServerModel = ChatServerModelImpl.getInstance();
+        loginServerModel = LoginServerModelImpl.getInstance();
+        taskServerModel = TaskServerModelImpl.getInstance();
+        gameServerModel = GameServerModelImpl.getInstance();
+        mainServerModel = MainServerModelImpl.getInstance();
     }
 
     @Override
@@ -52,6 +59,7 @@ public class Server_RMI implements ServerConnection_RMI {
     @Override
     public void validateUser(String username, String password) {
         try {
+            System.out.println("Server_RMI: user trying to validate");
             loginServerModel.validateUser(username, password);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
@@ -61,6 +69,7 @@ public class Server_RMI implements ServerConnection_RMI {
     @Override
     public void createUser(String username, String password) {
         try {
+            System.out.println("Server trying to create user");
             loginServerModel.createUser(username, password);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
@@ -73,6 +82,7 @@ public class Server_RMI implements ServerConnection_RMI {
              switch (event.getPropertyName()) {
                 case "userLoginSuccess":
                     try {
+                        System.out.println("userLoginSuccess sent to client");
                         client.updateUser((User) event.getNewValue());
                     } catch (RemoteException e) {
                         throw new RuntimeException(e);
@@ -80,6 +90,7 @@ public class Server_RMI implements ServerConnection_RMI {
                     break;
                 case "userCreatedSuccess":
                     try {
+                        System.out.println("userCreatedSuccess sent to client");
                         client.userCreatedSuccessfully();
                     } catch (RemoteException e) {
                         throw new RuntimeException(e);

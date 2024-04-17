@@ -26,10 +26,12 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
             Registry registry = LocateRegistry.getRegistry("localhost", 1099);
             server = (ServerConnection_RMI) registry.lookup("Model");
             server.registerClient(this);
+            server.registerClientListener(this);
+            System.out.println("user is connected");
+
         } catch (RemoteException | NotBoundException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("user is connected");
     }
 
 
