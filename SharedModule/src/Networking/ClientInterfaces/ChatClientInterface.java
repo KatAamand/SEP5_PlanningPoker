@@ -1,7 +1,6 @@
 package Networking.ClientInterfaces;
 
 import DataTypes.User;
-import Util.PropertyChangeSubject;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

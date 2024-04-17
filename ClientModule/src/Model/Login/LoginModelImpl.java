@@ -33,6 +33,11 @@ public class LoginModelImpl implements LoginModel
 
 
   @Override
+  public void init() {
+
+  }
+
+  @Override
   public void requestLogin(String username, String password) {
     clientConnection.validateUser(username, password);
   }
