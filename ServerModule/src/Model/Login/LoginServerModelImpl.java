@@ -14,6 +14,7 @@ public class LoginServerModelImpl implements LoginServerModel, Runnable{
   private LoginServerModelImpl()
   {
     //TODO
+    // ADD list of users
   }
 
   public static LoginServerModel getInstance()
