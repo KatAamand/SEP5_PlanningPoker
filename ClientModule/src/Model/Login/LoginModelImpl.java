@@ -32,9 +32,8 @@ public class LoginModelImpl implements LoginModel
   }
 
 
-  @Override
-  public void init() {
 
+  public void init() {
   }
 
   @Override
