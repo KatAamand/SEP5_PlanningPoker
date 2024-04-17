@@ -82,7 +82,11 @@ public class Client_RMI implements ClientConnection_RMI, PropertyChangeSubject {
 
     @Override
     public void sendMessage(String message, User sender) {
-        server.sendMessage(message, sender);
+        try {
+            server.sendMessage(message, sender);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
