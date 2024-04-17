@@ -1,8 +1,8 @@
 package Model.Task;
 
 import Application.ClientFactory;
+import Networking.Client;
 import Networking.ClientInterfaces.TaskClientInterface;
-import Networking.Client_RMI;
 import Util.PropertyChangeSubject;
 import javafx.application.Platform;
 
@@ -13,7 +13,7 @@ import java.rmi.RemoteException;
 public class TaskModelImpl implements TaskModel, PropertyChangeSubject
 {
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-  private TaskClientInterface clientConnection;
+  private Client clientConnection;
 
 
 
@@ -23,7 +23,7 @@ public class TaskModelImpl implements TaskModel, PropertyChangeSubject
     //Assign the network connection:
     try
     {
-      clientConnection = (TaskClientInterface) ClientFactory.getInstance().getClient();
+      clientConnection = (Client) ClientFactory.getInstance().getClient();
     }
     catch (RemoteException e)
     {
@@ -52,11 +52,6 @@ public class TaskModelImpl implements TaskModel, PropertyChangeSubject
   private void assignListeners()
   {
     //TODO define the listeners that should be added to the Client here.
-
-    //Example:
-    clientConnection.addPropertyChangeListener("DataChanged", evt -> {
-      System.out.println("This is an example");});
-    //End of example
   }
 
 

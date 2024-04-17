@@ -24,7 +24,7 @@ public class LoginViewController {
 
     public void initialize() {
         loginViewModel.setOnLoginResult(this::onLoginResult);
-        loginViewModel.setOnLoginResult(this::onUserCreatedResult);
+        loginViewModel.setOnUserCreatedResult(this::onUserCreatedResult);
     }
 
     public void onLoginResult(Boolean success) {
@@ -43,20 +43,21 @@ public class LoginViewController {
 
     public void onUserCreatedResult(Boolean success) {
         Platform.runLater(() -> {
+            System.out.println("Controller: User created: " + success);
             if (success) {
-                try {
-                    viewFactory.loadMainView();
-                    viewFactory.closeLoginView();
-
-                    // Create alert that let's the user know that the user has been created
-                    Alert alert = new Alert(AlertType.INFORMATION);
-                    alert.setTitle("Bruger oprettet");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Din bruger er nu oprettet og du kan logge ind.");
-                    alert.showAndWait();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                // Create alert that let's the user know that the user has been created
+                Alert alert = new Alert(AlertType.INFORMATION);
+                alert.setTitle("Bruger oprettet");
+                alert.setHeaderText(null);
+                alert.setContentText("Din bruger er nu oprettet og du kan logge ind.");
+                alert.showAndWait();
+            } else {
+                // Create alert that let's the user know that there was an error creating the user
+                Alert alert = new Alert(AlertType.INFORMATION);
+                alert.setTitle("Brugeroprettelse fejlet");
+                alert.setHeaderText(null);
+                alert.setContentText("Din bruge kan ikke oprettes, vent og prøv igen senere");
+                alert.showAndWait();
             }
         });
     }

@@ -2,9 +2,8 @@ package Model.Login;
 
 import Application.ClientFactory;
 
-import DataTypes.User;
+import Networking.Client;
 import Networking.ClientInterfaces.LoginClientInterface;
-import Networking.Client_RMI;
 import javafx.application.Platform;
 
 import java.beans.PropertyChangeListener;
@@ -16,31 +15,21 @@ import java.rmi.RemoteException;
 public class LoginModelImpl implements LoginModel
 {
   private final PropertyChangeSupport support;
-  private LoginClientInterface clientConnection;
+  private Client clientConnection;
 
   public LoginModelImpl() {
     support = new PropertyChangeSupport(this);
 
     //Assign the network connection:
     try {
-      clientConnection = ClientFactory.getInstance().getClient();
+      clientConnection = (Client) ClientFactory.getInstance().getClient();
     } catch (RemoteException e) {
       //TODO: Properly handle this error!
       e.printStackTrace();
     }
 
-    //Initialize remaining data:
-    Platform.runLater(this::init);
+    assignListeners();
   }
-
-
-  @Override public void init()
-  {
-
-    //Assign all PropertyChangeListeners:
-    this.assignListeners();
-  }
-
 
   @Override
   public void requestLogin(String username, String password) {
@@ -72,13 +61,20 @@ public class LoginModelImpl implements LoginModel
   }
 
 
-  /** Assigns all the required listeners to the clientConnection allowing for Observable behavior betweeen these classes. */
+  /** Assigns all the required listeners to the clientConnection allowing for Observable behavior between classes. */
   private void assignListeners()
   {
-    //Example:
-    clientConnection.addPropertyChangeListener("DataChanged", evt -> {
-      System.out.println("This is an example");});
-    //End of example
+    clientConnection.addPropertyChangeListener("userLoginSuccess", evt -> {
+      Platform.runLater(() -> {
+        support.firePropertyChange("userLoginSuccess", null, evt.getNewValue());
+      });
+    });
+
+    clientConnection.addPropertyChangeListener("userCreatedSuccess", evt -> {
+      Platform.runLater(() -> {
+        support.firePropertyChange("userCreatedSuccess", null, null);
+      });
+    });
   }
 
 }

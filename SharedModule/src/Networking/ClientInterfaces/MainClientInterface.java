@@ -2,5 +2,7 @@ package Networking.ClientInterfaces;
 
 import Util.PropertyChangeSubject;
 
-public interface MainClientInterface extends PropertyChangeSubject {
+import java.rmi.Remote;
+
+public interface MainClientInterface extends Remote {
 }

@@ -58,7 +58,7 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
 
   @Override
   public void receiveAndBroadcastMessage(String message, User sender, ArrayList<ClientConnection_RMI> connectedClients) {
-    ArrayList<User> usersToReceive = sender.getPlanningPoker().getConnectedUsers();
+    /*ArrayList<User> usersToReceive = sender.getPlanningPoker().getConnectedUsers();
 
     for (ClientConnection_RMI client : connectedClients)
     {
@@ -70,7 +70,7 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
           break;
         }
       }
-    }
+    }*/
   }
 
 

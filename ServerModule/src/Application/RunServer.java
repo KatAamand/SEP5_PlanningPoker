@@ -18,5 +18,7 @@ public class RunServer {
             throw new RuntimeException(e);
         }
 
+        System.out.println("Server is started");
+
     }
 }

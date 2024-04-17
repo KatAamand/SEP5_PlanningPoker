@@ -29,7 +29,7 @@ public class ChatViewModel extends ViewModel {
 
     public void sendMessage(String message)
     {
-        chatModel.sendMessage(session.getCurrentUser().getUserName() + ": " + message, session.getCurrentUser());
+        chatModel.sendMessage(session.getCurrentUser().getUsername() + ": " + message, session.getCurrentUser());
     }
 
 

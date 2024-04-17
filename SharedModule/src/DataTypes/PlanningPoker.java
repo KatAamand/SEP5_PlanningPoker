@@ -2,10 +2,9 @@ package DataTypes;
 
 import DataTypes.States.PlanningPokerState;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
-public class PlanningPoker implements Serializable
+public class PlanningPoker
 {
     private String connectionCode;
     private ArrayList<User> connectedUsers;

@@ -1,8 +1,8 @@
 package Model.Lobby;
 
 import Application.ClientFactory;
+import Networking.Client;
 import Networking.ClientInterfaces.LobbyClientInterface;
-import Networking.Client_RMI;
 import Util.PropertyChangeSubject;
 import javafx.application.Platform;
 
@@ -13,7 +13,7 @@ import java.rmi.RemoteException;
 public class LobbyModelImpl implements LobbyModel, PropertyChangeSubject
 {
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-  private LobbyClientInterface clientConnection;
+  private Client clientConnection;
 
 
 
@@ -23,7 +23,7 @@ public class LobbyModelImpl implements LobbyModel, PropertyChangeSubject
     //Assign the network connection:
     try
     {
-      clientConnection = (LobbyClientInterface) ClientFactory.getInstance().getClient();
+      clientConnection = (Client) ClientFactory.getInstance().getClient();
     }
     catch (RemoteException e)
     {
@@ -53,10 +53,6 @@ public class LobbyModelImpl implements LobbyModel, PropertyChangeSubject
   {
     //TODO define the listeners that should be added to the Client here.
 
-    //Example:
-    clientConnection.addPropertyChangeListener("DataChanged", evt -> {
-      System.out.println("This is an example");});
-    //End of example
   }
 
 

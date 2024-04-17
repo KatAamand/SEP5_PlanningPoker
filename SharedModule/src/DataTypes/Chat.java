@@ -1,9 +1,8 @@
 package DataTypes;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Chat implements Serializable
+public class Chat
 {
   private ArrayList<Message> chatHistory;
 

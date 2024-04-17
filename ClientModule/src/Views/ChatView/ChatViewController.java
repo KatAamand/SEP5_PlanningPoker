@@ -1,10 +1,13 @@
 package Views.ChatView;
 
+import Application.ViewModelFactory;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+
+import java.rmi.RemoteException;
 
 public class ChatViewController {
     private ChatViewModel viewModel;
@@ -12,8 +15,12 @@ public class ChatViewController {
     @FXML public TextArea chatTextArea;
     @FXML public Label userIdLabel;
 
-    public ChatViewController(ChatViewModel viewModel) {
-        this.viewModel = viewModel;
+    public ChatViewController() {
+        try {
+            this.viewModel = ViewModelFactory.getInstance().getChatViewModel();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void initialize() {

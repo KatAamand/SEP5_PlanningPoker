@@ -24,16 +24,16 @@ public class ViewModelFactory {
     private ChatViewModel chatViewModel;
     private Session session;
 
-    private ViewModelFactory(ModelFactory modelFactory) {
-        this.modelFactory = modelFactory;
+    private ViewModelFactory() {
+        this.modelFactory = ModelFactory.getInstance();
         this.session = new Session();
     }
 
-    public static ViewModelFactory getInstance(ModelFactory modelFactory) {
+    public static ViewModelFactory getInstance() {
         if (instance == null) {
             synchronized (lock) {
                 if (instance == null) {
-                    instance = new ViewModelFactory(modelFactory);
+                    instance = new ViewModelFactory();
                 }
             }
         }

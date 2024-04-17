@@ -4,26 +4,25 @@ import java.io.Serializable;
 
 public class User implements Serializable
 {
-  private String userName;
+  private String username;
   private String password;
   private PlanningPoker planningPoker;
 
-  public User(String userName, String password)
+  public User(String username, String password)
   {
-    setUserName(userName);
+    setUsername(username);
     setPassword(password);
   }
 
-  public void setUserName(String userName)
+  public void setUsername(String userName)
   {
-    this.userName = userName;
+    this.username = userName;
   }
 
-  public String getUserName()
+  public String getUsername()
   {
-    return this.userName;
+    return this.username;
   }
-
 
   public void setPassword(String pswd)
   {
@@ -50,13 +49,13 @@ public class User implements Serializable
       return false;
     }
     User user = (User) obj;
-    return (this.getUserName().equals(user.getUserName())
+    return (this.getUsername().equals(user.getUsername())
         && this.getPassword().equals(user.getPassword()));
   }
 
 
   public User copy()
   {
-    return new User(this.getUserName(), this.getPassword());
+    return new User(this.getUsername(), this.getPassword());
   }
 }

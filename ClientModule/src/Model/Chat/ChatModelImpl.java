@@ -2,9 +2,8 @@ package Model.Chat;
 
 import Application.ClientFactory;
 import DataTypes.User;
+import Networking.Client;
 import Networking.ClientInterfaces.ChatClientInterface;
-import Networking.Client_RMI;
-import Util.PropertyChangeSubject;
 import javafx.application.Platform;
 
 import java.beans.PropertyChangeListener;
@@ -15,7 +14,7 @@ public class ChatModelImpl implements ChatModel
 {
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
-  private ChatClientInterface clientConnection;
+  private Client clientConnection;
 
 
 
@@ -25,7 +24,7 @@ public class ChatModelImpl implements ChatModel
     //Assign the network connection:
     try
     {
-      clientConnection = (ChatClientInterface) ClientFactory.getInstance().getClient();
+      clientConnection = (Client) ClientFactory.getInstance().getClient();
     }
     catch (RemoteException e)
     {
