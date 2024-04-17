@@ -3,6 +3,7 @@ package Model.Login;
 import Application.ClientFactory;
 
 import DataTypes.User;
+import Networking.ClientInterfaces.LoginClientInterface;
 import Networking.Client_RMI;
 import javafx.application.Platform;
 
@@ -15,7 +16,7 @@ import java.rmi.RemoteException;
 public class LoginModelImpl implements LoginModel
 {
   private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-  private Client_RMI clientConnection;
+  private LoginClientInterface clientConnection;
 
 
 
@@ -25,7 +26,7 @@ public class LoginModelImpl implements LoginModel
     //Assign the network connection:
     try
     {
-      clientConnection = (Client_RMI) ClientFactory.getInstance().getClient();
+      clientConnection = ClientFactory.getInstance().getClient();
     }
     catch (RemoteException e)
     {

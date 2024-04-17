@@ -1,6 +1,7 @@
 package Model.Task;
 
 import Application.ClientFactory;
+import Networking.ClientInterfaces.TaskClientInterface;
 import Networking.Client_RMI;
 import Util.PropertyChangeSubject;
 import javafx.application.Platform;
@@ -12,7 +13,7 @@ import java.rmi.RemoteException;
 public class TaskModelImpl implements TaskModel, PropertyChangeSubject
 {
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-  private Client_RMI clientConnection;
+  private TaskClientInterface clientConnection;
 
 
 
@@ -22,7 +23,7 @@ public class TaskModelImpl implements TaskModel, PropertyChangeSubject
     //Assign the network connection:
     try
     {
-      clientConnection = (Client_RMI) ClientFactory.getInstance().getClient();
+      clientConnection = ClientFactory.getInstance().getClient();
     }
     catch (RemoteException e)
     {

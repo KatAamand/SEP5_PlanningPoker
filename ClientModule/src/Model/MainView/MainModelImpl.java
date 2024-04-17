@@ -1,6 +1,7 @@
 package Model.MainView;
 
 import Application.ClientFactory;
+import Networking.ClientInterfaces.MainClientInterface;
 import Networking.Client_RMI;
 import Util.PropertyChangeSubject;
 import javafx.application.Platform;
@@ -12,7 +13,7 @@ import java.rmi.RemoteException;
 public class MainModelImpl implements MainModel, PropertyChangeSubject
 {
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-  private Client_RMI clientConnection;
+  private MainClientInterface clientConnection;
 
 
 
@@ -22,7 +23,7 @@ public class MainModelImpl implements MainModel, PropertyChangeSubject
     //Assign the network connection:
     try
     {
-      clientConnection = (Client_RMI) ClientFactory.getInstance().getClient();
+      clientConnection = ClientFactory.getInstance().getClient();
     }
     catch (RemoteException e)
     {

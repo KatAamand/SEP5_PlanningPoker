@@ -1,6 +1,8 @@
 package Model.Game;
 
 import Application.ClientFactory;
+import Networking.ClientInterfaces.GameClientInterface;
+import Networking.ClientInterfaces.LobbyClientInterface;
 import Networking.Client_RMI;
 import Util.PropertyChangeSubject;
 import javafx.application.Platform;
@@ -12,7 +14,7 @@ import java.rmi.RemoteException;
 public class GameModelImpl implements GameModel, PropertyChangeSubject
 {
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-  private Client_RMI clientConnection;
+  private GameClientInterface clientConnection;
 
 
 
@@ -22,7 +24,7 @@ public class GameModelImpl implements GameModel, PropertyChangeSubject
     //Assign the network connection:
     try
     {
-      clientConnection = (Client_RMI) ClientFactory.getInstance().getClient();
+      clientConnection = ClientFactory.getInstance().getClient();
     }
     catch (RemoteException e)
     {

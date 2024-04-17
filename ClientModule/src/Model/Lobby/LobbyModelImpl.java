@@ -1,6 +1,7 @@
 package Model.Lobby;
 
 import Application.ClientFactory;
+import Networking.ClientInterfaces.LobbyClientInterface;
 import Networking.Client_RMI;
 import Util.PropertyChangeSubject;
 import javafx.application.Platform;
@@ -12,7 +13,7 @@ import java.rmi.RemoteException;
 public class LobbyModelImpl implements LobbyModel, PropertyChangeSubject
 {
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-  private Client_RMI clientConnection;
+  private LobbyClientInterface clientConnection;
 
 
 
@@ -22,7 +23,7 @@ public class LobbyModelImpl implements LobbyModel, PropertyChangeSubject
     //Assign the network connection:
     try
     {
-      clientConnection = (Client_RMI) ClientFactory.getInstance().getClient();
+      clientConnection = ClientFactory.getInstance().getClient();
     }
     catch (RemoteException e)
     {
