@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="765.0" prefWidth="846.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Views.PlanningPokerView.PlanningPokerViewController">
+<children>
+    <VBox fx:id="taskViewWrapper" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="761.0" prefWidth="229.0">
+         <children>
+                  <fx:include fx:id="taskView" source="../TaskView/TaskView.fxml" />
+         </children></VBox>
+    <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="761.0" prefWidth="382.0">
+         <children>
+            <VBox fx:id="gameViewWrapper" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="392.0" prefWidth="383.0">
+        <children>
+            <fx:include fx:id="gameView" source="../GameView/GameView.fxml" />
+        </children></VBox>
+            <HBox prefHeight="100.0" prefWidth="200.0" />
+         </children>
+    </VBox>
+    <VBox fx:id="chatViewWrapper" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="749.0" prefWidth="248.0">
+        <children>
+            <fx:include fx:id="chatView" source="../ChatView/ChatView.fxml" />
+        </children></VBox>
+</children>
+</HBox>
