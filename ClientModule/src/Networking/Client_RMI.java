@@ -72,5 +72,12 @@ public class Client_RMI implements ClientConnection_RMI, PropertyChangeSubject {
         propertyChangeSupport.firePropertyChange("messageReceived", null, message);
     }
 
+<<<<<<< Updated upstream
 
+=======
+    @Override
+    public User getCurrentUser() {
+        return Session.getCurrentUser();
+    }
+>>>>>>> Stashed changes
 }
