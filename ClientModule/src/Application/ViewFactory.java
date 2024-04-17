@@ -106,14 +106,6 @@ public class ViewFactory {
                 }
             });
 
-            loadChatView();
-            loadTaskView();
-
-            Scene sessionViewScene = new Scene(fxmlLoader.load());
-            Stage sessionViewStage = new Stage();
-            sessionViewStage.setTitle("Session");
-            sessionViewStage.setScene(sessionViewScene);
-            sessionViewStage.show();
             gameViewController = fxmlLoader.getController();
         }
 
@@ -167,12 +159,7 @@ public class ViewFactory {
                     throw new RuntimeException(e);
                 }
             });
-
-            Scene chatViewScene = new Scene(fxmlLoader.load());
-            Stage chatViewStage = new Stage();
-            chatViewStage.setTitle("Chat");
-            chatViewStage.setScene(chatViewScene);
-            chatViewStage.show();
+            
             chatViewController = fxmlLoader.getController();
         }
 
@@ -182,7 +169,13 @@ public class ViewFactory {
     public PlanningPokerViewController loadPlanningPokerView() throws IOException {
         if (planningPokerViewController == null) {
             fxmlLoader = new FXMLLoader(getClass().getResource("../Views/PlanningPokerView/PlanningPokerView.fxml"));
-            fxmlLoader.setControllerFactory(controllerClass -> new PlanningPokerViewController());
+            fxmlLoader.setControllerFactory(controllerClass -> {
+                try {
+                    return new PlanningPokerViewController(loadSessionView(), loadTaskView(), loadChatView());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
 
             Scene planningPokerViewScene = new Scene(fxmlLoader.load());
             Stage planningPokerViewStage = new Stage();
