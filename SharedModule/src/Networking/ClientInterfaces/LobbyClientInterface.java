@@ -1,4 +1,6 @@
 package Networking.ClientInterfaces;
 
-public interface LobbyClientInterface {
+import Util.PropertyChangeSubject;
+
+public interface LobbyClientInterface extends PropertyChangeSubject {
 }

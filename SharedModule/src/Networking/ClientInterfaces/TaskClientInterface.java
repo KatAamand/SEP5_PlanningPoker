@@ -1,4 +1,6 @@
 package Networking.ClientInterfaces;
 
-public interface TaskClientInterface {
+import Util.PropertyChangeSubject;
+
+public interface TaskClientInterface extends PropertyChangeSubject {
 }

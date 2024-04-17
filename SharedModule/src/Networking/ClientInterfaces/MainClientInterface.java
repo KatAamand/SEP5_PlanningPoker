@@ -1,4 +1,6 @@
 package Networking.ClientInterfaces;
 
-public interface MainClientInterface {
+import Util.PropertyChangeSubject;
+
+public interface MainClientInterface extends PropertyChangeSubject {
 }

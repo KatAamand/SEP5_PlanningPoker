@@ -1,4 +1,6 @@
 package Networking.ClientInterfaces;
 
-public interface GameClientInterface {
+import Util.PropertyChangeSubject;
+
+public interface GameClientInterface extends PropertyChangeSubject {
 }
