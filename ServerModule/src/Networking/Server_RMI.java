@@ -27,9 +27,10 @@ public class Server_RMI implements ServerConnection_RMI {
     private Map<ClientConnection_RMI, PropertyChangeListener> listeners = new HashMap<>();
 
     public Server_RMI() throws RemoteException {
-        UnicastRemoteObject.exportObject(this, 0);
         connectedClients = new ArrayList<>();
         chatServerModel = ChatServerModelImpl.getInstance();
+
+        UnicastRemoteObject.exportObject(this, 0);
     }
 
     @Override
