@@ -17,23 +17,23 @@
                <children>
                   <HBox alignment="CENTER_RIGHT" spacing="20.0">
                      <children>
-                        <Label text="Klar til at starte en ny session? Klik her">
+                        <Label text="Klar til at starte en ny planningPoker? Klik her">
                            <font>
                               <Font size="14.0" />
                            </font>
                         </Label>
-                        <Button fx:id="createSessionButton" mnemonicParsing="false" onAction="#onCreateSessionButtonPressed" prefWidth="100.0" style="-fx-background-color: #fff; -fx-border-color: #ccc;" text="Opret session" />
+                        <Button fx:id="createSessionButton" mnemonicParsing="false" onAction="#onCreateSessionButtonPressed" prefWidth="100.0" style="-fx-background-color: #fff; -fx-border-color: #ccc;" text="Opret planningPoker" />
                      </children>
                   </HBox>
                   <HBox alignment="CENTER_RIGHT" prefHeight="67.0" prefWidth="500.0" spacing="20.0">
                      <children>
-                        <Label text="Vil du deltage i en session? ">
+                        <Label text="Vil du deltage i en planningPoker? ">
                            <font>
                               <Font size="14.0" />
                            </font>
                         </Label>
                         <TextField fx:id="sessionIdTextField" alignment="CENTER_RIGHT" promptText="sessions id" />
-                        <Button fx:id="connectToSessionButton" mnemonicParsing="false" onAction="#onConnectToSessionButtonPressed" prefWidth="100.0" style="-fx-background-color: #fff; -fx-border-color: #ccc;" text="Tilslut session" />
+                        <Button fx:id="connectToSessionButton" mnemonicParsing="false" onAction="#onConnectToSessionButtonPressed" prefWidth="100.0" style="-fx-background-color: #fff; -fx-border-color: #ccc;" text="Tilslut planningPoker" />
                      </children>
                   </HBox>
                </children>

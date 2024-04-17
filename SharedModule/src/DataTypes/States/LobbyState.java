@@ -1,10 +1,11 @@
 package DataTypes.States;
 
-import DataTypes.Session;
+import DataTypes.PlanningPoker;
 
-public class LobbyState implements SessionState {
-    public void init(Session session)
+public class LobbyState implements PlanningPokerState
+{
+    public void init(PlanningPoker planningPoker)
     {
-        session.setCurrentState(this);
+        planningPoker.setCurrentState(this);
     }
 }
