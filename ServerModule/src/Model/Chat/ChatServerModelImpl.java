@@ -5,6 +5,7 @@ import Networking.ClientConnection_RMI;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -64,10 +65,13 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
     {
       for (User user : usersToReceive)
       {
-        if (client.getCurrentUser().equals(user))
+        try
         {
-          client.receiveMessage(message);
-          break;
+          if (client.getCurrentUser().equals(user))
+          {
+            client.receiveMessage(message);
+            break;
+          }
         }
       }
     }*/

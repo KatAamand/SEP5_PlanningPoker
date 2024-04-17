@@ -75,7 +75,7 @@ public class ViewModelFactory {
 
     public TaskViewModel getTaskViewModel() throws RemoteException {
         if (taskViewModel == null) {
-            taskViewModel = new TaskViewModel(modelFactory.getTaskModel());
+            taskViewModel = new TaskViewModel();
         }
 
         return taskViewModel;

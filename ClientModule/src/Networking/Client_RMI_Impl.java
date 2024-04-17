@@ -1,17 +1,17 @@
 package Networking;
 
+import DataTypes.Task;
 import DataTypes.User;
-import Util.PropertyChangeSubject;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 
 public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializable {
 
@@ -84,6 +84,29 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     @Override
     public void removePropertyChangeListener(String name, PropertyChangeListener listener) {
         propertyChangeSupport.removePropertyChangeListener(name, listener);
+    }
+
+    @Override public void loadTaskList() throws RemoteException
+    {
+        try
+        {
+            ArrayList<Task> taskList = server.getTaskList();
+            if(taskList != null)
+            {
+                System.out.println("Loaded taskList from server.");
+                propertyChangeSupport.firePropertyChange("receivedUpdatedTaskList", null, taskList);
+            }
+        }
+        catch (RemoteException e)
+        {
+            //TODO: Implement proper exception handling.
+            e.printStackTrace();
+        }
+    }
+
+    @Override public void addTask(Task task) throws RemoteException
+    {
+        server.addTask(task);
     }
 
     @Override

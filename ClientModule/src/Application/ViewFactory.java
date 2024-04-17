@@ -32,13 +32,14 @@ public class ViewFactory {
     private ChatViewController chatViewController;
     private PlanningPokerViewController planningPokerViewController;
 
-    private final Stage loginViewStage;
+    private Stage loginViewStage;
     private FXMLLoader fxmlLoader;
 
     private ViewFactory() {
         this.viewModelFactory = ViewModelFactory.getInstance();
         this.loginViewStage = new Stage();
     }
+
 
     public static ViewFactory getInstance() {
         if (instance == null) {
@@ -48,7 +49,6 @@ public class ViewFactory {
                 }
             }
         }
-
         return instance;
     }
 
@@ -131,19 +131,36 @@ public class ViewFactory {
     }
 
     // Load TaskView
-    public TaskViewController loadTaskViewController() throws IOException {
-        if (taskViewController == null) {
+    /*public void loadTaskView() {
+        try
+        {
             fxmlLoader = new FXMLLoader(getClass().getResource("../Views/TaskView/TaskView.fxml"));
-            fxmlLoader.setControllerFactory(controllerClass -> new TaskViewController());
-            
-            taskViewController = fxmlLoader.getController();
+            Scene sessionViewScene = new Scene(fxmlLoader.load());
+            Stage sessionViewStage = new Stage();
+            sessionViewStage.setTitle("Session");
+            sessionViewStage.setScene(sessionViewScene);
+            sessionViewStage.show();
         }
+        catch (IOException e)
+        {
+            //TODO: Add Proper Exception handling
+            e.printStackTrace();
+        }
+    }*/
+
+    public TaskViewController getTaskViewController()
+    {
         return taskViewController;
     }
 
     public Parent loadTaskView() throws IOException {
         fxmlLoader = new FXMLLoader(getClass().getResource("../Views/TaskView/TaskView.fxml"));
         return fxmlLoader.load();
+    }
+
+    public void setTaskViewController(TaskViewController controller)
+    {
+        this.taskViewController = controller;
     }
 
     // Load LobbyView

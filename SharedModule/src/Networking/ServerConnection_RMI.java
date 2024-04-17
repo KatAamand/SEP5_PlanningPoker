@@ -1,9 +1,11 @@
 package Networking;
 
+import DataTypes.Task;
 import DataTypes.User;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 public interface ServerConnection_RMI extends Remote {
     void registerClient(ClientConnection_RMI client) throws RemoteException;
@@ -16,4 +18,7 @@ public interface ServerConnection_RMI extends Remote {
     void createUser(String username, String password) throws RemoteException;
 
     void registerClientListener(ClientConnection_RMI client) throws RemoteException;
+    ArrayList<Task> getTaskList() throws RemoteException;
+
+    void addTask(Task task) throws RemoteException;
 }

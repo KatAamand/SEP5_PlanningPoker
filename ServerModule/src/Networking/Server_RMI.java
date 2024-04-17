@@ -1,5 +1,6 @@
 package Networking;
 
+import DataTypes.Task;
 import DataTypes.User;
 import Model.Chat.ChatServerModel;
 import Model.Chat.ChatServerModelImpl;
@@ -38,6 +39,42 @@ public class Server_RMI implements ServerConnection_RMI {
         taskServerModel = TaskServerModelImpl.getInstance();
         gameServerModel = GameServerModelImpl.getInstance();
         mainServerModel = MainServerModelImpl.getInstance();
+
+        //Load some test/Dummy data:
+        generateDummyTaskData();
+
+        //Assign Listeners:
+        taskServerModel.addPropertyChangeListener("TaskDataChanged", evt -> {
+            //Broadcast the changes to the tasklist to all clients:
+            broadcastTaskListUpdate();
+        });
+
+    }
+
+    private void generateDummyTaskData()
+    {
+        taskServerModel.addTask(new Task("Implement User Authentication", "Develop a user authentication system using OAuth 2.0 to allow users to securely log in with their Google or GitHub accounts."));
+        taskServerModel.addTask(new Task("Optimize Database Queries", "Review and optimize database queries in the application's backend to improve performance and reduce response times."));
+        taskServerModel.addTask(new Task("Refactor UI Components", "Refactor the frontend UI components using a modern framework like React or Vue.js to enhance user experience and maintainability."));
+        taskServerModel.addTask(new Task("Implement RESTful API Endpoints", "Design and implement RESTful API endpoints for CRUD operations to enable seamless interaction between the frontend and backend components."));
+        taskServerModel.addTask(new Task("Enhance Error Handling", "Improve error handling mechanisms throughout the application to provide clear and informative error messages for users and developers alike."));
+    }
+
+    private void broadcastTaskListUpdate()
+    {
+        System.out.println("Server: Broadcasting changes to the task list to all clients");
+        for (ClientConnection_RMI client : connectedClients)
+        {
+            try
+            {
+                client.loadTaskList();
+            }
+            catch (RemoteException e)
+            {
+                //TODO: Add proper exception handling.
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -106,5 +143,18 @@ public class Server_RMI implements ServerConnection_RMI {
 
         loginServerModel.addPropertyChangeListener("userLoginSuccess", listener);
         loginServerModel.addPropertyChangeListener("userCreatedSuccess", listener);
+    }
+
+    //Task related requests
+    @Override public ArrayList<Task> getTaskList() throws RemoteException
+    {
+        //TODO: Add proper session handling here. Tasks should be retrieved from a specific session.
+        return taskServerModel.getTaskList();
+    }
+
+    @Override public void addTask(Task task) throws RemoteException
+    {
+        //TODO: Add proper session handling here. Tasks should be assigned to a specific session.
+        taskServerModel.addTask(task);
     }
 }

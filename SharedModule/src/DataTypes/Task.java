@@ -1,16 +1,31 @@
 package DataTypes;
 
-public class Task
+import java.io.Serializable;
+
+public class Task implements Serializable
 {
+  private String name;
   private String description;
   private String finalEffort;
 
 
 
-  public Task(String description)
+  public Task(String taskName, String description)
   {
+    setTaskName(taskName);
     setDescription(description);
     setFinalEffort("Undefined");
+  }
+
+
+  public void setTaskName(String name)
+  {
+    this.name = name;
+  }
+
+  public String getTaskName()
+  {
+    return this.name;
   }
 
 
@@ -41,7 +56,7 @@ public class Task
 
   public Task copy()
   {
-    Task copy = new Task(this.getDescription());
+    Task copy = new Task(this.getTaskName(), this.getDescription());
     copy.setFinalEffort(this.getFinalEffort());
 
     return copy;
@@ -56,7 +71,8 @@ public class Task
       return false;
     }
     Task task = (Task) obj;
-    return (this.getDescription().equals(task.getDescription())
+    return (this.getTaskName().equals(task.getTaskName())
+        && this.getDescription().equals(task.getDescription())
         && this.getFinalEffort().equals(task.getFinalEffort()));
   }
 }

@@ -1,19 +1,19 @@
 package Model.Task;
 
 import Application.ClientFactory;
-import Networking.Client;
+import DataTypes.Task;
 import Networking.ClientInterfaces.TaskClientInterface;
-import Util.PropertyChangeSubject;
 import javafx.application.Platform;
-
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
-public class TaskModelImpl implements TaskModel, PropertyChangeSubject
+public class TaskModelImpl implements TaskModel
 {
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-  private Client clientConnection;
+  private TaskClientInterface clientConnection;
+  private ArrayList<Task> taskList; //TODO: Should be refactored to be session dependant, instead of being filled with all tasks in existence!.
 
 
 
@@ -23,7 +23,7 @@ public class TaskModelImpl implements TaskModel, PropertyChangeSubject
     //Assign the network connection:
     try
     {
-      clientConnection = (Client) ClientFactory.getInstance().getClient();
+      clientConnection = ClientFactory.getInstance().getClient();
     }
     catch (RemoteException e)
     {
@@ -39,11 +39,20 @@ public class TaskModelImpl implements TaskModel, PropertyChangeSubject
 
   @Override public void init()
   {
-    //TODO Initialize relevant data that might affect the javaFx thread here.
-
-
     //Assign all PropertyChangeListeners:
     this.assignListeners();
+
+
+    //Load data from server:
+    try
+    {
+      clientConnection.loadTaskList();
+    }
+    catch (RemoteException e)
+    {
+      //TODO: Add proper exception handling.
+      e.printStackTrace();
+    }
   }
 
 
@@ -51,10 +60,43 @@ public class TaskModelImpl implements TaskModel, PropertyChangeSubject
   /** Assigns all the required listeners to the clientConnection allowing for Observable behavior betweeen these classes. */
   private void assignListeners()
   {
-    //TODO define the listeners that should be added to the Client here.
+    try
+    {
+      clientConnection.addPropertyChangeListener("receivedUpdatedTaskList", evt -> {
+        setTaskList((ArrayList<Task>) evt.getNewValue());
+        propertyChangeSupport.firePropertyChange("taskListUpdated", null, null);
+        });
+    }
+    catch (RemoteException e)
+    {
+      //TODO: Proper Exception handling
+      e.printStackTrace();
+    }
   }
 
+  private void setTaskList(ArrayList<Task> taskList)
+  {
+    this.taskList = taskList;
+  }
 
+  @Override public ArrayList<Task> getTaskList()
+  {
+    return this.taskList;
+  }
+
+  @Override public void addTask(Task task)
+  {
+    try
+    {
+      clientConnection.addTask(task);
+    }
+    catch (RemoteException e)
+    {
+      //TODO: Add Proper exception handling.
+      e.printStackTrace();
+    }
+
+  }
 
   @Override public void addPropertyChangeListener(PropertyChangeListener listener) {
     propertyChangeSupport.addPropertyChangeListener(listener);

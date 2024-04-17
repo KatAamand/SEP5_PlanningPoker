@@ -21,7 +21,7 @@ public class PlanningPokerViewController
     @FXML VBox chatViewWrapper;
     @FXML VBox lobbyViewWrapper;
     private GameViewController gameViewController;
-    private TaskViewController taskViewController;
+    //private TaskViewController taskViewController;
     private ChatViewController chatViewController;
     private LobbyViewController lobbyViewController;
 
@@ -41,7 +41,7 @@ public class PlanningPokerViewController
             lobbyViewWrapper.getChildren().add(lobbyView);
 
             gameViewController = ViewFactory.getInstance().loadGameViewController();
-            taskViewController = ViewFactory.getInstance().loadTaskViewController();
+            //taskViewController = ViewFactory.getInstance().loadTaskViewController();
             chatViewController = ViewFactory.getInstance().loadChatViewController();
             lobbyViewController = ViewFactory.getInstance().loadLobbyViewController();
         } catch (IOException e) {
@@ -57,13 +57,13 @@ public class PlanningPokerViewController
     }
 
     //Task View Buttons
-    public void onCreateTaskButtonPressed() {
+    /*public void onCreateTaskButtonPressed() {
         taskViewController.onCreateTaskButtonPressed();
     }
 
     public void onEditTaskButtonPressed() {
         taskViewController.onEditTaskButtonPressed();
-    }
+    }*/
 
     //Chat View Buttons
     public void onMessageSendButtonPressed()

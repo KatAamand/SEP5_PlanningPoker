@@ -3,7 +3,6 @@ package Model.Chat;
 import Application.ClientFactory;
 import DataTypes.User;
 import Networking.Client;
-import Networking.ClientInterfaces.ChatClientInterface;
 import javafx.application.Platform;
 
 import java.beans.PropertyChangeListener;
@@ -49,7 +48,7 @@ public class ChatModelImpl implements ChatModel
 
   @Override
   public void sendMessage(String message, User sender) {
-    clientConnection.sendMessage(message, sender);
+      clientConnection.sendMessage(message, sender);
   }
 
 
@@ -58,13 +57,8 @@ public class ChatModelImpl implements ChatModel
   {
     //TODO define the listeners that should be added to the Client here.
     clientConnection.addPropertyChangeListener("messageReceived", evt -> {
-      propertyChangeSupport.firePropertyChange("messageReceived", null, evt.getNewValue());
-     });
-
-    //Example:
-    clientConnection.addPropertyChangeListener("DataChanged", evt -> {
-      System.out.println("This is an example");});
-    //End of example
+        propertyChangeSupport.firePropertyChange("messageReceived", null, evt.getNewValue());
+      });
   }
 
 
