@@ -25,10 +25,23 @@ public class PlanningPokerViewController
     public void initialize()
     {
         try {
-            Parent taskView = ViewFactory.getInstance().loadTaskView();
+            VBox taskView = ViewFactory.getInstance().loadTaskView();
+            taskViewWrapper.getChildren().add(taskView);
+
+            Parent gameView = ViewFactory.getInstance().loadGameView();
+            gameViewWrapper.getChildren().add(gameView);
+
+            Parent chatView = ViewFactory.getInstance().loadChatView();
+            chatViewWrapper.getChildren().add(chatView);
+
+            gameViewController = ViewFactory.getInstance().loadGameViewController();
+            taskViewController = ViewFactory.getInstance().loadTaskViewController();
+            chatViewController = ViewFactory.getInstance().loadChatViewController();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+
     }
 
     //Game View Buttons

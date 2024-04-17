@@ -18,7 +18,7 @@ public class RunApplication extends Application {
         ViewFactory viewFactory = ViewFactory.getInstance();
 
         clientFactory.getClient();
-        viewFactory.loadPlanningPokerView();
+        viewFactory.loadLoginView();
     }
 
 }
