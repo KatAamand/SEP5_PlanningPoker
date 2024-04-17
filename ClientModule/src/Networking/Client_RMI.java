@@ -32,13 +32,21 @@ public class Client_RMI implements ClientConnection_RMI, PropertyChangeSubject {
     // Requests for Login
     @Override
     public void validateUser(String username, String password) {
-        server.validateUser(username, password);
+        try {
+            server.validateUser(username, password);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
         System.out.println("Client_RMI: user trying to validate");
     }
 
     @Override
     public void createUser(String username, String password) {
-        server.createUser(username, password);
+        try {
+            server.createUser(username, password);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
         System.out.println("Client_RMI: user trying to create user");
     }
 

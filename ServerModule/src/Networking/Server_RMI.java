@@ -34,33 +34,33 @@ public class Server_RMI implements ServerConnection_RMI {
     }
 
     @Override
-    public void registerClient(ClientConnection_RMI client) {
+    public void registerClient(ClientConnection_RMI client) throws RemoteException {
         connectedClients.add(client);
     }
 
     @Override
-    public void unRegisterClient(ClientConnection_RMI client) {
+    public void unRegisterClient(ClientConnection_RMI client) throws RemoteException {
         connectedClients.remove(client);
     }
 
     @Override
-    public void sendMessage(String message, User sender) {
+    public void sendMessage(String message, User sender) throws RemoteException {
         chatServerModel.receiveAndBroadcastMessage(message, sender, connectedClients);
     }
 
     // Requests for login
     @Override
-    public void validateUser(String username, String password) {
+    public void validateUser(String username, String password) throws RemoteException {
         loginServerModel.validateUser(username, password);
     }
 
     @Override
-    public void createUser(String username, String password) {
+    public void createUser(String username, String password) throws RemoteException {
         loginServerModel.createUser(username, password);
     }
 
     @Override
-    public void registerClientListener(ClientConnection_RMI client) {
+    public void registerClientListener(ClientConnection_RMI client) throws RemoteException {
         PropertyChangeListener listener = event -> {
              switch (event.getPropertyName()) {
                 case "userLoginSuccess":
