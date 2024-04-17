@@ -16,4 +16,7 @@ public interface ServerConnection_RMI extends Remote {
     void createUser(String username, String password) throws RemoteException;
 
     void registerClientListener(ClientConnection_RMI client) throws RemoteException;
+
+    void validatePlanningPokerID(String planningPokerID) throws RemoteException;
+    void createPlanningPoker() throws RemoteException;
 }
