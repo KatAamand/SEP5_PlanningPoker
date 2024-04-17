@@ -29,15 +29,19 @@ public class ModelFactory {
     private TaskModel taskModel;
     private LobbyModel lobbyModel;
 
-    private ModelFactory(ClientFactory clientFactory) {
-        this.clientFactory = clientFactory;
+    private ModelFactory() {
+        try {
+            this.clientFactory = ClientFactory.getInstance();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public static synchronized ModelFactory getInstance(ClientFactory clientFactory) {
+    public static synchronized ModelFactory getInstance() {
         if (instance == null) {
             synchronized (lock) {
                 if (instance == null) {
-                    instance = new ModelFactory(clientFactory);
+                    instance = new ModelFactory();
                 }
             }
         }

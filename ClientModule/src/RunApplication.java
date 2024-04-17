@@ -13,9 +13,9 @@ public class RunApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         ClientFactory clientFactory = ClientFactory.getInstance();
-        ModelFactory modelFactory = ModelFactory.getInstance(clientFactory);
-        ViewModelFactory viewModelFactory = ViewModelFactory.getInstance(modelFactory);
-        ViewFactory viewFactory = ViewFactory.getInstance(viewModelFactory, primaryStage);
+        ModelFactory modelFactory = ModelFactory.getInstance();
+        ViewModelFactory viewModelFactory = ViewModelFactory.getInstance();
+        ViewFactory viewFactory = ViewFactory.getInstance();
 
         clientFactory.getClient();
         viewFactory.loadPlanningPokerView();

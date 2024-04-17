@@ -1,25 +1,35 @@
 package Views.PlanningPokerView;
 
+import Application.ViewFactory;
 import Views.ChatView.ChatViewController;
 import Views.GameView.GameViewController;
 import Views.TaskView.TaskViewController;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
 import javafx.scene.layout.VBox;
+
+import java.io.IOException;
 
 public class PlanningPokerViewController
 {
-    public PlanningPokerViewController(GameViewController gameViewController, TaskViewController taskViewController, ChatViewController chatViewController) {
-        this.gameViewController = gameViewController;
-        this.taskViewController = taskViewController;
-        this.chatViewController = chatViewController;
-    }
+    public PlanningPokerViewController() {
 
-    @FXML VBox taskView;
-    @FXML VBox gameView;
-    @FXML VBox chatView;
-    @FXML GameViewController gameViewController;
-    @FXML TaskViewController taskViewController;
-    @FXML ChatViewController chatViewController;
+    }
+    @FXML VBox taskViewWrapper;
+    @FXML VBox gameViewWrapper;
+    @FXML VBox chatViewWrapper;
+    private GameViewController gameViewController;
+    private TaskViewController taskViewController;
+    private ChatViewController chatViewController;
+
+    public void initialize()
+    {
+        try {
+            Parent taskView = ViewFactory.getInstance().loadTaskView();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     //Game View Buttons
     public void onsetEffortButtonPressed() {
