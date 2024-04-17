@@ -5,7 +5,7 @@ import DataTypes.User;
 public class Session {
     private User currentUser;
 
-    public Session(User currentUser) {
+    public Session() {
         this.currentUser = new User("test", "123");
     }
 
