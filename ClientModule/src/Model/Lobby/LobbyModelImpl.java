@@ -23,7 +23,7 @@ public class LobbyModelImpl implements LobbyModel, PropertyChangeSubject
     //Assign the network connection:
     try
     {
-      clientConnection = ClientFactory.getInstance().getClient();
+      clientConnection = (LobbyClientInterface) ClientFactory.getInstance().getClient();
     }
     catch (RemoteException e)
     {

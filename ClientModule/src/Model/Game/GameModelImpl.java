@@ -24,7 +24,7 @@ public class GameModelImpl implements GameModel, PropertyChangeSubject
     //Assign the network connection:
     try
     {
-      clientConnection = ClientFactory.getInstance().getClient();
+      clientConnection = (GameClientInterface) ClientFactory.getInstance().getClient();
     }
     catch (RemoteException e)
     {
