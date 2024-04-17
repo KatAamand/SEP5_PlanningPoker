@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/SEP5_PlanningPoker.iml" filepath="$PROJECT_DIR$/.idea/SEP5_PlanningPoker.iml" />
       <module fileurl="file://$PROJECT_DIR$/ServerModule/ServerModule.iml" filepath="$PROJECT_DIR$/ServerModule/ServerModule.iml" />
       <module fileurl="file://$PROJECT_DIR$/SharedModule/SharedModule.iml" filepath="$PROJECT_DIR$/SharedModule/SharedModule.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Test/Test.iml" filepath="$PROJECT_DIR$/Test/Test.iml" />
     </modules>
   </component>
 </project>
