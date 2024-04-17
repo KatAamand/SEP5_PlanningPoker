@@ -6,7 +6,7 @@ public class User implements Serializable
 {
   private String userName;
   private String password;
-  private Session session;
+  private PlanningPoker planningPoker;
 
   public User(String userName, String password)
   {
