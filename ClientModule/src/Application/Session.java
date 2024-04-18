@@ -3,16 +3,16 @@ package Application;
 import DataTypes.User;
 
 public class Session {
-    private User currentUser;
+    private static User currentUser;
 
     public Session() {
     }
 
-    public User getCurrentUser() {
+    public static User getCurrentUser() {
         return currentUser;
     }
 
-    public void setCurrentUser(User currentUser) {
-        this.currentUser = currentUser;
+    public static void setCurrentUser(User currentUser) {
+        Session.currentUser = currentUser;
     }
 }

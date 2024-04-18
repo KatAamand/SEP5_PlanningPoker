@@ -1,5 +1,6 @@
 package Networking;
 
+import Application.Session;
 import DataTypes.Task;
 import DataTypes.PlanningPoker;
 import DataTypes.User;
@@ -167,5 +168,10 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
   {
     propertyChangeSupport.firePropertyChange("messageReceived", null, message);
   }
+
+    @Override
+    public User getCurrentUser() throws RemoteException {
+        return Session.getCurrentUser();
+    }
 
 }

@@ -89,7 +89,11 @@ public class Server_RMI implements ServerConnection_RMI {
 
     @Override
     public void sendMessage(String message, User sender) {
-        chatServerModel.receiveAndBroadcastMessage(message, sender, connectedClients);
+        try {
+            chatServerModel.receiveAndBroadcastMessage(message, sender, connectedClients);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // Requests for login

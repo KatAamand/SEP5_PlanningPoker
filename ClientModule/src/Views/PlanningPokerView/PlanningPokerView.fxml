@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="765.0" prefWidth="846.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Views.PlanningPokerView.PlanningPokerViewController">
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="763.0" prefWidth="1299.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Views.PlanningPokerView.PlanningPokerViewController">
 <children>
     <fx:include fx:id="taskView" source="../TaskView/TaskView.fxml" />
-    <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="761.0" prefWidth="382.0">
+    <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="738.0" prefWidth="895.0">
          <children>
-            <VBox fx:id="gameViewWrapper" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="392.0" prefWidth="383.0" />
-            <VBox fx:id="lobbyViewWrapper" prefHeight="200.0" prefWidth="100.0" />
-            <HBox prefHeight="100.0" prefWidth="200.0" />
+            <fx:include fx:id="lobbyView" source="../LobbyView/LobbyView.fxml" />
+             <fx:include fx:id="gameView" source="../GameView/GameView.fxml" />
+            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Button fx:id="startGameButton" mnemonicParsing="false" onAction="#onStartGameButtonPressed" text="Start game" />
+               </children></HBox>
          </children>
     </VBox>
-    <VBox fx:id="chatViewWrapper" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="749.0" prefWidth="248.0" />
+    <fx:include fx:id="chatView" source="../ChatView/ChatView.fxml" />
 </children>
 </HBox>

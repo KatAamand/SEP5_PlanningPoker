@@ -58,23 +58,20 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
   }
 
   @Override
-  public void receiveAndBroadcastMessage(String message, User sender, ArrayList<ClientConnection_RMI> connectedClients) {
-    /*ArrayList<User> usersToReceive = sender.getPlanningPoker().getConnectedUsers();
+  public void receiveAndBroadcastMessage(String message, User sender, ArrayList<ClientConnection_RMI> connectedClients) throws RemoteException {
+    ArrayList<User> usersToReceive = sender.getPlanningPoker().getConnectedUsers();
 
     for (ClientConnection_RMI client : connectedClients)
     {
       for (User user : usersToReceive)
       {
-        try
-        {
           if (client.getCurrentUser().equals(user))
           {
             client.receiveMessage(message);
             break;
           }
-        }
       }
-    }*/
+    }
   }
 
 

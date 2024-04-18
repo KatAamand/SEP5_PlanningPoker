@@ -40,6 +40,7 @@ public class User implements Serializable
 
   public void setPlanningPoker(PlanningPoker planningPoker) {
     this.planningPoker = planningPoker;
+    planningPoker.addUserToSession(this);
   }
 
   @Override public boolean equals(Object obj)
