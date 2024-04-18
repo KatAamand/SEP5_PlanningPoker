@@ -1,38 +1,90 @@
 package Views.MainView;
 
+import Application.ViewFactory;
+import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
-public class MainViewController {
-    MainViewModel mainViewModel;
+import java.io.IOException;
 
-    public Button createPlanningPokerButton;
-    public Button connectToPlanningPokerButton;
-    public TextField planningPokerIdTextField;
+public class MainViewController
+{
 
-    public MainViewController(MainViewModel mainViewModel) {
-        this.mainViewModel = mainViewModel;
-    }
+  public Button createPlanningPokerButton;
+  public Button connectToPlanningPokerButton;
+  public TextField planningPokerIdTextField;
+  private final MainViewModel mainViewModel;
+  private final ViewFactory viewFactory;
 
-    public void initialize() {
+  public MainViewController(MainViewModel mainViewModel,
+      ViewFactory viewFactory)
+  {
+    this.mainViewModel = mainViewModel;
+    this.viewFactory = viewFactory;
+  }
 
-    }
+  public void initialize()
+  {
+    mainViewModel.setOnPlanningPokerIDCreatedResult(
+        this::onCreatePlanningPokerResult);
+    mainViewModel.setOnPlanningPokerIDValidateResult(
+        this::onConnectToPlanningPokerResult);
+  }
 
-    public void onCreatePlanningPokerPressed() {
-       mainViewModel.requestCreatePlanningPokerID();
-
-    }
-
-    public void onConnectToPlanningPokerPressed() {
+  public void onCreatePlanningPokerResult(Boolean success)
+  {
+    Platform.runLater(() -> {
+      if (success)
+      {
         try
         {
-            String planningPokerID = null;
-            mainViewModel.requestConnectPlanningPokerID(planningPokerID);
+          viewFactory.loadPlanningPokerView();
+          viewFactory.closeMainView();
         }
-        catch (NumberFormatException e)
+        catch (IOException e)
         {
-            System.out.println("Invalid PlaningPoker_ID format.");
+          throw new RuntimeException(e);
         }
+      }
+    });
+  }
 
+  public void onConnectToPlanningPokerResult(Boolean success)
+  {
+    Platform.runLater(() -> {
+      if (success)
+      {
+        try
+        {
+          viewFactory.loadPlanningPokerView();
+          viewFactory.closeMainView();
+        }
+        catch (IOException e)
+        {
+          throw new RuntimeException(e);
+        }
+      }
+    });
+  }
+
+  public void onCreatePlanningPokerPressed()
+  {
+    mainViewModel.requestCreatePlanningPokerID();
+
+  }
+
+  public void onConnectToPlanningPokerPressed()
+  {
+    try
+    {
+      String planningPokerID = planningPokerIdTextField.getText();
+      mainViewModel.requestConnectPlanningPokerID(planningPokerID);
+      planningPokerIdTextField.clear();
     }
+    catch (NumberFormatException e)
+    {
+      System.out.println("Invalid PlaningPoker_ID format.");
+    }
+
+  }
 }

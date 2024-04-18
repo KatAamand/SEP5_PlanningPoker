@@ -22,6 +22,7 @@ public interface ServerConnection_RMI extends Remote {
 
     void addTask(Task task) throws RemoteException;
 
+
     void validatePlanningPokerID(String planningPokerID) throws RemoteException;
     void createPlanningPoker() throws RemoteException;
 }

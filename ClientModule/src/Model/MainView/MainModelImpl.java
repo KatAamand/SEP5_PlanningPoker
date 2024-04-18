@@ -10,49 +10,36 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
 
-public class MainModelImpl implements MainModel, PropertyChangeSubject
+public class MainModelImpl implements MainModel
 {
   private PropertyChangeSupport support;
   private Client clientConnection;
 
+  /**
+   * Primary constructor. Defers most of the declarations and definitions to the init method,
+   * which is run inside a Platform.runLater statement for increased thread safety while using javaFx.
+   */
 
-
-  /** Primary constructor. Defers most of the declarations and definitions to the init method,
-   * which is run inside a Platform.runLater statement for increased thread safety while using javaFx. */
-
-  public MainModelImpl() {
+  public MainModelImpl()
+  {
     support = new PropertyChangeSupport(this);
     //Assign the network connection:
-    try
-    {
+    try {
       clientConnection = (Client) ClientFactory.getInstance().getClient();
-    }
-    catch (RemoteException e)
-    {
+    } catch (RemoteException e) {
       //TODO: Properly handle this error!
       e.printStackTrace();
     }
 
-    //Initialize remaining data:
-    Platform.runLater(this::init);
+    assignListeners();
   }
-
-
 
   @Override public void init()
   {
     //TODO Initialize relevant data that might affect the javaFx thread here.
 
-
     //Assign all PropertyChangeListeners:
-    try
-    {
-      this.assignListeners();
-    }
-    catch (RemoteException e)
-    {
-      throw new RuntimeException(e);
-    }
+
   }
 
   @Override public void requestCreatePlanningPokerID()
@@ -62,33 +49,48 @@ public class MainModelImpl implements MainModel, PropertyChangeSubject
 
   @Override public void requestConnectPlanningPoker(String planningPokerID)
   {
-clientConnection.validatePlanningPokerID(planningPokerID);
+    clientConnection.validatePlanningPokerID(planningPokerID);
   }
-
 
 
 
   /** Assigns all the required listeners to the clientConnection allowing for Observable behavior betweeen these classes. */
-  private void assignListeners() throws RemoteException
+  private void assignListeners()
   {
-    //TODO define the listeners that should be added to the Client here.
+    clientConnection.addPropertyChangeListener("PlanningPokerIDValidatedSuccess", evt -> {
+      Platform.runLater(() -> {
+        support.firePropertyChange("PlanningPokerIDValidatedSuccess", null, evt.getNewValue());
+      });
+    });
 
-    //Example:
-    clientConnection.addPropertyChangeListener("DataChanged", evt -> {
-      System.out.println("This is an example");});
-    //End of example
+    clientConnection.addPropertyChangeListener("planningPokerCreatedSuccess", evt -> {
+      Platform.runLater(() -> {
+        support.firePropertyChange("planningPokerCreatedSuccess", null, null);
+      });
+    });
   }
 
-  @Override public void addPropertyChangeListener(PropertyChangeListener listener) {
+  @Override public void addPropertyChangeListener(
+      PropertyChangeListener listener)
+  {
     support.addPropertyChangeListener(listener);
   }
-  @Override public void addPropertyChangeListener(String name, PropertyChangeListener listener) {
+
+  @Override public void addPropertyChangeListener(String name,
+      PropertyChangeListener listener)
+  {
     support.addPropertyChangeListener(name, listener);
   }
-  @Override public void removePropertyChangeListener(PropertyChangeListener listener) {
+
+  @Override public void removePropertyChangeListener(
+      PropertyChangeListener listener)
+  {
     support.removePropertyChangeListener(listener);
   }
-  @Override public void removePropertyChangeListener(String name, PropertyChangeListener listener) {
+
+  @Override public void removePropertyChangeListener(String name,
+      PropertyChangeListener listener)
+  {
     support.removePropertyChangeListener(name, listener);
   }
 }

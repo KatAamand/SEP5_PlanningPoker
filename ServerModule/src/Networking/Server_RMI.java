@@ -193,4 +193,17 @@ public class Server_RMI implements ServerConnection_RMI {
     {
         //TODO: Missing implementation
     }
+
+
+    @Override public void validatePlanningPokerID(String planningPokerID)
+    {
+      System.out.println("Server_RMI: planningPokerID trying to validate");
+      mainServerModel.validatePlanningPoker(planningPokerID);
+    }
+
+    @Override public void createPlanningPoker()
+    {
+      System.out.println("Server trying to create planningPokerID");
+      mainServerModel.createPlanningPoker();
+    }
 }

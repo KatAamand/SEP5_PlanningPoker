@@ -101,6 +101,17 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     System.out.println("Client_RMI: user trying to create planningPoker");
   }
 
+  @Override public void PlanningPokerCreatedSuccessfully()
+  {
+    System.out.println("Opdatering fra server: planningPokerID is created succesfully");
+    propertyChangeSupport.firePropertyChange("planningPokerCreatedSuccess", null, null);
+  }
+
+  @Override public void updatePlanningPoker(String planningPokerID)
+  {
+    System.out.println("Opdatering fra server: planningPokerID is found in succesfully");
+    propertyChangeSupport.firePropertyChange("PlanningPokerIDValidatedSuccess", null, planningPokerID);
+  }
 
   @Override public void updatePlanningPoker(PlanningPoker planningPoker)
       throws RemoteException

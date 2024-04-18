@@ -30,6 +30,7 @@ public class ViewFactory {
     private PlanningPokerViewController planningPokerViewController;
 
     private Stage loginViewStage;
+    private Stage mainViewScene;
     private FXMLLoader fxmlLoader;
 
     private ViewFactory() {
@@ -76,7 +77,7 @@ public class ViewFactory {
             fxmlLoader = new FXMLLoader(getClass().getResource("../Views/MainView/MainView.fxml"));
             fxmlLoader.setControllerFactory(controllerClass -> {
                 try {
-                    return new MainViewController(viewModelFactory.getMainViewModel());
+                    return new MainViewController(viewModelFactory.getMainViewModel(), this);
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);
                 }
@@ -171,6 +172,9 @@ public class ViewFactory {
     // For closing loginView upon login
     public void closeLoginView() {
         loginViewStage.close();
+    }
+    public void closeMainView() {
+        mainViewScene.close();
     }
 
 }

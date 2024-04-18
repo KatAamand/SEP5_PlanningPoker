@@ -12,4 +12,6 @@ public interface Client extends PropertyChangeSubject {
     void receiveMessage(String message);
     void validatePlanningPokerID(String planningPokerID);
     void createPlanningPoker();
+    void PlanningPokerCreatedSuccessfully();
+    void updatePlanningPoker(String planningPokerID);
 }
