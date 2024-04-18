@@ -134,19 +134,11 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
 
     @Override public void loadTaskList() throws RemoteException
     {
-        try
+        ArrayList<Task> taskList = server.getTaskList();
+        if(taskList != null)
         {
-            ArrayList<Task> taskList = server.getTaskList();
-            if(taskList != null)
-            {
-                System.out.println("Loaded taskList from server.");
-                propertyChangeSupport.firePropertyChange("receivedUpdatedTaskList", null, taskList);
-            }
-        }
-        catch (RemoteException e)
-        {
-            //TODO: Implement proper exception handling.
-            e.printStackTrace();
+            System.out.println("Loaded taskList from server.");
+            propertyChangeSupport.firePropertyChange("receivedUpdatedTaskList", null, taskList);
         }
     }
 

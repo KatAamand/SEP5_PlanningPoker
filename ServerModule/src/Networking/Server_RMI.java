@@ -44,15 +44,16 @@ public class Server_RMI implements ServerConnection_RMI {
         generateDummyTaskData();
 
         //Assign Listeners:
+        //TODO: Rework this approach to be used with the HashMap implementation below.
+        // However, current hanging issues when multiple clients are connected should be resolved first.
         taskServerModel.addPropertyChangeListener("TaskDataChanged", evt -> {
             //Broadcast the changes to the tasklist to all clients:
             broadcastTaskListUpdate();
         });
-
     }
 
-    private void generateDummyTaskData()
-    {
+
+    private void generateDummyTaskData() {
         taskServerModel.addTask(new Task("Implement User Authentication", "Develop a user authentication system using OAuth 2.0 to allow users to securely log in with their Google or GitHub accounts."));
         taskServerModel.addTask(new Task("Optimize Database Queries", "Review and optimize database queries in the application's backend to improve performance and reduce response times."));
         taskServerModel.addTask(new Task("Refactor UI Components", "Refactor the frontend UI components using a modern framework like React or Vue.js to enhance user experience and maintainability."));
@@ -60,20 +61,30 @@ public class Server_RMI implements ServerConnection_RMI {
         taskServerModel.addTask(new Task("Enhance Error Handling", "Improve error handling mechanisms throughout the application to provide clear and informative error messages for users and developers alike."));
     }
 
-    private void broadcastTaskListUpdate()
-    {
-        System.out.println("Server: Broadcasting changes to the task list to all clients");
+
+    private void broadcastTaskListUpdate() {
         for (ClientConnection_RMI client : connectedClients)
         {
-            try
-            {
-                client.loadTaskList();
-            }
-            catch (RemoteException e)
-            {
-                //TODO: Add proper exception handling.
-                e.printStackTrace();
-            }
+            //Create a new thread for each connected client, and then call the desired broadcast operation. This minimizes server lag/hanging due to clients who have lost connection.
+            Thread transmitThread = new Thread(() -> {
+                try {
+                    client.loadTaskList();
+                }
+                catch (RemoteException e) {
+                    if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
+                        System.out.println("ERROR: Connection to client lost. Unregistering client -> [" + client + "]");
+
+                        //Unregisters clients from the server, who have lost connection in order to avoid further server errors.
+                        unRegisterClient(client);
+                    }
+                    else {
+                        //Error is something else:
+                        e.printStackTrace();
+                    }
+                }
+            });
+            transmitThread.setDaemon(true);
+            transmitThread.start();
         }
     }
 
@@ -137,6 +148,16 @@ public class Server_RMI implements ServerConnection_RMI {
                         throw new RuntimeException(e);
                     }
                     break;
+                    // TODO: Commented out below, since this approach causes all clients to hang when multiple clients are connected and even one of the clients has lost connection.
+                    // TODO: Using my initial approach for now. Test by opening a client - doing something (ie. add a task) - close the client and open a new - try adding another task!
+                 /*case "TaskDataChanged":
+                     System.out.println("Server: Broadcasting changes to the task list to all clients");
+                     try {
+                         client.loadTaskList();
+                     } catch (RemoteException e) {
+                         throw new RuntimeException(e);
+                     }
+                     break;*/
                 default:
                     System.out.println("Unrecognized event: " + event.getPropertyName());
                     break;
@@ -147,6 +168,7 @@ public class Server_RMI implements ServerConnection_RMI {
 
         loginServerModel.addPropertyChangeListener("userLoginSuccess", listener);
         loginServerModel.addPropertyChangeListener("userCreatedSuccess", listener);
+        //taskServerModel.addPropertyChangeListener("TaskDataChanged", listener);
     }
 
     //Task related requests

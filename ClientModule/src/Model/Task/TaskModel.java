@@ -3,6 +3,7 @@ package Model.Task;
 import DataTypes.Task;
 import Util.PropertyChangeSubject;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public interface TaskModel extends PropertyChangeSubject
@@ -13,5 +14,5 @@ public interface TaskModel extends PropertyChangeSubject
 
   ArrayList<Task> getTaskList();
 
-  void addTask(Task task);
+  void addTask(Task task) throws RemoteException;
 }

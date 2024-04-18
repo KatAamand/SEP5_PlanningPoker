@@ -1,9 +1,11 @@
 package Views.TaskView;
 
 import Application.ModelFactory;
+import Application.ViewFactory;
 import Model.Task.TaskModel;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -23,23 +25,18 @@ public class TaskViewModel {
     private Property<String> labelUserId;
     private ArrayList<SingleTaskViewController> taskControllerList;
     private ArrayList<SingleTaskViewModel> singleTaskViewModelList;
-    public TaskViewModel() {
+
+
+    public TaskViewModel() throws RemoteException {
         setSingleTaskViewModelList(new ArrayList<>());
         taskControllerList = new ArrayList<>();
-
-        try
-        {
-            this.taskModel = ModelFactory.getInstance().getTaskModel();
-        }
-        catch (RemoteException e)
-        {
-            //TODO: ADD proper exception handling
-            e.printStackTrace();
-        }
+        sessionId = new SimpleStringProperty("UNDEFINED");
+        labelUserId = new SimpleStringProperty("UNDEFINED");
+        this.taskModel = ModelFactory.getInstance().getTaskModel();
     }
 
-    public void initialize(Button btnCreateTask, Button btnEditTask, VBox taskWrapper)
-    {
+
+    public void initialize(Button btnCreateTask, Button btnEditTask, VBox taskWrapper) {
         setButtonReferences(btnCreateTask, btnEditTask);
         assignButtonMethods();
         this.taskWrapper = taskWrapper;
@@ -47,42 +44,31 @@ public class TaskViewModel {
         Platform.runLater(this::refresh);
 
         //Assign listeners:
-        taskModel.addPropertyChangeListener("taskListUpdated", evt -> {
-            Platform.runLater(this::refresh);
-        });
+        taskModel.addPropertyChangeListener("taskListUpdated", evt -> {Platform.runLater(this::refresh);});
     }
 
 
-
-    public void assignButtonMethods()
-    {
-        btnEditTask.setOnAction(event -> {
-            this.editTask();
-        });
-
-
-        btnCreateTask.setOnAction(event -> {
-            this.createTask();
-        });
+    public void assignButtonMethods() {
+        btnEditTask.setOnAction(event -> {this.editTask();});
+        btnCreateTask.setOnAction(event -> {this.createTask();});
     }
 
 
-    public void refresh()
-    {
-        //Refresh the singleTaskViewModelList
+    public void refresh() {
+        //Refresh the ViewModels inside the singleTaskViewModelList
         setSingleTaskViewModelList(new ArrayList<>());
 
         if(taskModel.getTaskList() != null)
         {
             for (int i = 0; i < taskModel.getTaskList().size(); i++)
             {
-                this.singleTaskViewModelList.add(new SingleTaskViewModel());
+                this.singleTaskViewModelList.add(new SingleTaskViewModel(this));
                 getSingleTaskViewModelList().get(i).setTaskHeaderLabel(i+1 + ": " + taskModel.getTaskList().get(i).getTaskName());
                 getSingleTaskViewModelList().get(i).setTaskDesc(taskModel.getTaskList().get(i).getDescription());
             }
         }
 
-        //Refresh all the nested viewControllers
+        //Refresh all the data in the nested viewControllers
         try
         {
             taskWrapper.getChildren().clear();
@@ -95,8 +81,8 @@ public class TaskViewModel {
         }
     }
 
-    public void displayTaskData() throws IOException
-    {
+
+    private void displayTaskData() throws IOException {
         if(taskModel.getTaskList() != null)
         {
             int numberOfTasks = taskModel.getTaskList().size();
@@ -107,7 +93,7 @@ public class TaskViewModel {
                 //Initialize a separate nested view and controller for each task:
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("SingleTaskView.fxml"));
                 VBox newTask = fxmlLoader.load();
-                ((SingleTaskViewController) fxmlLoader.getController()).initialize(i);
+                ((SingleTaskViewController) fxmlLoader.getController()).initialize(i, this.getSingleTaskViewModelList().get(i));
                 taskControllerList.add(fxmlLoader.getController());
 
                 //Assign the created controller to this class list of nested controllers:
@@ -121,39 +107,44 @@ public class TaskViewModel {
     }
 
 
+    public Property<String> sessionIdProperty() {
+        return sessionId;
+    }
 
-    public ArrayList<SingleTaskViewModel> getSingleTaskViewModelList()
-    {
+
+    public Property<String> labelUserIdProperty() {
+        return labelUserId;
+    }
+
+
+    public ArrayList<SingleTaskViewModel> getSingleTaskViewModelList() {
         return this.singleTaskViewModelList;
     }
 
-    public void setSingleTaskViewModelList(ArrayList<SingleTaskViewModel> singleTaskViewModelList)
-    {
+
+    public void setSingleTaskViewModelList(ArrayList<SingleTaskViewModel> singleTaskViewModelList) {
         this.singleTaskViewModelList = singleTaskViewModelList;
     }
 
 
-
-    private void setButtonReferences(Button btnCreateTask, Button btnEditTask)
-    {
+    private void setButtonReferences(Button btnCreateTask, Button btnEditTask) {
         this.btnCreateTask = btnCreateTask;
         this.btnEditTask = btnEditTask;
     }
 
-    private void disableEditButton()
-    {
+
+    private void disableEditButton() {
         btnEditTask.setDisable(true);
     }
 
-    private void enableEditButton()
-    {
+
+    private void enableEditButton() {
         btnEditTask.setDisable(false);
     }
 
 
     /** Creates a pop-up window where the user can enter a new task into.*/
-    public void createTask()
-    {
+    public void createTask() {
         //Create the viewController
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("AddTaskView.fxml"));
 
@@ -175,8 +166,8 @@ public class TaskViewModel {
         }
     }
 
-    public void editTask()
-    {
+
+    public void editTask() {
         //TODO: Missing implementation
     }
 }

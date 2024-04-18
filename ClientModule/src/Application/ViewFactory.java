@@ -6,7 +6,6 @@ import Views.LoginView.LoginViewController;
 import Views.MainView.MainViewController;
 import Views.GameView.GameViewController;
 import Views.PlanningPokerView.PlanningPokerViewController;
-import Views.TaskView.TaskViewController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -27,7 +26,6 @@ public class ViewFactory {
     private MainViewController mainViewController;
     private GameViewController gameViewController;
     private LobbyViewController lobbyViewController;
-    private TaskViewController taskViewController;
     private ChatViewController chatViewController;
     private PlanningPokerViewController planningPokerViewController;
 
@@ -129,16 +127,6 @@ public class ViewFactory {
         return fxmlLoader.load();
     }
 
-    public TaskViewController getTaskViewController()
-    {
-        return taskViewController;
-    }
-
-    public void setTaskViewController(TaskViewController controller)
-    {
-        this.taskViewController = controller;
-    }
-
     // Load LobbyView
     public ChatViewController loadChatViewController() throws IOException {
         if (chatViewController == null) {
@@ -171,6 +159,11 @@ public class ViewFactory {
             planningPokerViewController = fxmlLoader.getController();
         }
 
+        return planningPokerViewController;
+    }
+
+    public PlanningPokerViewController getPlanningPokerViewController()
+    {
         return planningPokerViewController;
     }
 

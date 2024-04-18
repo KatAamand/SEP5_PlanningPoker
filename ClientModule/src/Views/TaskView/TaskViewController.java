@@ -1,6 +1,5 @@
 package Views.TaskView;
 
-import Application.ViewFactory;
 import Application.ViewModelFactory;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -8,7 +7,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ResourceBundle;
@@ -22,17 +20,15 @@ public class TaskViewController implements Initializable
     @FXML private Button btnEditTask;
     private TaskViewModel taskViewModel;
 
-    public TaskViewController() {
-        try
-        {
-            this.taskViewModel = ViewModelFactory.getInstance().getTaskViewModel();
-            System.out.println("created");
-        }
-        catch (RemoteException e)
-        {
-            //TODO: Add proper exception handling
-            e.printStackTrace();
-        }
+    public TaskViewController() throws RemoteException {
+        this.taskViewModel = ViewModelFactory.getInstance().getTaskViewModel();
+    }
+
+
+    private void applyBindings()
+    {
+        sessionId.textProperty().bindBidirectional(taskViewModel.sessionIdProperty());
+        labelUserId.textProperty().bindBidirectional(taskViewModel.labelUserIdProperty());
     }
 
 
@@ -40,7 +36,9 @@ public class TaskViewController implements Initializable
     {
         Platform.runLater(() -> {
             taskViewModel.initialize(btnCreateTask, btnEditTask, taskWrapper);
-            ViewFactory.getInstance().setTaskViewController(this);
+
+            //Apply Property Bindings:
+            applyBindings();
         });
     }
 }

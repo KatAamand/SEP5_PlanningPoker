@@ -14,14 +14,12 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable{
   private static final Lock lock = new ReentrantLock();
   private ArrayList<Task> taskList;
 
-  private TaskServerModelImpl()
-  {
+  private TaskServerModelImpl() {
     //TODO: Refactor so that it in the future loads the list from a database.
     this.taskList = new ArrayList<>();
   }
 
-  @Override public void addTask(Task task)
-  {
+  @Override public void addTask(Task task) {
     if(taskList.add(task))
     {
       System.out.println("Server: Added a task.");
@@ -33,8 +31,7 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable{
     }
   }
 
-  @Override public void removeTask(Task task)
-  {
+  @Override public void removeTask(Task task) {
     if(taskList.remove(task))
     {
       System.out.println("Server: Removed a task.");
@@ -46,19 +43,17 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable{
     }
   }
 
-  @Override public Task getTask(int index)
-  {
+  @Override public Task getTask(int index) {
     return taskList.get(index);
   }
 
   //TODO: Should be refactored and become session dependent, instead of just returning all tasks in the entire database...
-  @Override public ArrayList<Task> getTaskList()
-  {
+  @Override public ArrayList<Task> getTaskList() {
     return this.taskList;
   }
 
-  public static TaskServerModel getInstance()
-  {
+
+  public static TaskServerModel getInstance() {
     //Here we use the "Double-checked lock" principle to ensure proper synchronization.
     if(instance == null)
     {
@@ -73,21 +68,28 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable{
     return instance;
   }
 
+
   @Override public void addPropertyChangeListener(PropertyChangeListener listener) {
     propertyChangeSupport.addPropertyChangeListener(listener);
   }
+
+
   @Override public void addPropertyChangeListener(String name, PropertyChangeListener listener) {
     propertyChangeSupport.addPropertyChangeListener(name, listener);
   }
+
+
   @Override public void removePropertyChangeListener(PropertyChangeListener listener) {
     propertyChangeSupport.removePropertyChangeListener(listener);
   }
+
+
   @Override public void removePropertyChangeListener(String name, PropertyChangeListener listener) {
     propertyChangeSupport.removePropertyChangeListener(name, listener);
   }
 
-  @Override public void run()
-  {
+
+  @Override public void run() {
     //TODO
   }
 }

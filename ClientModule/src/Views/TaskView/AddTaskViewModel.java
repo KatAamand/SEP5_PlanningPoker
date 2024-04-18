@@ -18,20 +18,9 @@ public class AddTaskViewModel
   private Property<String> textAreaTaskDescription;
   private TaskModel taskModel;
 
-  public AddTaskViewModel(Button saveButtonRef)
-  {
-    try
-    {
-      taskModel = ModelFactory.getInstance().getTaskModel();
-    }
-    catch (RemoteException e)
-    {
-      //TODO: Add proper exception handling.
-      e.printStackTrace();
-    }
 
-
-
+  public AddTaskViewModel(Button saveButtonRef) throws RemoteException {
+    taskModel = ModelFactory.getInstance().getTaskModel();
     textFieldTaskHeader = new SimpleStringProperty();
     textAreaTaskDescription = new SimpleStringProperty();
 
@@ -39,28 +28,28 @@ public class AddTaskViewModel
     disableSaveButton();
   }
 
-  private void enableSaveButton()
-  {
+
+  private void enableSaveButton() {
     saveButtonRef.setDisable(false);
   }
 
-  private void disableSaveButton()
-  {
+
+  private void disableSaveButton() {
     saveButtonRef.setDisable(true);
   }
 
-  public Property<String> textFieldTaskHeaderProperty()
-  {
+
+  public Property<String> textFieldTaskHeaderProperty() {
     return textFieldTaskHeader;
   }
 
-  public Property<String> textAreaTaskDescriptionProperty()
-  {
+
+  public Property<String> textAreaTaskDescriptionProperty() {
     return textAreaTaskDescription;
   }
 
-  public void validateData()
-  {
+
+  public void validateData() {
     if(textFieldTaskHeader.getValue().isEmpty() || textAreaTaskDescription.getValue().isEmpty())
     {
       disableSaveButton();
@@ -74,14 +63,23 @@ public class AddTaskViewModel
 
   public void save(ActionEvent event)
   {
-    taskModel.addTask(new Task(textFieldTaskHeaderProperty().getValue(), textAreaTaskDescriptionProperty().getValue()));
+    try
+    {
+      taskModel.addTask(new Task(textFieldTaskHeaderProperty().getValue(), textAreaTaskDescriptionProperty().getValue()));
+    }
+    catch (RemoteException e)
+    {
+      //TODO: Add better exception handling.
+      e.printStackTrace();
+    }
+
 
     //Close the popup window after adding the task to the system:
     cancel(event);
   }
 
-  public void cancel(ActionEvent event)
-  {
+
+  public void cancel(ActionEvent event) {
     ((Stage) ((Button) event.getSource()).getScene().getWindow()).close();
   }
 }

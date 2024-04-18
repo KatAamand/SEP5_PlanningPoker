@@ -2,7 +2,6 @@ package Model.Task;
 
 import DataTypes.Task;
 import Util.PropertyChangeSubject;
-
 import java.util.ArrayList;
 
 public interface TaskServerModel extends PropertyChangeSubject
