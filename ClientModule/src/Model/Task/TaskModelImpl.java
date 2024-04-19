@@ -2,7 +2,7 @@ package Model.Task;
 
 import Application.ClientFactory;
 import DataTypes.Task;
-import Networking.ClientInterfaces.TaskClientInterface;
+import Networking.Client;
 import javafx.application.Platform;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class TaskModelImpl implements TaskModel
 {
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-  private TaskClientInterface clientConnection;
+  private Client clientConnection;
   private ArrayList<Task> taskList; //TODO: Should be refactored to be session dependant, instead of being filled with all tasks in existence!.
 
 
@@ -20,7 +20,7 @@ public class TaskModelImpl implements TaskModel
    * which is run inside a Platform.runLater statement for increased thread safety while using javaFx. */
   public TaskModelImpl() throws RemoteException {
     //Assign the network connection:
-    clientConnection = ClientFactory.getInstance().getClient();
+    clientConnection = (Client) ClientFactory.getInstance().getClient();
 
     //Initialize remaining data:
     Platform.runLater(this::init);
@@ -29,24 +29,16 @@ public class TaskModelImpl implements TaskModel
 
   @Override public void init()
   {
-    try
-    {
       //Assign all PropertyChangeListeners:
       this.assignListeners();
 
       //Load data from server:
       clientConnection.loadTaskList();
-    }
-    catch (RemoteException e)
-    {
-      //TODO: Add proper exception handling.
-      e.printStackTrace();
-    }
   }
 
 
   /** Assigns all the required listeners to the clientConnection allowing for Observable behavior betweeen these classes. */
-  private void assignListeners() throws RemoteException
+  private void assignListeners()
   {
     clientConnection.addPropertyChangeListener("receivedUpdatedTaskList", evt -> {
       setTaskList((ArrayList<Task>) evt.getNewValue());
@@ -67,7 +59,7 @@ public class TaskModelImpl implements TaskModel
   }
 
 
-  @Override public void addTask(Task task) throws RemoteException
+  @Override public void addTask(Task task)
   {
     clientConnection.addTask(task);
   }

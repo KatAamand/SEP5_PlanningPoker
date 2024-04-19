@@ -1,7 +1,6 @@
 package Views.TaskView;
 
 import Application.ModelFactory;
-import Application.ViewFactory;
 import Model.Task.TaskModel;
 import javafx.application.Platform;
 import javafx.beans.property.Property;

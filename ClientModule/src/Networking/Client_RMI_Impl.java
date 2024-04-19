@@ -143,19 +143,39 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     propertyChangeSupport.removePropertyChangeListener(name, listener);
   }
 
-    @Override public void loadTaskList() throws RemoteException
+  @Override public void loadTaskList() {
+    try {
+      this.loadTaskListFromServer();
+    }
+    catch (RemoteException e) {
+      //TODO: Add proper exception handling
+      e.printStackTrace();
+    }
+  }
+
+  @Override public void loadTaskListFromServer() throws RemoteException
+  {
+    ArrayList<Task> taskList = server.getTaskList();
+    if(taskList != null)
     {
-        ArrayList<Task> taskList = server.getTaskList();
-        if(taskList != null)
-        {
-            System.out.println("Loaded taskList from server.");
-            propertyChangeSupport.firePropertyChange("receivedUpdatedTaskList", null, taskList);
-        }
+      System.out.println("Loaded taskList from server.");
+      propertyChangeSupport.firePropertyChange("receivedUpdatedTaskList", null, taskList);
+    }
+  }
+
+    @Override public void addTask(Task task)
+    {
+      try {
+        this.addTaskToServer(task);
+      } catch (RemoteException e) {
+        //TODO: Add proper exception handling
+        e.printStackTrace();
+      }
     }
 
-    @Override public void addTask(Task task) throws RemoteException
+    @Override public void addTaskToServer(Task task) throws RemoteException
     {
-        server.addTask(task);
+      server.addTask(task);
     }
 
     @Override

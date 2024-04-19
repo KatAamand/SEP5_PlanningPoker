@@ -14,5 +14,5 @@ public interface TaskModel extends PropertyChangeSubject
 
   ArrayList<Task> getTaskList();
 
-  void addTask(Task task) throws RemoteException;
+  void addTask(Task task);
 }

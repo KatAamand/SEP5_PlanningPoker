@@ -16,6 +16,6 @@ public interface TaskClientInterface extends Remote
 
   void removePropertyChangeListener(String name, PropertyChangeListener listener) throws RemoteException;
 
-  void loadTaskList() throws RemoteException;
-  void addTask(Task task) throws RemoteException;
+  void loadTaskListFromServer() throws RemoteException;
+  void addTaskToServer(Task task) throws RemoteException;
 }

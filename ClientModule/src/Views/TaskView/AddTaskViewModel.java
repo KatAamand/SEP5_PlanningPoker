@@ -63,16 +63,7 @@ public class AddTaskViewModel
 
   public void save(ActionEvent event)
   {
-    try
-    {
-      taskModel.addTask(new Task(textFieldTaskHeaderProperty().getValue(), textAreaTaskDescriptionProperty().getValue()));
-    }
-    catch (RemoteException e)
-    {
-      //TODO: Add better exception handling.
-      e.printStackTrace();
-    }
-
+    taskModel.addTask(new Task(textFieldTaskHeaderProperty().getValue(), textAreaTaskDescriptionProperty().getValue()));
 
     //Close the popup window after adding the task to the system:
     cancel(event);

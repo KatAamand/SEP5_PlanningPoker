@@ -68,7 +68,7 @@ public class Server_RMI implements ServerConnection_RMI {
             //Create a new thread for each connected client, and then call the desired broadcast operation. This minimizes server lag/hanging due to clients who have lost connection.
             Thread transmitThread = new Thread(() -> {
                 try {
-                    client.loadTaskList();
+                    client.loadTaskListFromServer();
                 }
                 catch (RemoteException e) {
                     if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
@@ -182,16 +182,6 @@ public class Server_RMI implements ServerConnection_RMI {
     {
         //TODO: Add proper session handling here. Tasks should be assigned to a specific session.
         taskServerModel.addTask(task);
-    }
-
-    @Override public void validatePlanningPokerID(String planningPokerID) throws RemoteException
-    {
-        //TODO: Missing implementation
-    }
-
-    @Override public void createPlanningPoker() throws RemoteException
-    {
-        //TODO: Missing implementation
     }
 
 
