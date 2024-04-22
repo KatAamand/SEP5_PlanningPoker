@@ -1,9 +1,5 @@
 import Application.ClientFactory;
-import Application.ModelFactory;
 import Application.ViewFactory;
-import Application.Session;
-import DataTypes.PlanningPoker;
-import DataTypes.User;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -19,7 +15,6 @@ public class RunApplication extends Application {
 
         clientFactory.getClient();
         viewFactory.loadLoginView();
-
     }
 
 }

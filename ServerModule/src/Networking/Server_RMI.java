@@ -26,7 +26,6 @@ public class Server_RMI implements ServerConnection_RMI {
     private TaskServerModel taskServerModel;
     private GameServerModel gameServerModel;
     private MainServerModel mainServerModel;
-
     private ArrayList<ClientConnection_RMI> connectedClients;
     private Map<ClientConnection_RMI, PropertyChangeListener> listeners = new HashMap<>();
 
@@ -42,14 +41,6 @@ public class Server_RMI implements ServerConnection_RMI {
 
         //Load some test/Dummy data:
         generateDummyTaskData();
-
-        //Assign Listeners:
-        //TODO: Rework this approach to be used with the HashMap implementation below.
-        // However, current hanging issues when multiple clients are connected should be resolved first.
-        taskServerModel.addPropertyChangeListener("TaskDataChanged", evt -> {
-            //Broadcast the changes to the tasklist to all clients:
-            broadcastTaskListUpdate();
-        });
     }
 
 
@@ -62,7 +53,7 @@ public class Server_RMI implements ServerConnection_RMI {
     }
 
 
-    private void broadcastTaskListUpdate() {
+   /* private void broadcastTaskListUpdate() {
         for (ClientConnection_RMI client : connectedClients)
         {
             //Create a new thread for each connected client, and then call the desired broadcast operation. This minimizes server lag/hanging due to clients who have lost connection.
@@ -86,7 +77,7 @@ public class Server_RMI implements ServerConnection_RMI {
             transmitThread.setDaemon(true);
             transmitThread.start();
         }
-    }
+    }*/
 
     @Override
     public void registerClient(ClientConnection_RMI client) {
@@ -133,31 +124,35 @@ public class Server_RMI implements ServerConnection_RMI {
         PropertyChangeListener listener = event -> {
              switch (event.getPropertyName()) {
                 case "userLoginSuccess":
-                    try {
-                        System.out.println("userLoginSuccess sent to client");
-                        client.updateUser((User) event.getNewValue());
-                    } catch (RemoteException e) {
-                        throw new RuntimeException(e);
-                    }
+                    System.out.println("userLoginSuccess sent to client");
+                    sendUpdateToClient(() -> {
+                        try {
+                            client.updateUser((User) event.getNewValue());
+                        } catch (RemoteException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }, client);
                     break;
                 case "userCreatedSuccess":
-                    try {
-                        System.out.println("userCreatedSuccess sent to client");
-                        client.userCreatedSuccessfully();
-                    } catch (RemoteException e) {
-                        throw new RuntimeException(e);
-                    }
+                    System.out.println("userCreatedSuccess sent to client");
+                    sendUpdateToClient(() -> {
+                        try {
+                            client.userCreatedSuccessfully();
+                        } catch (RemoteException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }, client);
                     break;
-                    // TODO: Commented out below, since this approach causes all clients to hang when multiple clients are connected and even one of the clients has lost connection.
-                    // TODO: Using my initial approach for now. Test by opening a client - doing something (ie. add a task) - close the client and open a new - try adding another task!
-                 /*case "TaskDataChanged":
+                 case "TaskDataChanged":
                      System.out.println("Server: Broadcasting changes to the task list to all clients");
-                     try {
-                         client.loadTaskList();
-                     } catch (RemoteException e) {
-                         throw new RuntimeException(e);
-                     }
-                     break;*/
+                     sendUpdateToClient(() -> {
+                         try {
+                             client.loadTaskListFromServer();
+                         } catch (RemoteException e) {
+                             throw new RuntimeException(e);
+                         }
+                     }, client);
+                     break;
                 default:
                     System.out.println("Unrecognized event: " + event.getPropertyName());
                     break;
@@ -168,8 +163,39 @@ public class Server_RMI implements ServerConnection_RMI {
 
         loginServerModel.addPropertyChangeListener("userLoginSuccess", listener);
         loginServerModel.addPropertyChangeListener("userCreatedSuccess", listener);
-        //taskServerModel.addPropertyChangeListener("TaskDataChanged", listener);
+        taskServerModel.addPropertyChangeListener("TaskDataChanged", listener);
     }
+
+    private void sendUpdateToClient(Runnable updateAction, ClientConnection_RMI client) {
+        try {
+            updateAction.run();
+        } catch (Exception e) {
+            System.out.println("Failed to send update to client, trying again..");
+            try {
+                Thread.sleep(1000);
+                updateAction.run();
+            } catch(InterruptedException e2) {
+                System.out.println("Failed to send update to client second time, unregistering client");
+                try {
+                    unRegisterClientListener(client);
+                } catch (RemoteException e3) {
+                    System.out.println("Failed to unregister client");
+                }
+            }
+        }
+    }
+
+    @Override
+    public void unRegisterClientListener(ClientConnection_RMI client) throws RemoteException {
+        PropertyChangeListener listener = listeners.get(client);
+
+        loginServerModel.removePropertyChangeListener("userLoginSuccess", listener);
+        loginServerModel.removePropertyChangeListener("userCreatedSuccess", listener);
+        taskServerModel.removePropertyChangeListener("TaskDataChanged", listener);
+
+        listeners.remove(client);
+    }
+
 
     //Task related requests
     @Override public ArrayList<Task> getTaskList() throws RemoteException
