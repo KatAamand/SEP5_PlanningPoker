@@ -20,8 +20,8 @@ public class PlanningPoker implements Serializable
   {
     connectedUsers = new ArrayList<>();
     chat = new Chat();
-    setPlanningPokerID(planningPokerID);
     generatePlanningPokerID();
+    setPlanningPokerID(planningPokerID);
   }
 
   public Chat getChat()

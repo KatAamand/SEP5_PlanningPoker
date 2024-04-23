@@ -17,6 +17,9 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable{
   private TaskServerModelImpl() {
     //TODO: Refactor so that it in the future loads the list from a database.
     this.taskList = new ArrayList<>();
+
+    //Load some test/Dummy data:
+    generateDummyTaskData();
   }
 
   @Override public void addTask(Task task) {
@@ -91,5 +94,13 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable{
 
   @Override public void run() {
     //TODO
+  }
+
+  private void generateDummyTaskData() {
+    addTask(new Task("Implement User Authentication", "Develop a user authentication system using OAuth 2.0 to allow users to securely log in with their Google or GitHub accounts."));
+    addTask(new Task("Optimize Database Queries", "Review and optimize database queries in the application's backend to improve performance and reduce response times."));
+    addTask(new Task("Refactor UI Components", "Refactor the frontend UI components using a modern framework like React or Vue.js to enhance user experience and maintainability."));
+    addTask(new Task("Implement RESTful API Endpoints", "Design and implement RESTful API endpoints for CRUD operations to enable seamless interaction between the frontend and backend components."));
+    addTask(new Task("Enhance Error Handling", "Improve error handling mechanisms throughout the application to provide clear and informative error messages for users and developers alike."));
   }
 }

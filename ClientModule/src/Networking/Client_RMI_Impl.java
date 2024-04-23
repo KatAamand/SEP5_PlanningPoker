@@ -41,7 +41,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
   {
     try
     {
-      server.validateUser(username, password);
+      server.validateUser(username, password, this);
     }
     catch (RemoteException e)
     {
@@ -54,7 +54,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
   {
     try
     {
-      server.createUser(username, password);
+      server.createUser(username, password, this);
     }
     catch (RemoteException e)
     {

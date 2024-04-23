@@ -1,11 +1,12 @@
 package Model.Login;
 
+import DataTypes.User;
 import Util.PropertyChangeSubject;
 
 import java.rmi.RemoteException;
 
 public interface LoginServerModel extends PropertyChangeSubject
 {
-    void validateUser(String username, String password) throws RemoteException;
-    void createUser(String username, String password) throws RemoteException;
+    User validateUser(String username, String password) throws RemoteException;
+    Boolean createUser(String username, String password) throws RemoteException;
 }

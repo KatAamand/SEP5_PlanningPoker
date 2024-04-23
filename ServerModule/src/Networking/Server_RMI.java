@@ -38,46 +38,8 @@ public class Server_RMI implements ServerConnection_RMI {
         taskServerModel = TaskServerModelImpl.getInstance();
         gameServerModel = GameServerModelImpl.getInstance();
         mainServerModel = MainServerModelImpl.getInstance();
-
-        //Load some test/Dummy data:
-        generateDummyTaskData();
     }
 
-
-    private void generateDummyTaskData() {
-        taskServerModel.addTask(new Task("Implement User Authentication", "Develop a user authentication system using OAuth 2.0 to allow users to securely log in with their Google or GitHub accounts."));
-        taskServerModel.addTask(new Task("Optimize Database Queries", "Review and optimize database queries in the application's backend to improve performance and reduce response times."));
-        taskServerModel.addTask(new Task("Refactor UI Components", "Refactor the frontend UI components using a modern framework like React or Vue.js to enhance user experience and maintainability."));
-        taskServerModel.addTask(new Task("Implement RESTful API Endpoints", "Design and implement RESTful API endpoints for CRUD operations to enable seamless interaction between the frontend and backend components."));
-        taskServerModel.addTask(new Task("Enhance Error Handling", "Improve error handling mechanisms throughout the application to provide clear and informative error messages for users and developers alike."));
-    }
-
-
-   /* private void broadcastTaskListUpdate() {
-        for (ClientConnection_RMI client : connectedClients)
-        {
-            //Create a new thread for each connected client, and then call the desired broadcast operation. This minimizes server lag/hanging due to clients who have lost connection.
-            Thread transmitThread = new Thread(() -> {
-                try {
-                    client.loadTaskListFromServer();
-                }
-                catch (RemoteException e) {
-                    if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
-                        System.out.println("ERROR: Connection to client lost. Unregistering client -> [" + client + "]");
-
-                        //Unregisters clients from the server, who have lost connection in order to avoid further server errors.
-                        unRegisterClient(client);
-                    }
-                    else {
-                        //Error is something else:
-                        e.printStackTrace();
-                    }
-                }
-            });
-            transmitThread.setDaemon(true);
-            transmitThread.start();
-        }
-    }*/
 
     @Override
     public void registerClient(ClientConnection_RMI client) {
@@ -98,52 +60,52 @@ public class Server_RMI implements ServerConnection_RMI {
         }
     }
 
+
     // Requests for login
     @Override
-    public void validateUser(String username, String password) {
+    public void validateUser(String username, String password, ClientConnection_RMI client) {
         try {
             System.out.println("Server_RMI: user trying to validate");
-            loginServerModel.validateUser(username, password);
+            User user = loginServerModel.validateUser(username, password);
+            sendUpdateToClient(() -> {
+                try {
+                    client.updateUser(user);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            }, client);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Override
-    public void createUser(String username, String password) {
+    public void createUser(String username, String password, ClientConnection_RMI client) {
         try {
             System.out.println("Server trying to create user");
-            loginServerModel.createUser(username, password);
+            Boolean isLoginCreated;
+
+            isLoginCreated = loginServerModel.createUser(username, password);
+            if (isLoginCreated) {
+                sendUpdateToClient(() -> {
+                    try {
+                        client.userCreatedSuccessfully();
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
+                }, client);
+            }
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
     }
 
+    // Adding listeners to the client
     @Override
     public void registerClientListener(ClientConnection_RMI client) {
         PropertyChangeListener listener = event -> {
              switch (event.getPropertyName()) {
-                case "userLoginSuccess":
-                    System.out.println("userLoginSuccess sent to client");
-                    sendUpdateToClient(() -> {
-                        try {
-                            client.updateUser((User) event.getNewValue());
-                        } catch (RemoteException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }, client);
-                    break;
-                case "userCreatedSuccess":
-                    System.out.println("userCreatedSuccess sent to client");
-                    sendUpdateToClient(() -> {
-                        try {
-                            client.userCreatedSuccessfully();
-                        } catch (RemoteException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }, client);
-                    break;
-                 case "TaskDataChanged":
+                case "TaskDataChanged":
                      System.out.println("Server: Broadcasting changes to the task list to all clients");
                      sendUpdateToClient(() -> {
                          try {
@@ -161,8 +123,6 @@ public class Server_RMI implements ServerConnection_RMI {
 
         listeners.put(client, listener);
 
-        loginServerModel.addPropertyChangeListener("userLoginSuccess", listener);
-        loginServerModel.addPropertyChangeListener("userCreatedSuccess", listener);
         taskServerModel.addPropertyChangeListener("TaskDataChanged", listener);
     }
 
@@ -189,8 +149,6 @@ public class Server_RMI implements ServerConnection_RMI {
     public void unRegisterClientListener(ClientConnection_RMI client) throws RemoteException {
         PropertyChangeListener listener = listeners.get(client);
 
-        loginServerModel.removePropertyChangeListener("userLoginSuccess", listener);
-        loginServerModel.removePropertyChangeListener("userCreatedSuccess", listener);
         taskServerModel.removePropertyChangeListener("TaskDataChanged", listener);
 
         listeners.remove(client);
@@ -211,6 +169,7 @@ public class Server_RMI implements ServerConnection_RMI {
     }
 
 
+    // MainView related requests
     @Override public void validatePlanningPokerID(String planningPokerID)
     {
       System.out.println("Server_RMI: planningPokerID trying to validate");
