@@ -3,6 +3,7 @@ package Model.PlanningPoker;
 import Application.ClientFactory;
 import Application.Session;
 import DataTypes.PlanningPoker;
+import DataTypes.User;
 import Networking.Client;
 import javafx.application.Platform;
 
@@ -37,7 +38,10 @@ public class PlanningPokerModelImpl implements PlanningPokerModel
     assignListeners();
   }
 
-
+  @Override public User getLocalUser()
+  {
+    return Session.getCurrentUser();
+  }
 
   /** Assigns all the required listeners to the clientConnection allowing for Observable behavior betweeen these classes. */
   private void assignListeners() {

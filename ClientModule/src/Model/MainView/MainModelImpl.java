@@ -17,7 +17,6 @@ public class MainModelImpl implements MainModel
 {
   private PropertyChangeSupport support;
   private Client clientConnection;
-  //private PlanningPoker activePlanningPokerGame;
 
   /**
    * Primary constructor. Defers most of the declarations and definitions to the init method,
@@ -27,18 +26,12 @@ public class MainModelImpl implements MainModel
   public MainModelImpl() throws RemoteException
   {
     support = new PropertyChangeSupport(this);
-    //activePlanningPokerGame = null;
 
     //Assign the network connection:
     clientConnection = (Client) ClientFactory.getInstance().getClient();
 
     Platform.runLater(this::init);
   }
-
-
-  /*public PlanningPoker getActivePlanningPokerGame() {
-    return this.activePlanningPokerGame;
-  }*/
 
   @Override public void init()
   {
