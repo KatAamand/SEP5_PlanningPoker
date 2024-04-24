@@ -27,7 +27,7 @@ public class PlanningPokerModelImpl implements PlanningPokerModel
     });
   }
 
-  public PlanningPoker getActivePlanningPokerGame()  {
+  @Override public PlanningPoker getActivePlanningPokerGame()  {
     //Ensure that the returned PlanningPoker game instance also corresponds with the one in the primary instance of this class!
     try {
       if(! ModelFactory.getInstance().getPlanningPokerModel().equals(this)) {

@@ -1,18 +1,46 @@
 package Views.GameView;
 
+import Application.ModelFactory;
 import Application.Session;
+import DataTypes.Task;
 import Model.Game.GameModel;
-import Views.ViewModel;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleStringProperty;
 
-public class GameViewModel extends ViewModel
+import java.rmi.RemoteException;
+
+public class GameViewModel
 {
   private final GameModel gameModel;
-  private final Session session;
+  private Property<String> taskHeaderProperty;
+  private Property<String> taskDescProperty;
 
-  public GameViewModel(GameModel gameModel, Session session)
+  public GameViewModel() throws RemoteException
   {
-    super();
-    this.gameModel = gameModel;
-    this.session = session;
+    this.gameModel = ModelFactory.getInstance().getGameModel();
+    taskHeaderProperty = new SimpleStringProperty();
+    taskDescProperty = new SimpleStringProperty();
+  }
+
+  public void refresh() {
+    Task nextTask = gameModel.nextTaskToEvaluate();
+
+    if(nextTask != null) {
+      taskHeaderPropertyProperty().setValue(nextTask.getTaskName());
+      taskDescPropertyProperty().setValue(nextTask.getDescription());
+    } else {
+      taskHeaderPropertyProperty().setValue("No more tasks");
+      taskDescPropertyProperty().setValue("No more tasks");
+    }
+  }
+
+  public Property<String> taskHeaderPropertyProperty()
+  {
+    return taskHeaderProperty;
+  }
+
+  public Property<String> taskDescPropertyProperty()
+  {
+    return taskDescProperty;
   }
 }

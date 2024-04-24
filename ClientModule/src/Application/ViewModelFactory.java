@@ -61,7 +61,7 @@ public class ViewModelFactory {
 
     public LobbyViewModel getLobbyViewModel() throws RemoteException {
         if (lobbyViewModel == null) {
-            lobbyViewModel = new LobbyViewModel(modelFactory.getLobbyModel(), session);
+            lobbyViewModel = new LobbyViewModel();
         }
 
         return lobbyViewModel;
@@ -69,7 +69,7 @@ public class ViewModelFactory {
 
     public GameViewModel getGameViewModel() throws RemoteException {
         if (gameViewModel == null) {
-            gameViewModel = new GameViewModel(modelFactory.getGameModel(), session);
+            gameViewModel = new GameViewModel();
         }
 
         return gameViewModel;

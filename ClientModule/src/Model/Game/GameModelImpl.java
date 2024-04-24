@@ -1,21 +1,20 @@
 package Model.Game;
 
 import Application.ClientFactory;
+import DataTypes.Task;
 import Model.PlanningPoker.PlanningPokerModelImpl;
 import Networking.Client;
-import Networking.ClientInterfaces.GameClientInterface;
 import Util.PropertyChangeSubject;
 import javafx.application.Platform;
-
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 public class GameModelImpl extends PlanningPokerModelImpl implements GameModel, PropertyChangeSubject
 {
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
   private Client clientConnection;
-
 
 
   /** Primary constructor. Defers most of the declarations and definitions to the init method,
@@ -25,38 +24,38 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel, 
     super.init();
 
     //Assign the network connection:
-    try
-    {
-      clientConnection = (Client) ClientFactory.getInstance().getClient();
-    }
-    catch (RemoteException e)
-    {
-      //TODO: Properly handle this error!
-      e.printStackTrace();
-    }
+    clientConnection = (Client) ClientFactory.getInstance().getClient();
 
     //Initialize remaining data:
     Platform.runLater(this::init);
   }
 
 
-
   @Override public void init()
   {
     //TODO Initialize relevant data that might affect the javaFx thread here.
-
 
     //Assign all PropertyChangeListeners:
     this.assignListeners();
   }
 
+  @Override public Task nextTaskToEvaluate()
+  {
+    ArrayList<Task> taskList = (ArrayList<Task>) super.getActivePlanningPokerGame().getTaskList();
 
+    for (Task task : taskList) {
+      if (task.getFinalEffort() != null) {
+        return task;
+      }
+    }
 
-  /** Assigns all the required listeners to the clientConnection allowing for Observable behavior betweeen these classes. */
+    return null;
+  }
+
+  /** Assigns all the required listeners to the clientConnection allowing for Observable behavior between these classes. */
   private void assignListeners()
   {
     //TODO define the listeners that should be added to the Client here.
-
   }
 
   @Override public void addPropertyChangeListener(PropertyChangeListener listener) {

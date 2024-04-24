@@ -61,16 +61,28 @@ public class AddTaskViewModel
   }
 
 
-  public void save(ActionEvent event)
-  {
+  public void saveStandalone(ActionEvent event) {
     taskModel.addTask(new Task(textFieldTaskHeaderProperty().getValue(), textAreaTaskDescriptionProperty().getValue()));
 
     //Close the popup window after adding the task to the system:
-    cancel(event);
+    cancelStandalone(event);
+  }
+
+  public void saveEmbedded(ActionEvent event) {
+    taskModel.addTask(new Task(textFieldTaskHeaderProperty().getValue(), textAreaTaskDescriptionProperty().getValue()));
+
+    //Reset the data entry fields:
+    cancelEmbedded(event);
   }
 
 
-  public void cancel(ActionEvent event) {
+  public void cancelStandalone(ActionEvent event) {
     ((Stage) ((Button) event.getSource()).getScene().getWindow()).close();
+  }
+
+  public void cancelEmbedded(ActionEvent event) {
+    this.textFieldTaskHeaderProperty().setValue("");
+    this.textAreaTaskDescriptionProperty().setValue("");
+    this.validateData();
   }
 }

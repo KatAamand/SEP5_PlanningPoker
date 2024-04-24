@@ -24,8 +24,6 @@ public class ViewFactory {
     // Controller variables
     private LoginViewController loginViewController; 
     private MainViewController mainViewController;
-    private GameViewController gameViewController;
-    private LobbyViewController lobbyViewController;
     private ChatViewController chatViewController;
     private PlanningPokerViewController planningPokerViewController;
 
@@ -94,64 +92,14 @@ public class ViewFactory {
         return mainViewController;
     }
 
-    // Load SessionView
-    public GameViewController loadGameViewController() throws IOException {
-        if (gameViewController == null) {
-            fxmlLoader = new FXMLLoader(getClass().getResource("../Views/GameView/GameView.fxml"));
-            fxmlLoader.setControllerFactory(controllerClass -> new GameViewController());
-
-            gameViewController = fxmlLoader.getController();
-        }
-
-        return gameViewController;
-    }
-
-    public Parent loadGameView() throws IOException {
-        fxmlLoader = new FXMLLoader(getClass().getResource("../Views/GameView/GameView.fxml"));
-        return fxmlLoader.load();
-    }
-
-    // Load LobbyView
-    public LobbyViewController loadLobbyViewController() throws IOException {
-        if (lobbyViewController == null) {
-            fxmlLoader = new FXMLLoader(getClass().getResource("../Views/LobbyView/LobbyView.fxml"));
-            fxmlLoader.setControllerFactory(controllerClass -> new LobbyViewController());
-
-            lobbyViewController = fxmlLoader.getController();
-        }
-
-        return lobbyViewController;
-    }
-
-    public Parent loadLobbyView() throws IOException {
-        fxmlLoader = new FXMLLoader(getClass().getResource("../Views/LobbyView/LobbyView.fxml"));
-        return fxmlLoader.load();
-    }
-
-    // Load LobbyView
-    public ChatViewController loadChatViewController() throws IOException {
-        if (chatViewController == null) {
-            fxmlLoader = new FXMLLoader(getClass().getResource("../Views/ChatView/ChatView.fxml"));
-            fxmlLoader.setControllerFactory(controllerClass -> new ChatViewController());
-
-            chatViewController = fxmlLoader.getController();
-        }
-
-        return chatViewController;
-    }
-
-    public Parent loadChatView() throws IOException {
-        fxmlLoader = new FXMLLoader(getClass().getResource("../Views/ChatView/ChatView.fxml"));
-        return fxmlLoader.load();
-    }
-
+    // Load PlanningPokerView
     public PlanningPokerViewController loadPlanningPokerView() throws IOException {
         if (planningPokerViewController == null) {
             fxmlLoader = new FXMLLoader(getClass().getResource("../Views/PlanningPokerView/PlanningPokerView.fxml"));
 
             Scene planningPokerViewScene = new Scene(fxmlLoader.load());
             Stage planningPokerViewStage = new Stage();
-            planningPokerViewStage.setTitle("Chat");
+            planningPokerViewStage.setTitle("Planning Poker");
             planningPokerViewStage.setScene(planningPokerViewScene);
             planningPokerViewStage.show();
             planningPokerViewController = fxmlLoader.getController();

@@ -1,18 +1,15 @@
 package Views.LobbyView;
 
-import Application.Session;
+import Application.ModelFactory;
 import Model.Lobby.LobbyModel;
-import Views.ViewModel;
+import java.rmi.RemoteException;
 
-public class LobbyViewModel extends ViewModel
+public class LobbyViewModel
 {
   private final LobbyModel lobbyModel;
-  private final Session session;
 
-  public LobbyViewModel(LobbyModel lobbyModel, Session session)
+  public LobbyViewModel() throws RemoteException
   {
-    super();
-    this.session = session;
-    this.lobbyModel = lobbyModel;
+    this.lobbyModel = ModelFactory.getInstance().getLobbyModel();
   }
 }

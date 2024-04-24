@@ -12,4 +12,5 @@ public interface PlanningPokerModel
   void init() throws RemoteException;
 
   User getLocalUser();
+  PlanningPoker getActivePlanningPokerGame();
 }

@@ -3,39 +3,42 @@ package Views.PlanningPokerView;
 import Application.ModelFactory;
 import Application.Session;
 import Application.ViewModelFactory;
+import Model.PlanningPoker.PlanningPokerModel;
+import Views.TaskView.TaskViewModel;
 
 import java.rmi.RemoteException;
 
 public class PlanningPokerViewModel
 {
+  private TaskViewModel taskViewModel;
+  private PlanningPokerModel planningPokerModel;
 
+
+  public PlanningPokerViewModel() throws RemoteException {
+    taskViewModel = ViewModelFactory.getInstance().getTaskViewModel();
+    planningPokerModel = ModelFactory.getInstance().getPlanningPokerModel();
+  }
 
   public void init() {
-    try {
-      setTaskViewData();
-    } catch (RemoteException e) {
-      throw new RuntimeException();
-    }
-
+    setTaskViewData();
   }
 
   /** Initializes the initial data that is shown inside the TaskView pane upon first loading the PlanningPokerView*/
-  private void setTaskViewData() throws RemoteException
+  private void setTaskViewData()
   {
     //Set the user label in the TaskView:
     String user = "ERROR";
     if(Session.getCurrentUser() != null) {
       user = Session.getCurrentUser().getUsername();
     }
-    ViewModelFactory.getInstance().getTaskViewModel().labelUserIdProperty().setValue(user);
+    taskViewModel.labelUserIdProperty().setValue(user);
 
     //Set the GameId in the TaskView:
     String gameId = "ERROR";
     if(Session.getConnectedGameId() != null) {
-      //gameId = ModelFactory.getInstance().getMainViewModel().getActivePlanningPokerGame().getPlanningPokerID();
-      gameId = ModelFactory.getInstance().getPlanningPokerModel().getActivePlanningPokerGame().getPlanningPokerID();
+      gameId = planningPokerModel.getActivePlanningPokerGame().getPlanningPokerID();
     }
-    ViewModelFactory.getInstance().getTaskViewModel().sessionIdProperty().setValue(gameId);
+    taskViewModel.sessionIdProperty().setValue(gameId);
   }
 
 }

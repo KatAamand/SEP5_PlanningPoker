@@ -1,40 +1,50 @@
 package Views.LobbyView;
 
 import Application.ViewModelFactory;
+import Views.PlanningPokerView.PlanningPokerViewController;
+import Views.TaskView.AddTaskViewController;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
+import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.ResourceBundle;
 
-public class LobbyViewController
+public class LobbyViewController implements Initializable
 {
+  @FXML private VBox addTaskWrapper;
+  @FXML private Label titleLabel;
+  @FXML private VBox addTask;
+  @FXML private AddTaskViewController addTaskController;
+  @FXML private Button StartGameButton;
+
   private LobbyViewModel lobbyViewModel;
-  @FXML public Button StartGameButton;
-  @FXML public Button SaveTaskButton;
-  @FXML public TextArea taskTextArea;
-  @FXML public VBox chatViewWrapper;
-  @FXML public VBox taskViewWrapper;
+  private PlanningPokerViewController parentController;
 
-  public LobbyViewController()
+
+  public LobbyViewController() throws RemoteException
   {
-      try {
-          this.lobbyViewModel = ViewModelFactory.getInstance().getLobbyViewModel();
-      } catch (RemoteException e) {
-          throw new RuntimeException(e);
-      }
+      this.lobbyViewModel = ViewModelFactory.getInstance().getLobbyViewModel();
   }
 
-  public void initialize() {
-
+  public void setParentController(PlanningPokerViewController parentController) {
+    this.parentController = parentController;
   }
 
-  public void onSaveTaskButtonPressed() {
-// tries to save or create new a task
+  @Override public void initialize(URL location, ResourceBundle resources)
+  {
+    addTaskController.isEmbedded(true);
+
   }
 
   public void onStartGameButtonPressed() {
-// tries to start the game
+    if(parentController != null) {
+      parentController.onStartGameButtonPressed();
+    }
   }
+
+
 }

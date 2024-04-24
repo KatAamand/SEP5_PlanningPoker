@@ -16,10 +16,11 @@ public class AddTaskViewController implements Initializable
   @FXML private TextField textFieldTaskHeader;
   @FXML private TextArea textAreaTaskDescription;
   private AddTaskViewModel viewModel;
+  private boolean isEmbedded; //Used to distinguish between whether this controller is initialized in a popup window, or embedded into the main view.
 
 
   public AddTaskViewController() {
-    //Does nothing at the moment.
+    isEmbedded = false;
   }
 
 
@@ -29,12 +30,25 @@ public class AddTaskViewController implements Initializable
 
 
   @FXML public void onSavePressed(ActionEvent event) {
-    viewModel.save(event);
+    if(isEmbedded) {
+      viewModel.saveEmbedded(event);
+    } else {
+      viewModel.saveStandalone(event);
+    }
   }
 
 
   @FXML public void onCancelPressed(ActionEvent event) {
-    viewModel.cancel(event);
+    if(isEmbedded) {
+      viewModel.cancelEmbedded(event);
+    } else {
+      viewModel.cancelStandalone(event);
+    }
+  }
+
+  /** Used to control the state of this controller. True, this controller will act as if embedded inside another view. False, this controller will act as if it is its own window.*/
+  public void isEmbedded(boolean state) {
+    this.isEmbedded = state;
   }
 
 

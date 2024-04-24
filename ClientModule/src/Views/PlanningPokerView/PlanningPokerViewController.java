@@ -19,8 +19,7 @@ public class PlanningPokerViewController
     @FXML private VBox taskView;
     @FXML private HBox gameView;
     @FXML private VBox chatView;
-    @FXML private HBox lobbyView;
-    @FXML private Button startGameButton;
+    @FXML private VBox lobbyView;
     @FXML private TaskViewController taskViewController;
     @FXML private GameViewController gameViewController;
     @FXML private ChatViewController chatViewController;
@@ -38,6 +37,7 @@ public class PlanningPokerViewController
         gameView.setManaged(false);
         lobbyView.setManaged(true);
         lobbyView.setVisible(true);
+        Platform.runLater(() -> lobbyViewController.setParentController(this));
         Platform.runLater(() -> planningPokerViewModel.init());
     }
 
@@ -47,7 +47,6 @@ public class PlanningPokerViewController
         lobbyView.setManaged(false);
         gameView.setManaged(true);
         gameView.setVisible(true);
-        startGameButton.setVisible(false);
-        startGameButton.setManaged(false);
+        Platform.runLater(() -> gameViewController.initialize());
     }
 }
