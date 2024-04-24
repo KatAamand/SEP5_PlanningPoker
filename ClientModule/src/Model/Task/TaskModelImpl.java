@@ -14,13 +14,13 @@ public class TaskModelImpl extends PlanningPokerModelImpl implements TaskModel
 {
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
   private Client clientConnection;
-  private ArrayList<Task> taskList; //TODO: Should be refactored to be session dependant, instead of being filled with all tasks in existence!.
 
 
   /** Primary constructor. Defers most of the declarations and definitions to the init method,
    * which is run inside a Platform.runLater statement for increased thread safety while using javaFx. */
   public TaskModelImpl() throws RemoteException {
     super();
+    super.init();
 
     //Assign the network connection:
     clientConnection = (Client) ClientFactory.getInstance().getClient();
@@ -30,41 +30,37 @@ public class TaskModelImpl extends PlanningPokerModelImpl implements TaskModel
   }
 
 
-  @Override public void init()
-  {
+  @Override public void init() {
       //Assign all PropertyChangeListeners:
       this.assignListeners();
-
-      //Load data from server:
-      clientConnection.loadTaskList();
   }
 
 
   /** Assigns all the required listeners to the clientConnection allowing for Observable behavior betweeen these classes. */
-  private void assignListeners()
-  {
+  private void assignListeners() {
     clientConnection.addPropertyChangeListener("receivedUpdatedTaskList", evt -> {
-      setTaskList((ArrayList<Task>) evt.getNewValue());
+      try {
+        setTaskList((ArrayList<Task>) evt.getNewValue());
+      } catch (RemoteException e) {
+        throw new RuntimeException();
+      }
       propertyChangeSupport.firePropertyChange("taskListUpdated", null, null);
       });
   }
 
 
-  private void setTaskList(ArrayList<Task> taskList)
-  {
-    this.taskList = taskList;
+  private void setTaskList(ArrayList<Task> taskList) throws RemoteException {
+    super.getActivePlanningPokerGame().setTaskList(taskList);
   }
 
 
-  @Override public ArrayList<Task> getTaskList()
-  {
-    return this.taskList;
+  @Override public ArrayList<Task> getTaskList() {
+    return (ArrayList<Task>) super.getActivePlanningPokerGame().getTaskList();
   }
 
 
-  @Override public void addTask(Task task)
-  {
-    clientConnection.addTask(task);
+  @Override public void addTask(Task task) {
+    clientConnection.addTask(task, super.getActivePlanningPokerGame().getPlanningPokerID());
   }
 
 

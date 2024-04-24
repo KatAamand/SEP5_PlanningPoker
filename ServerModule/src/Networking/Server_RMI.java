@@ -19,6 +19,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Server_RMI implements ServerConnection_RMI {
@@ -29,6 +30,7 @@ public class Server_RMI implements ServerConnection_RMI {
     private MainServerModel mainServerModel;
     private ArrayList<ClientConnection_RMI> connectedClients;
     private Map<ClientConnection_RMI, PropertyChangeListener> listeners = new HashMap<>();
+    private Map<String, ArrayList<ClientConnection_RMI>> clientsInEachGame = new HashMap<>();
 
     public Server_RMI() throws RemoteException {
         UnicastRemoteObject.exportObject(this, 0);
@@ -39,6 +41,14 @@ public class Server_RMI implements ServerConnection_RMI {
         taskServerModel = TaskServerModelImpl.getInstance();
         gameServerModel = GameServerModelImpl.getInstance();
         mainServerModel = MainServerModelImpl.getInstance();
+
+        //Assign server listeners
+        assignServerListeners();
+    }
+
+    /** These listeners are local to this server, and listen for events inside the server models. <br> They are not intended for clients to call. */
+    private void assignServerListeners() {
+        taskServerModel.addPropertyChangeListener("TaskDataChanged", (evt) -> broadcastTaskListUpdate((String) evt.getNewValue()));
     }
 
 
@@ -47,9 +57,34 @@ public class Server_RMI implements ServerConnection_RMI {
         connectedClients.add(client);
     }
 
+    @Override public void registerClientToGame(ClientConnection_RMI client, String gameId) throws RemoteException
+    {
+        ArrayList<ClientConnection_RMI> existingClients;
+
+        if(clientsInEachGame.get(gameId) != null) {
+            existingClients = clientsInEachGame.get(gameId);
+        } else {
+            existingClients = new ArrayList<>();
+        }
+
+        if(!existingClients.contains(client)) {
+            existingClients.add(client);
+            clientsInEachGame.put(gameId, existingClients);
+        }
+    }
+
     @Override
     public void unRegisterClient(ClientConnection_RMI client) {
         connectedClients.remove(client);
+    }
+
+    @Override public void unRegisterClientFromGame(ClientConnection_RMI client, String gameId)
+    {
+        ArrayList<ClientConnection_RMI> existingClients = clientsInEachGame.get(gameId);
+
+        if(existingClients != null && existingClients.remove(client)) {
+            clientsInEachGame.put(gameId, existingClients);
+        }
     }
 
     @Override
@@ -106,16 +141,7 @@ public class Server_RMI implements ServerConnection_RMI {
     public void registerClientListener(ClientConnection_RMI client) {
         PropertyChangeListener listener = event -> {
              switch (event.getPropertyName()) {
-                case "TaskDataChanged":
-                     System.out.println("Server: Broadcasting changes to the task list to all clients");
-                     sendUpdateToClient(() -> {
-                         try {
-                             client.loadTaskListFromServer();
-                         } catch (RemoteException e) {
-                             throw new RuntimeException(e);
-                         }
-                     }, client);
-                     break;
+
                 default:
                     System.out.println("Unrecognized event: " + event.getPropertyName());
                     break;
@@ -123,8 +149,33 @@ public class Server_RMI implements ServerConnection_RMI {
         };
 
         listeners.put(client, listener);
+    }
 
-        taskServerModel.addPropertyChangeListener("TaskDataChanged", listener);
+    /** Responsible for broadcasting taskListUpdates ONLY to the clients connected to the Game with the provided gameId */
+    private void broadcastTaskListUpdate(String gameId) {
+        ArrayList<ClientConnection_RMI> receivingClients = clientsInEachGame.get(gameId);
+
+        System.out.println("Server: Broadcasting changes to the task list to clients in game [" + gameId + "]");
+        for (ClientConnection_RMI client : receivingClients) {
+            //Create a new thread for each connected client, and then call the desired broadcast operation. This minimizes server lag/hanging due to clients who have connection issues.
+            Thread transmitThread = new Thread(() -> {
+                try {
+                    client.loadTaskListFromServer(gameId);
+                }
+                catch (RemoteException e) {
+                    if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
+                        //Unregisters clients from the Game Server, who have lost connection in order to avoid further server errors.
+                        unRegisterClientFromGame(client, gameId);
+                    }
+                    else {
+                        //Error is something else:
+                        throw new RuntimeException();
+                    }
+                }
+            });
+            transmitThread.setDaemon(true);
+            transmitThread.start();
+        }
     }
 
     private void sendUpdateToClient(Runnable updateAction, ClientConnection_RMI client) {
@@ -150,8 +201,6 @@ public class Server_RMI implements ServerConnection_RMI {
     public void unRegisterClientListener(ClientConnection_RMI client) throws RemoteException {
         PropertyChangeListener listener = listeners.get(client);
 
-        taskServerModel.removePropertyChangeListener("TaskDataChanged", listener);
-
         listeners.remove(client);
     }
 
@@ -165,6 +214,7 @@ public class Server_RMI implements ServerConnection_RMI {
     @Override public void addTask(Task task, String gameId) throws RemoteException
     {
         taskServerModel.addTask(task, gameId);
+        mainServerModel.getPlanningPokerGame(gameId).setTaskList(taskServerModel.getTaskList(gameId));
     }
 
 
@@ -175,14 +225,24 @@ public class Server_RMI implements ServerConnection_RMI {
       return mainServerModel.validatePlanningPoker(planningPokerID);
     }
 
-    @Override public PlanningPoker createPlanningPoker()
+    @Override public PlanningPoker createPlanningPoker(ClientConnection_RMI client) throws RemoteException
     {
       System.out.println("Server_RMI: trying to create planningPokerID");
-      return mainServerModel.createPlanningPoker();
+      PlanningPoker planningPoker = mainServerModel.createPlanningPoker();
+
+      if(planningPoker != null) {
+          this.registerClientToGame(client, planningPoker.getPlanningPokerID());
+      }
+      return planningPoker;
     }
 
-    @Override public PlanningPoker loadPlanningPokerGame(String planningPokerId) {
+    @Override public PlanningPoker loadPlanningPokerGame(String planningPokerId, ClientConnection_RMI client) throws RemoteException {
         System.out.println("Server_RMI: planningPokerID trying to validate");
-        return mainServerModel.getPlanningPokerGame(planningPokerId);
+        PlanningPoker planningPoker = mainServerModel.getPlanningPokerGame(planningPokerId);
+
+        if(planningPoker != null) {
+            this.registerClientToGame(client, planningPokerId);
+        }
+        return planningPoker;
     }
 }

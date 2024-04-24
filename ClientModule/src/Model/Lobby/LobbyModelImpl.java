@@ -23,6 +23,7 @@ public class LobbyModelImpl extends PlanningPokerModelImpl implements LobbyModel
   public LobbyModelImpl() throws RemoteException
   {
     super();
+    super.init();
 
     //Assign the network connection:
     clientConnection = (Client) ClientFactory.getInstance().getClient();

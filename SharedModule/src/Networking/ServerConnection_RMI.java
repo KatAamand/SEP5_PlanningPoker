@@ -10,7 +10,9 @@ import java.util.ArrayList;
 
 public interface ServerConnection_RMI extends Remote {
     void registerClient(ClientConnection_RMI client) throws RemoteException;
+    void registerClientToGame(ClientConnection_RMI client, String gameId) throws RemoteException;
     void unRegisterClient(ClientConnection_RMI client) throws RemoteException;
+    void unRegisterClientFromGame(ClientConnection_RMI client, String gameId) throws RemoteException;
 
     void sendMessage(String message, User sender) throws RemoteException;
 
@@ -23,6 +25,6 @@ public interface ServerConnection_RMI extends Remote {
     ArrayList<Task> getTaskList(String gameId) throws RemoteException;
     void addTask(Task task, String gameId) throws RemoteException;
     boolean validatePlanningPokerID(String planningPokerID) throws RemoteException;
-    PlanningPoker createPlanningPoker() throws RemoteException;
-    PlanningPoker loadPlanningPokerGame(String planningPokerId) throws RemoteException;
+    PlanningPoker createPlanningPoker(ClientConnection_RMI client) throws RemoteException;
+    PlanningPoker loadPlanningPokerGame(String planningPokerId, ClientConnection_RMI client) throws RemoteException;
 }

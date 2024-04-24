@@ -68,13 +68,10 @@ public class TaskViewModel {
         }
 
         //Refresh all the data in the nested viewControllers
-        try
-        {
+        try {
             taskWrapper.getChildren().clear();
             displayTaskData();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             //TODO: Implement proper exception handling.
             e.printStackTrace();
         }
@@ -82,13 +79,11 @@ public class TaskViewModel {
 
 
     private void displayTaskData() throws IOException {
-        if(taskModel.getTaskList() != null)
-        {
+        if(taskModel.getTaskList() != null) {
             int numberOfTasks = taskModel.getTaskList().size();
             taskControllerList.clear();
 
-            for (int i = 0; i < numberOfTasks; i++)
-            {
+            for (int i = 0; i < numberOfTasks; i++) {
                 //Initialize a separate nested view and controller for each task:
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("SingleTaskView.fxml"));
                 VBox newTask = fxmlLoader.load();
@@ -150,16 +145,13 @@ public class TaskViewModel {
         //Create the popup screen as a new stage, and show it!
         Stage stage = new Stage();
         stage.setTitle("Opret Task");
-        try
-        {
+        try {
             Scene scene = new Scene(fxmlLoader.load());
             stage.setScene(scene);
             stage.setResizable(false);
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.show();
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             //TODO: Add proper exception handling.
             e.printStackTrace();
         }

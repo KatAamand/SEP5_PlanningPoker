@@ -39,6 +39,9 @@ public class TaskViewController implements Initializable
 
             //Apply Property Bindings:
             applyBindings();
+
+            //Refresh onScreen elements:
+            this.taskViewModel.refresh();
         });
     }
 }

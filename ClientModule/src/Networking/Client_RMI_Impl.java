@@ -100,7 +100,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     try
     {
       System.out.println("Client_RMI: user trying to create planningPoker");
-      PlanningPoker serverAnswer = server.createPlanningPoker();
+      PlanningPoker serverAnswer = server.createPlanningPoker(this);
 
       if(serverAnswer != null) {
         //PlanningPoker created successfully
@@ -120,7 +120,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
   @Override public PlanningPoker loadPlanningPoker(String planningPokerId) {
       try {
         System.out.println("Client_RMI: trying to load PlanningPoker Game with ID " + planningPokerId);
-        PlanningPoker serverAnswer = server.loadPlanningPokerGame(planningPokerId);
+        PlanningPoker serverAnswer = server.loadPlanningPokerGame(planningPokerId, this);
 
         if(serverAnswer != null) {
           //PlanningPoker loaded successfully
@@ -157,9 +157,9 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     propertyChangeSupport.removePropertyChangeListener(name, listener);
   }
 
-  @Override public void loadTaskList() {
+  @Override public void loadTaskList(String gameId) {
     try {
-      this.loadTaskListFromServer();
+      this.loadTaskListFromServer(gameId);
     }
     catch (RemoteException e) {
       //TODO: Add proper exception handling
@@ -167,29 +167,26 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     }
   }
 
-  @Override public void loadTaskListFromServer() throws RemoteException
+  @Override public void loadTaskListFromServer(String gameId) throws RemoteException
   {
-    ArrayList<Task> taskList = server.getTaskList(Session.getConnectedGameId());
-    if(taskList != null)
-    {
+    ArrayList<Task> taskList = server.getTaskList(gameId);
+    if(taskList != null) {
       System.out.println("Loaded taskList from server.");
       propertyChangeSupport.firePropertyChange("receivedUpdatedTaskList", null, taskList);
     }
   }
 
-    @Override public void addTask(Task task)
-    {
+    @Override public void addTask(Task task, String gameId) {
       try {
-        this.addTaskToServer(task);
+        this.addTaskToServer(task, gameId);
       } catch (RemoteException e) {
         //TODO: Add proper exception handling
         e.printStackTrace();
       }
     }
 
-    @Override public void addTaskToServer(Task task) throws RemoteException
-    {
-      server.addTask(task, Session.getConnectedGameId());
+    @Override public void addTaskToServer(Task task, String gameId) throws RemoteException {
+      server.addTask(task, gameId);
     }
 
     @Override

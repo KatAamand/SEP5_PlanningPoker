@@ -4,6 +4,7 @@ import DataTypes.States.PlanningPokerState;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class PlanningPoker implements Serializable
@@ -15,11 +16,13 @@ public class PlanningPoker implements Serializable
   private String planningPokerID;
   private Chat chat;
   private static final Random random = new Random();
+  private List<Task> taskList;
 
   public PlanningPoker()
   {
     connectedUsers = new ArrayList<>();
     chat = new Chat();
+    taskList = new ArrayList<>();
     generatePlanningPokerID();
     setPlanningPokerID(planningPokerID);
   }
@@ -37,6 +40,14 @@ public class PlanningPoker implements Serializable
   public void addUserToSession(User user)
   {
     connectedUsers.add(user);
+  }
+
+  public List<Task> getTaskList() {
+    return this.taskList;
+  }
+
+  public void setTaskList(List<Task> taskList) {
+    this.taskList = taskList;
   }
 
   public void setCurrentState(PlanningPokerState planningPokerState)

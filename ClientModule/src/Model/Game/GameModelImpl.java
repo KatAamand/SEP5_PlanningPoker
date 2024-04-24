@@ -22,6 +22,8 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel, 
    * which is run inside a Platform.runLater statement for increased thread safety while using javaFx. */
   public GameModelImpl() throws RemoteException {
     super();
+    super.init();
+
     //Assign the network connection:
     try
     {

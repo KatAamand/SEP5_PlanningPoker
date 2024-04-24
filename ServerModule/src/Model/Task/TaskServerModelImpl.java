@@ -16,16 +16,12 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable{
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
   private volatile static TaskServerModel instance;
   private static final Lock lock = new ReentrantLock();
-  private ArrayList<Task> taskList;
   private Map<String, List<Task>> tasklistMap;
 
   private TaskServerModelImpl() {
     //TODO: Refactor so that it in the future loads the list from a database.
-    this.taskList = new ArrayList<>();
     this.tasklistMap = new HashMap<>();
 
-    //Load some test/Dummy data:
-    //generateDummyTaskData();
   }
 
   @Override public void addTask(Task task, String gameId) {
@@ -40,12 +36,14 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable{
     if(taskList.contains(task)) {
       taskList.remove(task);
       taskList.add(task);
+    } else {
+      taskList.add(task);
     }
 
     tasklistMap.put(gameId, taskList);
 
     System.out.println("Server: Added a task.");
-    propertyChangeSupport.firePropertyChange("TaskDataChanged", null, null);
+    propertyChangeSupport.firePropertyChange("TaskDataChanged", null, gameId);
   }
 
   @Override public void removeTask(Task task, String gameId) {
@@ -66,7 +64,7 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable{
 
 
   @Override public ArrayList<Task> getTaskList(String gameId) {
-    List<Task> taskList;
+    ArrayList<Task> taskList;
 
     if(tasklistMap.get(gameId) != null) {
       return (ArrayList<Task>) tasklistMap.get(gameId);
@@ -74,7 +72,7 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable{
       taskList = new ArrayList<>();
     }
 
-    return this.taskList;
+    return taskList;
   }
 
 
@@ -114,12 +112,4 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable{
   @Override public void run() {
     //TODO
   }
-
-  /*private void generateDummyTaskData() {
-    addTask(new Task("Implement User Authentication", "Develop a user authentication system using OAuth 2.0 to allow users to securely log in with their Google or GitHub accounts."));
-    addTask(new Task("Optimize Database Queries", "Review and optimize database queries in the application's backend to improve performance and reduce response times."));
-    addTask(new Task("Refactor UI Components", "Refactor the frontend UI components using a modern framework like React or Vue.js to enhance user experience and maintainability."));
-    addTask(new Task("Implement RESTful API Endpoints", "Design and implement RESTful API endpoints for CRUD operations to enable seamless interaction between the frontend and backend components."));
-    addTask(new Task("Enhance Error Handling", "Improve error handling mechanisms throughout the application to provide clear and informative error messages for users and developers alike."));
-  }*/
 }
