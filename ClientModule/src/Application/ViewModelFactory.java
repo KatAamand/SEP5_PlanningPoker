@@ -45,7 +45,7 @@ public class ViewModelFactory {
 
     public LoginViewModel getLoginViewModel() throws RemoteException {
         if (loginViewModel == null) {
-            loginViewModel = new LoginViewModel(modelFactory.getLoginModel(), session);
+            loginViewModel = new LoginViewModel(modelFactory.getLoginModel());
         }
 
         return loginViewModel;

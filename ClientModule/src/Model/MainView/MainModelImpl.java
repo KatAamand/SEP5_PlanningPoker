@@ -44,12 +44,14 @@ public class MainModelImpl implements MainModel
   @Override public void requestCreatePlanningPokerID() throws RemoteException
   {
     ModelFactory.getInstance().getPlanningPokerModel().setActivePlanningPokerGame(clientConnection.createPlanningPoker());
+    Session.getCurrentUser().setPlanningPoker(ModelFactory.getInstance().getPlanningPokerModel().getActivePlanningPokerGame());
   }
 
   @Override public void requestConnectPlanningPoker(String planningPokerID) throws RemoteException
   {
     if(clientConnection.validatePlanningPokerID(planningPokerID)) {
       ModelFactory.getInstance().getPlanningPokerModel().setActivePlanningPokerGame(clientConnection.loadPlanningPoker(planningPokerID));
+      Session.getCurrentUser().setPlanningPoker(ModelFactory.getInstance().getPlanningPokerModel().getActivePlanningPokerGame());
     }
   }
 

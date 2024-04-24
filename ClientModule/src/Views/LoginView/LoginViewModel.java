@@ -11,14 +11,12 @@ import java.util.function.Consumer;
 
 public class LoginViewModel extends ViewModel {
     private final LoginModel loginModel;
-    private final Session session;
 
     private Consumer<Boolean> onLoginResult;
     private Consumer<Boolean> onUserCreatedResult;
 
-    public LoginViewModel(LoginModel loginModel, Session session) {
+    public LoginViewModel(LoginModel loginModel) {
         super();
-        this.session = session;
         this.loginModel = loginModel;
 
         loginModel.addPropertyChangeListener("userLoginSuccess", this::loginUser);
@@ -28,7 +26,7 @@ public class LoginViewModel extends ViewModel {
     private void loginUser(PropertyChangeEvent event) {
         Platform.runLater(() -> {
             onLoginResult.accept(true);
-            session.setCurrentUser((User) event.getNewValue());
+            Session.setCurrentUser((User) event.getNewValue());
         });
     }
 
