@@ -1,6 +1,8 @@
 package Model.MainView;
 
 import Application.ClientFactory;
+import Application.Session;
+import DataTypes.PlanningPoker;
 import Networking.Client;
 
 import Util.PropertyChangeSubject;
@@ -14,6 +16,7 @@ public class MainModelImpl implements MainModel
 {
   private PropertyChangeSupport support;
   private Client clientConnection;
+  private PlanningPoker activePlanningPokerGame;
 
   /**
    * Primary constructor. Defers most of the declarations and definitions to the init method,
@@ -23,6 +26,7 @@ public class MainModelImpl implements MainModel
   public MainModelImpl()
   {
     support = new PropertyChangeSupport(this);
+    activePlanningPokerGame = null;
     //Assign the network connection:
     try {
       clientConnection = (Client) ClientFactory.getInstance().getClient();
@@ -31,7 +35,11 @@ public class MainModelImpl implements MainModel
       e.printStackTrace();
     }
 
-    assignListeners();
+    Platform.runLater(this::init);
+  }
+
+  public PlanningPoker getActivePlanningPokerGame() {
+    return this.activePlanningPokerGame;
   }
 
   @Override public void init()
@@ -39,17 +47,21 @@ public class MainModelImpl implements MainModel
     //TODO Initialize relevant data that might affect the javaFx thread here.
 
     //Assign all PropertyChangeListeners:
-
+    assignListeners();
   }
 
   @Override public void requestCreatePlanningPokerID()
   {
-    clientConnection.createPlanningPoker();
+    activePlanningPokerGame = clientConnection.createPlanningPoker();
+    Session.setConnectedGameId(activePlanningPokerGame.getPlanningPokerID());
   }
 
   @Override public void requestConnectPlanningPoker(String planningPokerID)
   {
-    clientConnection.validatePlanningPokerID(planningPokerID);
+    if(clientConnection.validatePlanningPokerID(planningPokerID)) {
+      activePlanningPokerGame = clientConnection.loadPlanningPoker(planningPokerID);
+      Session.setConnectedGameId(activePlanningPokerGame.getPlanningPokerID());
+    };
   }
 
 
@@ -57,15 +69,15 @@ public class MainModelImpl implements MainModel
   /** Assigns all the required listeners to the clientConnection allowing for Observable behavior betweeen these classes. */
   private void assignListeners()
   {
-    clientConnection.addPropertyChangeListener("PlanningPokerIDValidatedSuccess", evt -> {
+    clientConnection.addPropertyChangeListener("planningPokerIDValidatedSuccess", evt -> {
       Platform.runLater(() -> {
-        support.firePropertyChange("PlanningPokerIDValidatedSuccess", null, evt.getNewValue());
+        support.firePropertyChange("planningPokerIDValidatedSuccess", null, evt.getNewValue());
       });
     });
 
     clientConnection.addPropertyChangeListener("planningPokerCreatedSuccess", evt -> {
       Platform.runLater(() -> {
-        support.firePropertyChange("planningPokerCreatedSuccess", null, null);
+        support.firePropertyChange("planningPokerIDCreatedSuccess", null, evt.getNewValue());
       });
     });
   }

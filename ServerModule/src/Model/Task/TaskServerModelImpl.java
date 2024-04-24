@@ -4,6 +4,8 @@ import DataTypes.Task;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -13,10 +15,12 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable{
   private static TaskServerModel instance;
   private static final Lock lock = new ReentrantLock();
   private ArrayList<Task> taskList;
+  private Map<String, Task> tasklistMap;
 
   private TaskServerModelImpl() {
     //TODO: Refactor so that it in the future loads the list from a database.
     this.taskList = new ArrayList<>();
+    this.tasklistMap = new HashMap<>();
 
     //Load some test/Dummy data:
     generateDummyTaskData();

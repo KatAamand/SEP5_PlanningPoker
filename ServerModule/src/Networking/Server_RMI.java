@@ -1,5 +1,6 @@
 package Networking;
 
+import DataTypes.PlanningPoker;
 import DataTypes.Task;
 import DataTypes.User;
 import Model.Chat.ChatServerModel;
@@ -170,15 +171,20 @@ public class Server_RMI implements ServerConnection_RMI {
 
 
     // MainView related requests
-    @Override public void validatePlanningPokerID(String planningPokerID)
+    @Override public boolean validatePlanningPokerID(String planningPokerID)
     {
-      System.out.println("Server_RMI: planningPokerID trying to validate");
-      mainServerModel.validatePlanningPoker(planningPokerID);
+      System.out.println("Server_RMI: planningPokerID [" + planningPokerID + "] trying to validate");
+      return mainServerModel.validatePlanningPoker(planningPokerID);
     }
 
-    @Override public void createPlanningPoker()
+    @Override public PlanningPoker createPlanningPoker()
     {
-      System.out.println("Server trying to create planningPokerID");
-      mainServerModel.createPlanningPoker();
+      System.out.println("Server_RMI: trying to create planningPokerID");
+      return mainServerModel.createPlanningPoker();
+    }
+
+    @Override public PlanningPoker loadPlanningPokerGame(String planningPokerId) {
+        System.out.println("Server_RMI: planningPokerID trying to validate");
+        return mainServerModel.getPlanningPokerGame(planningPokerId);
     }
 }

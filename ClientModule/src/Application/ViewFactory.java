@@ -30,7 +30,7 @@ public class ViewFactory {
     private PlanningPokerViewController planningPokerViewController;
 
     private Stage loginViewStage;
-    private Stage mainViewScene;
+    private Stage mainViewStage;
     private FXMLLoader fxmlLoader;
 
     private ViewFactory() {
@@ -84,7 +84,7 @@ public class ViewFactory {
             });
 
             Scene mainViewScene = new Scene(fxmlLoader.load());
-            Stage mainViewStage = new Stage();
+            mainViewStage = new Stage();
             mainViewStage.setTitle("Main");
             mainViewStage.setScene(mainViewScene);
             mainViewStage.show();
@@ -148,9 +148,6 @@ public class ViewFactory {
     public PlanningPokerViewController loadPlanningPokerView() throws IOException {
         if (planningPokerViewController == null) {
             fxmlLoader = new FXMLLoader(getClass().getResource("../Views/PlanningPokerView/PlanningPokerView.fxml"));
-            //fxmlLoader.setControllerFactory(controllerClass -> new PlanningPokerViewController());
-            /** BEMÆRK OVENSTÅENDE LINJE DRÆBER NESTED CONTROLLERS! Når et .fxml view bliver loadet bliver den pr. standard assigned en controller som defineret i fx:controller i .fxml filen.
-             *  Den her fremgangsmåde skaber bare unødige problemer, hvis ikke der aktuelt er behov for at sende attributter med til controllerens constructor! */
 
             Scene planningPokerViewScene = new Scene(fxmlLoader.load());
             Stage planningPokerViewStage = new Stage();
@@ -163,18 +160,15 @@ public class ViewFactory {
         return planningPokerViewController;
     }
 
-    public PlanningPokerViewController getPlanningPokerViewController()
-    {
-        return planningPokerViewController;
-    }
-
 
     // For closing loginView upon login
     public void closeLoginView() {
         loginViewStage.close();
     }
+
+    // For closing MainView after game has been created/joined
     public void closeMainView() {
-        mainViewScene.close();
+        mainViewStage.close();
     }
 
 }

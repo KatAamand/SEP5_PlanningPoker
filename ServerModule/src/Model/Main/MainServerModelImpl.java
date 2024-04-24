@@ -12,38 +12,49 @@ public class MainServerModelImpl implements MainServerModel, Runnable
 {
 
   private PropertyChangeSupport support;
-  private static MainServerModel instance;
+  private volatile static MainServerModel instance;
   private static final Lock lock = new ReentrantLock();
   private ArrayList<PlanningPoker> planningPokerGames;
 
   private MainServerModelImpl()
   {
+    //TODO: Refactor so that it in the future loads the games from a database.
     support = new PropertyChangeSupport(this);
     planningPokerGames = new ArrayList<>();
   }
 
-  @Override public void validatePlanningPoker(String planningPokerID)
+  @Override public boolean validatePlanningPoker(String planningPokerID)
   {
-    System.out.println("Validating plannigPokerID: " + planningPokerID);
-
     for (PlanningPoker planningPoker : planningPokerGames)
     {
       if (planningPoker.getPlanningPokerID().equals(planningPokerID))
       {
-        support.firePropertyChange("planningPokerGameValidated", null,
-            planningPoker);
-        return;
+        return true;
       }
     }
+    return false;
   }
 
-  @Override public void createPlanningPoker()
+  @Override public PlanningPoker createPlanningPoker()
   {
     PlanningPoker planningPoker = new PlanningPoker();
     planningPoker.generatePlanningPokerID();
     System.out.println(
         "Creating planningPokerID: " + planningPoker.getPlanningPokerID());
     planningPokerGames.add(planningPoker);
+    return planningPoker;
+  }
+
+  @Override public PlanningPoker getPlanningPokerGame(String planningPokerId)
+  {
+    if(validatePlanningPoker(planningPokerId)) {
+      for (PlanningPoker planningPoker : planningPokerGames) {
+        if(planningPoker.getPlanningPokerID().equals(planningPokerId)) {
+          return planningPoker;
+        }
+      }
+    }
+    return null;
   }
 
   public static MainServerModel getInstance()

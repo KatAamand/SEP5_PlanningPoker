@@ -1,5 +1,6 @@
 package Model.MainView;
 
+import DataTypes.PlanningPoker;
 import Util.PropertyChangeSubject;
 
 public interface MainModel extends PropertyChangeSubject
@@ -10,6 +11,6 @@ public interface MainModel extends PropertyChangeSubject
 
   void requestCreatePlanningPokerID();
   void requestConnectPlanningPoker(String planningPokerID);
-
+  PlanningPoker getActivePlanningPokerGame();
 
 }

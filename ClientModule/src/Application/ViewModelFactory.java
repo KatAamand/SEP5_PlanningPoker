@@ -6,6 +6,7 @@ import Views.LobbyView.LobbyViewModel;
 import Views.LoginView.LoginViewModel;
 import Views.MainView.MainViewModel;
 import Views.GameView.GameViewModel;
+import Views.PlanningPokerView.PlanningPokerViewModel;
 import Views.TaskView.TaskViewModel;
 
 import java.rmi.RemoteException;
@@ -22,6 +23,7 @@ public class ViewModelFactory {
     private GameViewModel gameViewModel;
     private TaskViewModel taskViewModel;
     private ChatViewModel chatViewModel;
+    private PlanningPokerViewModel planningPokerViewModel;
     private Session session;
 
     private ViewModelFactory() {
@@ -51,7 +53,7 @@ public class ViewModelFactory {
 
     public MainViewModel getMainViewModel() throws RemoteException {
         if (mainViewModel == null) {
-            mainViewModel = new MainViewModel(modelFactory.getMainViewModel(), session);
+            mainViewModel = new MainViewModel();
         }
 
         return mainViewModel;
@@ -87,6 +89,14 @@ public class ViewModelFactory {
         }
 
         return chatViewModel;
+    }
+
+    public PlanningPokerViewModel getPlanningPokerViewModel() throws RemoteException {
+        if(planningPokerViewModel == null) {
+            planningPokerViewModel = new PlanningPokerViewModel();
+        }
+
+        return planningPokerViewModel;
     }
 
 }

@@ -1,5 +1,6 @@
 package Networking;
 
+import DataTypes.PlanningPoker;
 import DataTypes.Task;
 import Util.PropertyChangeSubject;
 import DataTypes.User;
@@ -11,10 +12,9 @@ public interface Client extends PropertyChangeSubject {
     void updateUser(User user);
     void sendMessage(String message, User sender);
     void receiveMessage(String message);
-    void validatePlanningPokerID(String planningPokerID);
-    void createPlanningPoker();
-    void PlanningPokerCreatedSuccessfully();
-    void updatePlanningPoker(String planningPokerID);
+    boolean validatePlanningPokerID(String planningPokerID);
+    PlanningPoker createPlanningPoker();
+    PlanningPoker loadPlanningPoker(String planningPokerId);
     void loadTaskList();
     void addTask(Task task);
 }

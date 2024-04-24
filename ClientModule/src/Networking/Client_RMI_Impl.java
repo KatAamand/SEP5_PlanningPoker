@@ -75,48 +75,62 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     propertyChangeSupport.firePropertyChange("userLoginSuccess", null, user);
   }
 
-  @Override public void validatePlanningPokerID(String planningPokerID)
+  @Override public boolean validatePlanningPokerID(String planningPokerID)
   {
     try
     {
-      server.validatePlanningPokerID(planningPokerID);
+      System.out.println("Client_RMI: planningPokerID trying to validate");
+      boolean serverAnswer = server.validatePlanningPokerID(planningPokerID);
+      if(serverAnswer) {
+        System.out.println("Opdatering fra server: planningPokerID is validated");
+        propertyChangeSupport.firePropertyChange("planningPokerIDValidatedSuccess", null, planningPokerID);
+      } else {
+        System.out.println("Client_RMI: planningPokerID validation failed");
+      }
+      return serverAnswer;
     }
     catch (RemoteException e)
     {
       throw new RuntimeException(e);
     }
-    System.out.println("Client_RMI: planningPokerID trying to validate");
   }
 
-  @Override public void createPlanningPoker()
+  @Override public PlanningPoker createPlanningPoker()
   {
     try
     {
-      server.createPlanningPoker();
+      System.out.println("Client_RMI: user trying to create planningPoker");
+      PlanningPoker serverAnswer = server.createPlanningPoker();
+
+      if(serverAnswer != null) {
+        //PlanningPoker created successfully
+        System.out.println("Opdatering fra server: planningPokerID is created succesfully");
+        propertyChangeSupport.firePropertyChange("planningPokerCreatedSuccess", null, serverAnswer);
+
+        return serverAnswer;
+      }
     }
     catch (RemoteException e)
     {
       throw new RuntimeException(e);
     }
-    System.out.println("Client_RMI: user trying to create planningPoker");
+    return null;
   }
 
-  @Override public void PlanningPokerCreatedSuccessfully()
-  {
-    System.out.println("Opdatering fra server: planningPokerID is created succesfully");
-    propertyChangeSupport.firePropertyChange("planningPokerCreatedSuccess", null, null);
-  }
+  @Override public PlanningPoker loadPlanningPoker(String planningPokerId) {
+      try {
+        System.out.println("Client_RMI: trying to load PlanningPoker Game with ID " + planningPokerId);
+        PlanningPoker serverAnswer = server.loadPlanningPokerGame(planningPokerId);
 
-  @Override public void updatePlanningPoker(String planningPokerID)
-  {
-    System.out.println("Opdatering fra server: planningPokerID is found in succesfully");
-    propertyChangeSupport.firePropertyChange("PlanningPokerIDValidatedSuccess", null, planningPokerID);
-  }
-
-  @Override public void updatePlanningPoker(PlanningPoker planningPoker)
-      throws RemoteException
-  {
-    // Needs logic.
+        if(serverAnswer != null) {
+          //PlanningPoker loaded successfully
+          System.out.println("Opdatering fra server: PlanningPoker game has been loaded successfully");
+          return serverAnswer;
+        }
+      } catch (RemoteException e) {
+        throw new RuntimeException();
+      }
+      return null;
   }
 
   @Override public void addPropertyChangeListener(

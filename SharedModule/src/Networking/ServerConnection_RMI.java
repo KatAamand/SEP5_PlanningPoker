@@ -1,5 +1,6 @@
 package Networking;
 
+import DataTypes.PlanningPoker;
 import DataTypes.Task;
 import DataTypes.User;
 
@@ -23,6 +24,7 @@ public interface ServerConnection_RMI extends Remote {
 
     void addTask(Task task) throws RemoteException;
 
-    void validatePlanningPokerID(String planningPokerID) throws RemoteException;
-    void createPlanningPoker() throws RemoteException;
+    boolean validatePlanningPokerID(String planningPokerID) throws RemoteException;
+    PlanningPoker createPlanningPoker() throws RemoteException;
+    PlanningPoker loadPlanningPokerGame(String planningPokerId) throws RemoteException;
 }

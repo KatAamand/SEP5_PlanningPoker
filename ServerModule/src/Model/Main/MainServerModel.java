@@ -1,10 +1,12 @@
 package Model.Main;
 
+import DataTypes.PlanningPoker;
 import Util.PropertyChangeSubject;
 
 public interface MainServerModel extends PropertyChangeSubject
 {
-  void validatePlanningPoker(String planningPokerID);
+  boolean validatePlanningPoker(String planningPokerID);
 
-  void createPlanningPoker();
+  PlanningPoker createPlanningPoker();
+  PlanningPoker getPlanningPokerGame(String planningPokerId);
 }

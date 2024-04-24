@@ -1,46 +1,44 @@
 package Views.MainView;
 
+import Application.ModelFactory;
 import Application.Session;
-import DataTypes.User;
 import Model.MainView.MainModel;
-import Views.ViewModel;
 import javafx.application.Platform;
 
 import java.beans.PropertyChangeEvent;
+import java.rmi.RemoteException;
 import java.util.function.Consumer;
 
-public class MainViewModel extends ViewModel {
+public class MainViewModel  {
     private final MainModel mainModel;
-    private final Session session;
-
-    private Consumer<Boolean> onPlannigPokerIDValidated;
+    private Consumer<Boolean> onPlanningPokerIDValidated;
     private Consumer<Boolean> onPlanningPokerIDCreatedResult;
-    public MainViewModel(MainModel mainModel, Session session) {
-        super();
-        this.session = session; 
-        this.mainModel = mainModel;
 
-        mainModel.addPropertyChangeListener("planningPokerIDValidateSuccess", this::plannigPokerIDValidated);
-        mainModel.addPropertyChangeListener("planningPokerIDCreatedSuccess", this::plannigPokerIDCreated);
+
+    public MainViewModel() throws RemoteException
+    {
+        this.mainModel = ModelFactory.getInstance().getMainViewModel();
+
+        mainModel.addPropertyChangeListener("planningPokerIDValidatedSuccess", this::planningPokerIDValidated);
+        mainModel.addPropertyChangeListener("planningPokerIDCreatedSuccess", this::planningPokerIDCreated);
     }
 
 
-    private void plannigPokerIDValidated(PropertyChangeEvent event) {
+    private void planningPokerIDValidated(PropertyChangeEvent event) {
         Platform.runLater(() -> {
-            onPlannigPokerIDValidated.accept(true);
-            session.setCurrentUser((User) event.getNewValue());
+            onPlanningPokerIDValidated.accept(true);
         });
     }
 
-    private void plannigPokerIDCreated(PropertyChangeEvent event) {
+    private void planningPokerIDCreated(PropertyChangeEvent event) {
         Platform.runLater(() -> {
-            System.out.println("VM: PlannigPoker created: " + event.getNewValue());
+            System.out.println("VM: PlanningPoker created: " + event.getNewValue() + " with ID: " + Session.getConnectedGameId());
             onPlanningPokerIDCreatedResult.accept(true);
         });
     }
 
-    public void setOnPlanningPokerIDValidateResult(Consumer<Boolean> onPlannigPokerIDValidated) {
-        this.onPlannigPokerIDValidated = onPlannigPokerIDValidated;
+    public void setOnPlanningPokerIDValidateResult(Consumer<Boolean> onPlanningPokerIDValidated) {
+        this.onPlanningPokerIDValidated = onPlanningPokerIDValidated;
     }
     public void setOnPlanningPokerIDCreatedResult(Consumer<Boolean> onPlanningPokerIDCreatedResult) {
         this.onPlanningPokerIDCreatedResult = onPlanningPokerIDCreatedResult;
