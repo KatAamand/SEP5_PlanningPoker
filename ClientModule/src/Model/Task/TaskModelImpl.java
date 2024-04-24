@@ -2,6 +2,7 @@ package Model.Task;
 
 import Application.ClientFactory;
 import DataTypes.Task;
+import Model.PlanningPoker.PlanningPokerModelImpl;
 import Networking.Client;
 import javafx.application.Platform;
 import java.beans.PropertyChangeListener;
@@ -9,7 +10,7 @@ import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-public class TaskModelImpl implements TaskModel
+public class TaskModelImpl extends PlanningPokerModelImpl implements TaskModel
 {
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
   private Client clientConnection;
@@ -19,6 +20,8 @@ public class TaskModelImpl implements TaskModel
   /** Primary constructor. Defers most of the declarations and definitions to the init method,
    * which is run inside a Platform.runLater statement for increased thread safety while using javaFx. */
   public TaskModelImpl() throws RemoteException {
+    super();
+
     //Assign the network connection:
     clientConnection = (Client) ClientFactory.getInstance().getClient();
 

@@ -6,12 +6,9 @@ import java.util.ArrayList;
 
 public interface TaskServerModel extends PropertyChangeSubject
 {
-  void addTask(Task task);
+  void addTask(Task task, String gameId);
 
-  void removeTask(Task task);
+  void removeTask(Task task, String gameId);
 
-  Task getTask(int index);
-
-  //TODO: Should be refactored and become session dependent, instead of just returning all tasks in the entire database...
-  ArrayList<Task> getTaskList();
+  ArrayList<Task> getTaskList(String gameId);
 }

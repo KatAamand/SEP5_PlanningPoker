@@ -1,6 +1,7 @@
 package Model.Game;
 
 import Application.ClientFactory;
+import Model.PlanningPoker.PlanningPokerModelImpl;
 import Networking.Client;
 import Networking.ClientInterfaces.GameClientInterface;
 import Util.PropertyChangeSubject;
@@ -10,7 +11,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
 
-public class GameModelImpl implements GameModel, PropertyChangeSubject
+public class GameModelImpl extends PlanningPokerModelImpl implements GameModel, PropertyChangeSubject
 {
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
   private Client clientConnection;
@@ -19,7 +20,8 @@ public class GameModelImpl implements GameModel, PropertyChangeSubject
 
   /** Primary constructor. Defers most of the declarations and definitions to the init method,
    * which is run inside a Platform.runLater statement for increased thread safety while using javaFx. */
-  public GameModelImpl() {
+  public GameModelImpl() throws RemoteException {
+    super();
     //Assign the network connection:
     try
     {

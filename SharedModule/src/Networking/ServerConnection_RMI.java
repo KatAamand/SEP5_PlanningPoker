@@ -20,10 +20,8 @@ public interface ServerConnection_RMI extends Remote {
 
     void registerClientListener(ClientConnection_RMI client) throws RemoteException;
     void unRegisterClientListener(ClientConnection_RMI client) throws RemoteException;
-    ArrayList<Task> getTaskList() throws RemoteException;
-
-    void addTask(Task task) throws RemoteException;
-
+    ArrayList<Task> getTaskList(String gameId) throws RemoteException;
+    void addTask(Task task, String gameId) throws RemoteException;
     boolean validatePlanningPokerID(String planningPokerID) throws RemoteException;
     PlanningPoker createPlanningPoker() throws RemoteException;
     PlanningPoker loadPlanningPokerGame(String planningPokerId) throws RemoteException;

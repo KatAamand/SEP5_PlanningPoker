@@ -1,6 +1,7 @@
 package Model.MainView;
 
 import Application.ClientFactory;
+import Application.ModelFactory;
 import Application.Session;
 import DataTypes.PlanningPoker;
 import Networking.Client;
@@ -16,31 +17,28 @@ public class MainModelImpl implements MainModel
 {
   private PropertyChangeSupport support;
   private Client clientConnection;
-  private PlanningPoker activePlanningPokerGame;
+  //private PlanningPoker activePlanningPokerGame;
 
   /**
    * Primary constructor. Defers most of the declarations and definitions to the init method,
    * which is run inside a Platform.runLater statement for increased thread safety while using javaFx.
    */
 
-  public MainModelImpl()
+  public MainModelImpl() throws RemoteException
   {
     support = new PropertyChangeSupport(this);
-    activePlanningPokerGame = null;
+    //activePlanningPokerGame = null;
+
     //Assign the network connection:
-    try {
-      clientConnection = (Client) ClientFactory.getInstance().getClient();
-    } catch (RemoteException e) {
-      //TODO: Properly handle this error!
-      e.printStackTrace();
-    }
+    clientConnection = (Client) ClientFactory.getInstance().getClient();
 
     Platform.runLater(this::init);
   }
 
-  public PlanningPoker getActivePlanningPokerGame() {
+
+  /*public PlanningPoker getActivePlanningPokerGame() {
     return this.activePlanningPokerGame;
-  }
+  }*/
 
   @Override public void init()
   {
@@ -50,18 +48,16 @@ public class MainModelImpl implements MainModel
     assignListeners();
   }
 
-  @Override public void requestCreatePlanningPokerID()
+  @Override public void requestCreatePlanningPokerID() throws RemoteException
   {
-    activePlanningPokerGame = clientConnection.createPlanningPoker();
-    Session.setConnectedGameId(activePlanningPokerGame.getPlanningPokerID());
+    ModelFactory.getInstance().getPlanningPokerModel().setActivePlanningPokerGame(clientConnection.createPlanningPoker());
   }
 
-  @Override public void requestConnectPlanningPoker(String planningPokerID)
+  @Override public void requestConnectPlanningPoker(String planningPokerID) throws RemoteException
   {
     if(clientConnection.validatePlanningPokerID(planningPokerID)) {
-      activePlanningPokerGame = clientConnection.loadPlanningPoker(planningPokerID);
-      Session.setConnectedGameId(activePlanningPokerGame.getPlanningPokerID());
-    };
+      ModelFactory.getInstance().getPlanningPokerModel().setActivePlanningPokerGame(clientConnection.loadPlanningPoker(planningPokerID));
+    }
   }
 
 

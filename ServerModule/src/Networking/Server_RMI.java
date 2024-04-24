@@ -157,16 +157,14 @@ public class Server_RMI implements ServerConnection_RMI {
 
 
     //Task related requests
-    @Override public ArrayList<Task> getTaskList() throws RemoteException
+    @Override public ArrayList<Task> getTaskList(String gameId) throws RemoteException
     {
-        //TODO: Add proper session handling here. Tasks should be retrieved from a specific session.
-        return taskServerModel.getTaskList();
+        return taskServerModel.getTaskList(gameId);
     }
 
-    @Override public void addTask(Task task) throws RemoteException
+    @Override public void addTask(Task task, String gameId) throws RemoteException
     {
-        //TODO: Add proper session handling here. Tasks should be assigned to a specific session.
-        taskServerModel.addTask(task);
+        taskServerModel.addTask(task, gameId);
     }
 
 

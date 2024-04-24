@@ -6,6 +6,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
 
 public class MainViewController
 {
@@ -67,13 +68,13 @@ public class MainViewController
     });
   }
 
-  public void onCreatePlanningPokerPressed()
+  public void onCreatePlanningPokerPressed() throws RemoteException
   {
     mainViewModel.requestCreatePlanningPokerID();
 
   }
 
-  public void onConnectToPlanningPokerPressed()
+  public void onConnectToPlanningPokerPressed() throws RemoteException
   {
     try
     {

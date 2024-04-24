@@ -7,6 +7,7 @@ public class Task implements Serializable
   private String name;
   private String description;
   private String finalEffort;
+  private int taskNumber;
 
 
 
@@ -15,6 +16,7 @@ public class Task implements Serializable
     setTaskName(taskName);
     setDescription(description);
     setFinalEffort("Undefined");
+    setTaskNumber(0);
   }
 
 
@@ -53,6 +55,16 @@ public class Task implements Serializable
   }
 
 
+  /** Task number refers to the index/order this task has been assigned, and is used when loading the tasks, so they appear in the created/assigned order - rather than at random. */
+  public void setTaskNumber(int num) {
+    this.taskNumber = num;
+  }
+
+  /** Task number refers to the index/order this task has been assigned, and is used when loading the tasks, so they appear in the created/assigned order - rather than at random. */
+  public int getTaskNumber() {
+    return this.taskNumber;
+  }
+
 
   public Task copy()
   {
@@ -73,6 +85,7 @@ public class Task implements Serializable
     Task task = (Task) obj;
     return (this.getTaskName().equals(task.getTaskName())
         && this.getDescription().equals(task.getDescription())
-        && this.getFinalEffort().equals(task.getFinalEffort()));
+        && this.getFinalEffort().equals(task.getFinalEffort())
+        && this.getTaskNumber() == task.getTaskNumber());
   }
 }

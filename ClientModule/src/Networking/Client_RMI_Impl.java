@@ -169,7 +169,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
 
   @Override public void loadTaskListFromServer() throws RemoteException
   {
-    ArrayList<Task> taskList = server.getTaskList();
+    ArrayList<Task> taskList = server.getTaskList(Session.getConnectedGameId());
     if(taskList != null)
     {
       System.out.println("Loaded taskList from server.");
@@ -189,7 +189,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
 
     @Override public void addTaskToServer(Task task) throws RemoteException
     {
-      server.addTask(task);
+      server.addTask(task, Session.getConnectedGameId());
     }
 
     @Override

@@ -32,7 +32,8 @@ public class PlanningPokerViewModel
     //Set the GameId in the TaskView:
     String gameId = "ERROR";
     if(Session.getConnectedGameId() != null) {
-      gameId = ModelFactory.getInstance().getMainViewModel().getActivePlanningPokerGame().getPlanningPokerID();
+      //gameId = ModelFactory.getInstance().getMainViewModel().getActivePlanningPokerGame().getPlanningPokerID();
+      gameId = ModelFactory.getInstance().getPlanningPokerModel().getActivePlanningPokerGame().getPlanningPokerID();
     }
     ViewModelFactory.getInstance().getTaskViewModel().sessionIdProperty().setValue(gameId);
   }

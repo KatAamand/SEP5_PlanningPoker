@@ -43,13 +43,11 @@ public class MainViewModel  {
     public void setOnPlanningPokerIDCreatedResult(Consumer<Boolean> onPlanningPokerIDCreatedResult) {
         this.onPlanningPokerIDCreatedResult = onPlanningPokerIDCreatedResult;
     }
-    public void requestCreatePlanningPokerID()
-    {
+    public void requestCreatePlanningPokerID() throws RemoteException {
         mainModel.requestCreatePlanningPokerID();
     }
 
-    public void requestConnectPlanningPokerID(String planningPokerID)
-    {
+    public void requestConnectPlanningPokerID(String planningPokerID) throws RemoteException {
         mainModel.requestConnectPlanningPoker(planningPokerID);
     }
 }

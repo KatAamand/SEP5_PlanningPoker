@@ -1,6 +1,7 @@
 package Model.Lobby;
 
 import Application.ClientFactory;
+import Model.PlanningPoker.PlanningPokerModelImpl;
 import Networking.Client;
 import Networking.ClientInterfaces.LobbyClientInterface;
 import Util.PropertyChangeSubject;
@@ -10,7 +11,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
 
-public class LobbyModelImpl implements LobbyModel, PropertyChangeSubject
+public class LobbyModelImpl extends PlanningPokerModelImpl implements LobbyModel, PropertyChangeSubject
 {
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
   private Client clientConnection;
@@ -19,17 +20,12 @@ public class LobbyModelImpl implements LobbyModel, PropertyChangeSubject
 
   /** Primary constructor. Defers most of the declarations and definitions to the init method,
    * which is run inside a Platform.runLater statement for increased thread safety while using javaFx. */
-  public LobbyModelImpl() {
+  public LobbyModelImpl() throws RemoteException
+  {
+    super();
+
     //Assign the network connection:
-    try
-    {
-      clientConnection = (Client) ClientFactory.getInstance().getClient();
-    }
-    catch (RemoteException e)
-    {
-      //TODO: Properly handle this error!
-      e.printStackTrace();
-    }
+    clientConnection = (Client) ClientFactory.getInstance().getClient();
 
     //Initialize remaining data:
     Platform.runLater(this::init);
