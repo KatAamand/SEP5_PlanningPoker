@@ -40,6 +40,10 @@ public class LobbyViewController implements Initializable
 
   }
 
+  public AddTaskViewController getEmbeddedAddTaskViewController() {
+    return this.addTaskController;
+  }
+
   public void onStartGameButtonPressed() {
     if(parentController != null) {
       parentController.onStartGameButtonPressed();

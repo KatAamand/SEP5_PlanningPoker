@@ -1,7 +1,5 @@
 package Views.PlanningPokerView;
 
-import Application.ModelFactory;
-import Application.Session;
 import Application.ViewModelFactory;
 import Views.ChatView.ChatViewController;
 import Views.GameView.GameViewController;
@@ -9,9 +7,10 @@ import Views.LobbyView.LobbyViewController;
 import Views.TaskView.TaskViewController;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
 import java.rmi.RemoteException;
 
 public class PlanningPokerViewController
@@ -39,6 +38,7 @@ public class PlanningPokerViewController
         lobbyView.setVisible(true);
         Platform.runLater(() -> lobbyViewController.setParentController(this));
         Platform.runLater(() -> planningPokerViewModel.init());
+        Platform.runLater(this::catchCloseRequests);
     }
 
     public void onStartGameButtonPressed()
@@ -48,5 +48,27 @@ public class PlanningPokerViewController
         gameView.setManaged(true);
         gameView.setVisible(true);
         Platform.runLater(() -> gameViewController.initialize());
+    }
+
+    public void catchCloseRequests()
+    {
+        Stage thisStage = (Stage) taskView.getScene().getWindow();
+        planningPokerViewModel.closePlanningPoker(thisStage);
+    }
+
+    public TaskViewController getTaskViewController() {
+        return this.taskViewController;
+    }
+
+    public GameViewController getGameViewController() {
+        return this.gameViewController;
+    }
+
+    public LobbyViewController getLobbyViewController() {
+        return this.lobbyViewController;
+    }
+
+    public ChatViewController getChatViewController() {
+        return this.chatViewController;
     }
 }

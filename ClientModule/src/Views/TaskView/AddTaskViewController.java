@@ -13,8 +13,8 @@ import java.util.ResourceBundle;
 public class AddTaskViewController implements Initializable
 {
   @FXML private Button buttonSave;
-  @FXML private TextField textFieldTaskHeader;
-  @FXML private TextArea textAreaTaskDescription;
+  @FXML public TextField textFieldTaskHeader;
+  @FXML public TextArea textAreaTaskDescription;
   private AddTaskViewModel viewModel;
   private boolean isEmbedded; //Used to distinguish between whether this controller is initialized in a popup window, or embedded into the main view.
 
