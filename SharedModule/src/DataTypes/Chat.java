@@ -46,6 +46,11 @@ public class Chat implements Serializable
     throw new NullPointerException();
   }
 
+  public void clear()
+  {
+    chatHistory.clear();
+  }
+
 
 
   protected ArrayList<Message> getChatHistory()

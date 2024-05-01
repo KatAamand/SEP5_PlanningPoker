@@ -8,10 +8,10 @@ public class Message implements Serializable
 
 
 
-  public Message()
+  public Message(String message)
   {
-    setMessage("");
-    //TODO
+    setMessage(message);
+
   }
 
 
@@ -42,9 +42,7 @@ public class Message implements Serializable
 
   public Message copy()
   {
-    Message newMessage = new Message();
-    newMessage.setMessage(this.getMessage());
-
+    Message newMessage = new Message(this.getMessage());
     return newMessage;
   }
 }
