@@ -8,10 +8,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="491.0" prefWidth="731.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Views.GameView.GameViewController">
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="725.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Views.GameView.GameViewController">
     <children>
-        <VBox fx:id="taskViewWrapper" prefHeight="491.0" prefWidth="205.0" />
-        <VBox prefHeight="491.0" prefWidth="296.0">
+        <VBox prefHeight="491.0" prefWidth="725.0">
             <children>
                 <VBox prefHeight="54.0" prefWidth="281.0">
                     <children>
@@ -28,17 +27,26 @@
                      </padding>
                   </VBox>
                     </children>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
                 </VBox>
             <VBox prefHeight="123.0" prefWidth="281.0" style="-fx-background-color: #82B366;">
                <children>
-                  <Label fx:id="taskHeaderLabel" text="Task header">
+                  <Label fx:id="taskHeaderLabel" prefHeight="27.0" prefWidth="713.0" text="Task header">
                      <font>
                         <Font name="System Bold" size="18.0" />
                      </font>
+                     <VBox.margin>
+                        <Insets left="10.0" />
+                     </VBox.margin>
                   </Label>
-                  <HBox prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: #82B366;">
+                  <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: #82B366;">
                      <children>
-                        <Label fx:id="taskDescLabel" prefHeight="120.0" prefWidth="226.0" text="lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." wrapText="true" />
+                        <Label fx:id="taskDescLabel" prefHeight="103.0" prefWidth="619.0" text="lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." wrapText="true">
+                           <HBox.margin>
+                              <Insets left="20.0" right="5.0" />
+                           </HBox.margin></Label>
                         <VBox prefHeight="102.0" prefWidth="105.0">
                            <children>
                               <TextField fx:id="insertEffortField" promptText="insert effort">
@@ -46,19 +54,24 @@
                                     <Insets top="100.0" />
                                  </opaqueInsets>
                                  <VBox.margin>
-                                    <Insets top="50.0" />
+                                    <Insets bottom="5.0" right="5.0" top="50.0" />
                                  </VBox.margin>
                               </TextField>
-                                    <Button fx:id="setEffortButton" mnemonicParsing="false" onAction="#onsetEffortButtonPressed" prefWidth="100.0" style="-fx-background-color: #fff; -fx-border-color: #ccc;" text="Set effort" />
+                                    <Button fx:id="setEffortButton" mnemonicParsing="false" onAction="#onsetEffortButtonPressed" prefWidth="100.0" style="-fx-background-color: #fff; -fx-border-color: #ccc;" text="Set effort">
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" right="5.0" />
+                                 </VBox.margin></Button>
                            </children>
                         </VBox>
                      </children>
                   </HBox>
                </children>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
             </VBox>
-            <VBox prefHeight="330.0" prefWidth="281.0" />
+            <VBox fx:id="effortWrapper" prefHeight="330.0" prefWidth="281.0" />
             </children>
         </VBox>
-        <VBox fx:id="chatViewWrapper" prefHeight="491.0" prefWidth="275.0" />
     </children>
 </HBox>
