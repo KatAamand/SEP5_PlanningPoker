@@ -44,6 +44,7 @@ public class LoginServerModelImpl implements LoginServerModel, Runnable {
     System.out.println("Validating user: " + username + " " + password);
     for (User user : users) {
       if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+        System.out.println("user found, now logging user in...");
         return user;
       }
     }
@@ -64,8 +65,8 @@ public class LoginServerModelImpl implements LoginServerModel, Runnable {
   }
 
   private void addTestUsers() {
-    this.users.add(new User("test", "123"));
-    this.users.add(new User("test2", "123"));
+    this.users.add(new User("test", "1234"));
+    this.users.add(new User("test2", "1234"));
   }
 
   @Override public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -82,9 +83,7 @@ public class LoginServerModelImpl implements LoginServerModel, Runnable {
   }
 
   @Override public void run()
-  {
-    //TODO
-  }
+  {}
 
 
 }

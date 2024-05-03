@@ -103,13 +103,19 @@ public class Server_RMI implements ServerConnection_RMI {
         try {
             System.out.println("Server_RMI: user trying to validate");
             User user = loginServerModel.validateUser(username, password);
-            sendUpdateToClient(() -> {
-                try {
-                    client.updateUser(user);
-                } catch (RemoteException e) {
-                    throw new RuntimeException(e);
-                }
-            }, client);
+
+            if (user == null) {
+                client.userValidationFailed("Forkert brugernavn eller password");
+            } else {
+                sendUpdateToClient(() -> {
+                    try {
+                        client.updateUser(user);
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
+                }, client);
+            }
+
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }

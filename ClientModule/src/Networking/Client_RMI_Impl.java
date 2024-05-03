@@ -63,6 +63,11 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     System.out.println("Client_RMI: user trying to create user");
   }
 
+  @Override
+  public void userValidationFailed(String errorMessage) {
+      propertyChangeSupport.firePropertyChange("userValidationFailed", null, errorMessage);
+  }
+
   @Override public void userCreatedSuccessfully()
   {
     System.out.println("Opdatering fra server: user is created succesfully");

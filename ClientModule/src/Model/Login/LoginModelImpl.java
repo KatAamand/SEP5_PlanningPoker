@@ -75,6 +75,12 @@ public class LoginModelImpl implements LoginModel
         support.firePropertyChange("userCreatedSuccess", null, null);
       });
     });
+
+    clientConnection.addPropertyChangeListener("userValidationFailed", evt -> {
+      Platform.runLater(() -> {
+        support.firePropertyChange("userValidationFailed", null, evt.getNewValue());
+      });
+    });
   }
 
 }

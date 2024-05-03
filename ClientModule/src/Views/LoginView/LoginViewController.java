@@ -2,7 +2,9 @@ package Views.LoginView;
 
 import Application.ViewFactory;
 import javafx.application.Platform;
+import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -10,12 +12,14 @@ import javafx.scene.control.Alert.AlertType;
 import java.io.IOException;
 
 public class LoginViewController {
-    public TextField usernameTextField;
-    public TextField passwordTextField;
-    public Button loginButton;
-    public Button createUserButton;
+    @FXML public TextField usernameTextField;
+    @FXML public TextField passwordTextField;
+    @FXML public Button loginButton;
+    @FXML public Button createUserButton;
     private final LoginViewModel loginViewModel;
     private final ViewFactory viewFactory;
+    @FXML public Label usernameErrorLabel;
+    @FXML public Label passwordErrorLabel;
 
     public LoginViewController(LoginViewModel loginViewModel, ViewFactory viewFactory) {
         this.loginViewModel = loginViewModel;
@@ -25,12 +29,24 @@ public class LoginViewController {
     public void initialize() {
         loginViewModel.setOnLoginResult(this::onLoginResult);
         loginViewModel.setOnUserCreatedResult(this::onUserCreatedResult);
+
+        // Binding properties
+        usernameTextField.textProperty().bindBidirectional(loginViewModel.usernameProperty());
+        usernameErrorLabel.textProperty().bind(loginViewModel.usernameErrorMessageProperty());
+        passwordTextField.textProperty().bindBidirectional(loginViewModel.passwordProperty());
+        passwordErrorLabel.textProperty().bind(loginViewModel.passwordErrorMessageProperty());
+
+        loginButton.disableProperty().bind(loginViewModel.usernameErrorMessageProperty().isNotNull().or(loginViewModel.passwordErrorMessageProperty().isNotNull()));
+        createUserButton.disableProperty().bind(loginViewModel.usernameErrorMessageProperty().isNotNull().or(loginViewModel.passwordErrorMessageProperty().isNotNull()));
     }
 
     public void onLoginResult(Boolean success) {
         Platform.runLater(() -> {
             if (success) {
                 try {
+                    usernameTextField.clear();
+                    passwordTextField.clear();
+
                     viewFactory.loadMainView();
                     viewFactory.closeLoginView();
                 } catch (IOException e) {
@@ -45,37 +61,22 @@ public class LoginViewController {
         Platform.runLater(() -> {
             System.out.println("Controller: User created: " + success);
             if (success) {
-                // Create alert that let's the user know that the user has been created
-                Alert alert = new Alert(AlertType.INFORMATION);
-                alert.setTitle("Bruger oprettet");
-                alert.setHeaderText(null);
-                alert.setContentText("Din bruger er nu oprettet og du kan logge ind.");
-                alert.showAndWait();
+                // Create alert that lets the user know that the user has been created
+                loginViewModel.showDialogBox("Bruger oprettet", "Din bruger er nu oprettet og du kan logge ind");
             } else {
-                // Create alert that let's the user know that there was an error creating the user
-                Alert alert = new Alert(AlertType.INFORMATION);
-                alert.setTitle("Brugeroprettelse fejlet");
-                alert.setHeaderText(null);
-                alert.setContentText("Din bruge kan ikke oprettes, vent og prøv igen senere");
-                alert.showAndWait();
+                // Create alert that lets the user know that there was an error creating the user
+                loginViewModel.showAlertBox("Brugeroprettelse fejlet", "Din bruger kan ikke oprettes, vent og prøv igen senere");
             }
         });
     }
 
-    public void onLoginButtonPressed()
-    {
-        String username = usernameTextField.getText();
-        String password = passwordTextField.getText();
 
-        loginViewModel.requestLogin(username, password);
-        usernameTextField.clear();
-        passwordTextField.clear();
+
+    public void onLoginButtonPressed() {
+        loginViewModel.attemptLogin();
     }
 
     public void onCreateUserButtonPressed() {
-        String username = usernameTextField.getText();
-        String password = passwordTextField.getText();
-
-        loginViewModel.requestCreateUser(username, password);
+        loginViewModel.attemptCreateUser();
     }
 }

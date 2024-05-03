@@ -8,6 +8,7 @@ import DataTypes.User;
 public interface Client extends PropertyChangeSubject {
     void validateUser(String username, String password);
     void createUser(String username, String password);
+    void userValidationFailed(String errorMessage);
     void userCreatedSuccessfully();
     void updateUser(User user);
     void sendMessage(String message, User sender);
