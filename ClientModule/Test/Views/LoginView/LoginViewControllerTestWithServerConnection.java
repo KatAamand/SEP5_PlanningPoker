@@ -33,9 +33,8 @@ class LoginViewControllerTestWithServerConnection
   private static final int maxWaitingTicks = 1000;
   private static Thread serverThread;
   private static Thread clientThread;
-  private static Thread javaFxPlatformThread;
 
-  @BeforeAll public static void initServer()
+  @BeforeAll public static void initServerAndJavaFxClient()
   {
     AtomicBoolean serverInitialized = new AtomicBoolean(false);
     AtomicBoolean clientInitialized = new AtomicBoolean(false);
@@ -86,7 +85,7 @@ class LoginViewControllerTestWithServerConnection
       });
     clientThread.start();
 
-    // Wait for server to be initialized in a separate thread (Simulate the Client Connection running on a separate thread):
+    // Wait for the javaFx component library to be initialized in a separate thread (Simulate the Client Connection running on a separate thread):
     ticks = 0;
     while(!clientInitialized.get() && maxWaitingTicks >= ticks) {
       try {
@@ -930,9 +929,12 @@ class LoginViewControllerTestWithServerConnection
   }
 
 
-  /* This test is not working as intended. Commented out for now.
+
   @Test public void testLoginViewCanBeTerminatedAfterEnteringNameAndPassword()
   {
+    assertEquals(true, false, "This test must be run manually! Please check the Test-Case documentation for Use Case #1. As of 01/05-24 this test-case does NOT pass manual evaluation!");
+
+    /* This test is not working as intended. Commented out for now.
     // Arrange test parameters:
     String username = "test";
     String password = "123";
@@ -990,8 +992,8 @@ class LoginViewControllerTestWithServerConnection
     boolean areAllThreadsTerminated = !clientThread.isAlive();
 
     //Assert if test was successful or not:
-    assertEquals(true, clientThread.isAlive(), "Expected application to fully close its main thread [isAlive = " + (clientThread.isAlive()) + "]");
-  }*/
+    assertEquals(true, clientThread.isAlive(), "Expected application to fully close its main thread [isAlive = " + (clientThread.isAlive()) + "]");*/
+  }
 
 
 

@@ -24,7 +24,6 @@ public class ViewFactory {
     // Controller variables
     private LoginViewController loginViewController; 
     private MainViewController mainViewController;
-    private ChatViewController chatViewController;
     private PlanningPokerViewController planningPokerViewController;
 
     private Stage loginViewStage;
@@ -92,9 +91,12 @@ public class ViewFactory {
         return mainViewController;
     }
 
+    public Stage getMainViewStage() {
+        return this.mainViewStage;
+    }
+
     // Load PlanningPokerView
     public PlanningPokerViewController loadPlanningPokerView() throws IOException {
-        if (planningPokerViewController == null) {
             fxmlLoader = new FXMLLoader(getClass().getResource("../Views/PlanningPokerView/PlanningPokerView.fxml"));
 
             Scene planningPokerViewScene = new Scene(fxmlLoader.load());
@@ -103,7 +105,6 @@ public class ViewFactory {
             planningPokerViewStage.setScene(planningPokerViewScene);
             planningPokerViewStage.show();
             planningPokerViewController = fxmlLoader.getController();
-        }
 
         return planningPokerViewController;
     }
