@@ -6,17 +6,11 @@ import Networking.Client_RMI_Impl;
 import Networking.ServerConnection_RMI;
 import Networking.Server_RMI;
 import Views.ForceSynchronizationOfScenarioTestClasses;
-import Views.GameView.GameViewModel;
-import Views.LobbyView.LobbyViewController;
 import Views.LoginView.LoginViewController;
 import Views.MainView.MainViewController;
-import Views.TaskView.SingleTaskViewModel;
-import Views.TaskView.TaskViewModel;
-import Views.ViewModel;
+import Views.TestServer;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
-import javafx.scene.Node;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
@@ -32,7 +26,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,9 +36,6 @@ class JoinSessionTestWithServerConnection
   private static PlanningPokerViewController planningPokerViewController;
   private static MainViewController mainViewController;
   private static LoginViewController loginViewController;
-  private static TaskViewModel taskViewModel;
-  private static GameViewModel gameViewModel;
-  private static LobbyViewController lobbyViewController;
   private static ClientConnection_RMI client;
   private static ClientConnection_RMI client2;
   private static Registry registry;
@@ -80,9 +70,7 @@ class JoinSessionTestWithServerConnection
     serverThread = new Thread(() -> {
       try
       {
-        server = new Server_RMI();
-        registry = LocateRegistry.createRegistry(1099);
-        registry.bind("Model", server);
+        server = TestServer.getInstance();
         serverInitialized.set(true);
       }
       catch (RemoteException | AlreadyBoundException e)
@@ -141,8 +129,6 @@ class JoinSessionTestWithServerConnection
         ticks = Integer.MAX_VALUE;
       }
     }
-    System.out.println("reached 3");
-
   }
 
 
@@ -151,20 +137,13 @@ class JoinSessionTestWithServerConnection
     //Terminate server:
     try {
       server.unRegisterClient(client);
-      registry.unbind("Model");
+      TestServer.resetServer();
     } catch (RemoteException | NotBoundException e) {
-      throw new RuntimeException(e);
-    }
-
-    try {
-      UnicastRemoteObject.unexportObject(registry, true);
-    } catch (NoSuchObjectException e) {
       throw new RuntimeException(e);
     }
 
     // Release the centralized lock in order to allow other UI related test classes to execute their scenario tests:
     ForceSynchronizationOfScenarioTestClasses.getSynchronizationLock().unlock();
-    System.out.println("Finished CreateSessionTestWithServerConnection");
   }
 
 
@@ -173,7 +152,7 @@ class JoinSessionTestWithServerConnection
   {
     // Arrange test parameters:
     String username = "test";
-    String password = "123";
+    String password = "1234";
     testListener = new InnerTestClassListener();
 
     // Login to the system with the test user account

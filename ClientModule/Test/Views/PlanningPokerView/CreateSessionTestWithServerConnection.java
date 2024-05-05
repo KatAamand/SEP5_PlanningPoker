@@ -13,6 +13,7 @@ import Views.LoginView.LoginViewController;
 import Views.MainView.MainViewController;
 import Views.TaskView.SingleTaskViewModel;
 import Views.TaskView.TaskViewModel;
+import Views.TestServer;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -77,9 +78,7 @@ class CreateSessionTestWithServerConnection
     serverThread = new Thread(() -> {
       try
       {
-        server = new Server_RMI();
-        registry = LocateRegistry.createRegistry(1099);
-        registry.bind("Model", server);
+        server = TestServer.getInstance();
         serverInitialized.set(true);
       }
       catch (RemoteException | AlreadyBoundException e)
@@ -154,20 +153,13 @@ class CreateSessionTestWithServerConnection
     //Terminate server:
     try {
       server.unRegisterClient(client);
-      registry.unbind("Model");
+      TestServer.resetServer();
     } catch (RemoteException | NotBoundException e) {
-      throw new RuntimeException(e);
-    }
-
-    try {
-      UnicastRemoteObject.unexportObject(registry, true);
-    } catch (NoSuchObjectException e) {
       throw new RuntimeException(e);
     }
 
     // Release the centralized lock in order to allow other UI related test classes to execute their scenario tests:
     ForceSynchronizationOfScenarioTestClasses.getSynchronizationLock().unlock();
-    System.out.println("Finished CreateSessionTestWithServerConnection");
   }
 
 
@@ -176,7 +168,7 @@ class CreateSessionTestWithServerConnection
   {
     // Arrange test parameters:
     String username = "test";
-    String password = "123";
+    String password = "1234";
     testListener = new InnerTestClassListener();
 
     // Login to the system with the test user account

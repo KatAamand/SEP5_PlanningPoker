@@ -7,6 +7,7 @@ import Networking.ClientConnection_RMI;
 import Networking.ServerConnection_RMI;
 import Networking.Server_RMI;
 import Views.ForceSynchronizationOfScenarioTestClasses;
+import Views.TestServer;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.*;
@@ -52,8 +53,6 @@ class LoginTestWithServerConnection
         }
       }
     }
-    System.out.println("Running LoginTestWithServerConnection");
-
     AtomicBoolean serverInitialized = new AtomicBoolean(false);
     AtomicBoolean clientInitialized = new AtomicBoolean(false);
 
@@ -61,9 +60,7 @@ class LoginTestWithServerConnection
     serverThread = new Thread(() -> {
       try
       {
-        server = new Server_RMI();
-        registry = LocateRegistry.createRegistry(1099);
-        registry.bind("Model", server);
+        server = TestServer.getInstance();
         serverInitialized.set(true);
       }
       catch (RemoteException | AlreadyBoundException e)
@@ -136,14 +133,9 @@ class LoginTestWithServerConnection
     //Terminate server:
     try {
       server.unRegisterClient(client);
-      registry.unbind("Model");
+      //registry.unbind("Model");
+      TestServer.resetServer();
     } catch (RemoteException | NotBoundException e) {
-      throw new RuntimeException(e);
-    }
-
-    try {
-      UnicastRemoteObject.unexportObject(registry, true);
-    } catch (NoSuchObjectException e) {
       throw new RuntimeException(e);
     }
 
@@ -237,7 +229,7 @@ class LoginTestWithServerConnection
   }
 
 
-  @Test public void testCreateUserWithNoNameSpecified() {
+  @Test public void createUserWithNoNameSpecified_NotPossible() {
     // Arrange test parameters:
     String password = "qwerty123";
     InnerTestClassListener testListener = new InnerTestClassListener();
@@ -304,7 +296,7 @@ class LoginTestWithServerConnection
   }
 
 
-  @Test public void createUserWithNoPasswordSpecified() {
+  @Test public void createUserWithNoPasswordSpecified_NotPossible() {
     // Arrange test parameters:
     String username = "testBruger1";
     InnerTestClassListener testListener = new InnerTestClassListener();
@@ -371,7 +363,7 @@ class LoginTestWithServerConnection
   }
 
 
-  @Test public void createUserWithBlankNameSpecified() {
+  @Test public void createUserWithBlankNameSpecified_NotPossible() {
     // Arrange test parameters:
     String username = "     ";
     String password = "qwerty123";
@@ -439,7 +431,7 @@ class LoginTestWithServerConnection
   }
 
 
-  @Test public void createUserWithBlankPasswordSpecified() {
+  @Test public void createUserWithBlankPasswordSpecified_NotPossible() {
     // Arrange test parameters:
     String username = "testBruger1";
     String password = "     ";
@@ -686,7 +678,7 @@ class LoginTestWithServerConnection
   }
 
 
-  @Test public void loginWithNonExistantUsernameSpecified()
+  @Test public void loginWithNonExistantUsernameSpecified_NotPossible()
   {
     // Arrange test parameters:
     String username = "test27_qwerty112";
@@ -746,7 +738,7 @@ class LoginTestWithServerConnection
   }
 
 
-  @Test public void loginWithExistingUsernameButInvalidPasswordSpecified()
+  @Test public void loginWithExistingUsernameButInvalidPasswordSpecified_NotPossible()
   {
     // Arrange test parameters:
     String username = "test";
@@ -806,7 +798,7 @@ class LoginTestWithServerConnection
   }
 
 
-  @Test public void loginWithNoUsernameSpecified()
+  @Test public void loginWithNoUsernameSpecified_NotPossible()
   {
     // Arrange test parameters:
     String password = "qwerty123";
@@ -865,7 +857,7 @@ class LoginTestWithServerConnection
   }
 
 
-  @Test public void loginWithExistingUsernameButNoPasswordSpecified()
+  @Test public void loginWithExistingUsernameButNoPasswordSpecified_NotPossible()
   {
     // Arrange test parameters:
     String username = "test";
@@ -925,7 +917,7 @@ class LoginTestWithServerConnection
   }
 
 
-  @Test public void loginWithBlankUsernameSpecified()
+  @Test public void loginWithBlankUsernameSpecified_NotPossible()
   {
     // Arrange test parameters:
     String username = "     ";
@@ -985,7 +977,7 @@ class LoginTestWithServerConnection
   }
 
 
-  @Test public void loginWithValidUsernameAndBlankPasswordSpecified()
+  @Test public void loginWithValidUsernameAndBlankPasswordSpecified_NotPossible()
   {
     // Arrange test parameters:
     String username = "test";
