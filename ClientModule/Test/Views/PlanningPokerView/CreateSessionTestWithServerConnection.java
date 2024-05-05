@@ -3,11 +3,10 @@ package Views.PlanningPokerView;
 import Application.ClientFactory;
 import Application.ViewFactory;
 import Application.ViewModelFactory;
-import DataTypes.PlanningPoker;
 import Networking.ClientConnection_RMI;
-import Networking.Client_RMI_Impl;
 import Networking.ServerConnection_RMI;
 import Networking.Server_RMI;
+import Views.ForceSynchronizationOfScenarioTestClasses;
 import Views.GameView.GameViewModel;
 import Views.LobbyView.LobbyViewController;
 import Views.LoginView.LoginViewController;
@@ -18,30 +17,26 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.rmi.AlreadyBoundException;
-import java.rmi.RemoteException;
+import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class PlanningPokerViewControllerTestWithServerConnection
+@TestClassOrder(ClassOrderer.OrderAnnotation.class)
+class CreateSessionTestWithServerConnection
 {
   private static PlanningPokerViewController planningPokerViewController;
   private static MainViewController mainViewController;
@@ -50,6 +45,7 @@ class PlanningPokerViewControllerTestWithServerConnection
   private static GameViewModel gameViewModel;
   private static LobbyViewController lobbyViewController;
   private static ClientConnection_RMI client;
+  private static Registry registry;
   private static ServerConnection_RMI server;
   private boolean runLaterExecuted = false;
   private boolean testUserLoggedIn = false;
@@ -61,6 +57,19 @@ class PlanningPokerViewControllerTestWithServerConnection
 
   @BeforeAll public static void initServerAndJavaFxClient()
   {
+    //Try to acquire a centralized lock, in order to force UI related scenario test classes to be run 1 at a time instead of randomly:
+    boolean lockAcquired = false;
+    while(!lockAcquired) {
+      lockAcquired = ForceSynchronizationOfScenarioTestClasses.getSynchronizationLock().tryLock();
+      if(!lockAcquired) {
+        try {
+          Thread.sleep(500);
+        } catch (InterruptedException e) {
+          continue;
+        }
+      }
+    }
+
     AtomicBoolean serverInitialized = new AtomicBoolean(false);
     AtomicBoolean clientInitialized = new AtomicBoolean(false);
 
@@ -69,13 +78,13 @@ class PlanningPokerViewControllerTestWithServerConnection
       try
       {
         server = new Server_RMI();
-        Registry registry = LocateRegistry.createRegistry(1099);
+        registry = LocateRegistry.createRegistry(1099);
         registry.bind("Model", server);
         serverInitialized.set(true);
       }
       catch (RemoteException | AlreadyBoundException e)
       {
-        throw new RuntimeException(e);
+          throw new RuntimeException();
       }
     });
     serverThread.start();
@@ -93,20 +102,33 @@ class PlanningPokerViewControllerTestWithServerConnection
       }
     }
 
-
     //Initializes the javaFx component library, and starts the server which the client uses to connect with.
     clientThread = new Thread (() -> {
-      Platform.startup(() -> {
-        try
-        {
-          client = ClientFactory.getInstance().getClient();
-          clientInitialized.set(true);
-        }
-        catch (RemoteException e)
-        {
-          throw new RuntimeException(e);
-        }
-      });
+      try {
+        Platform.startup(() -> {
+          try
+          {
+            client = ClientFactory.getInstance().getClient();
+            clientInitialized.set(true);
+          }
+          catch (RemoteException e)
+          {
+            throw new RuntimeException(e);
+          }
+        });
+      } catch (IllegalStateException e) {
+        Platform.runLater(() -> {
+          try
+          {
+            client = ClientFactory.getInstance().getClient();
+            clientInitialized.set(true);
+          }
+          catch (RemoteException ee)
+          {
+            throw new RuntimeException(ee);
+          }
+        });
+      }
     });
     clientThread.start();
 
@@ -122,7 +144,33 @@ class PlanningPokerViewControllerTestWithServerConnection
         ticks = Integer.MAX_VALUE;
       }
     }
+    System.out.println("reached 3");
+
   }
+
+
+  @AfterAll public static void shutDownJavaFxThreadAndServer()
+  {
+    //Terminate server:
+    try {
+      server.unRegisterClient(client);
+      registry.unbind("Model");
+    } catch (RemoteException | NotBoundException e) {
+      throw new RuntimeException(e);
+    }
+
+    try {
+      UnicastRemoteObject.unexportObject(registry, true);
+    } catch (NoSuchObjectException e) {
+      throw new RuntimeException(e);
+    }
+
+    // Release the centralized lock in order to allow other UI related test classes to execute their scenario tests:
+    ForceSynchronizationOfScenarioTestClasses.getSynchronizationLock().unlock();
+    System.out.println("Finished CreateSessionTestWithServerConnection");
+  }
+
+
 
   @BeforeEach void setUp()
   {
@@ -200,10 +248,15 @@ class PlanningPokerViewControllerTestWithServerConnection
     planningPokerViewController = null;
     runLaterExecuted = false;
     testUserLoggedIn = false;
+    try {
+      client.removePropertyChangeListener(testListener);
+    } catch (RemoteException e) {
+      //Do nothing
+    }
   }
 
 
-  @Test public void testCreateANewPlanningPokerSession() {
+  @Test public void createANewPlanningPokerSession() {
     Platform.runLater(() -> {
       try {
         // 1. Simulate user pressing the 'Create Planning Poker' button:
@@ -319,7 +372,7 @@ class PlanningPokerViewControllerTestWithServerConnection
   }
 
 
-  @Test public void testIfLocalClientIsRevertedBackToMainScreenWhenPlanningPokerGameIsClosedBySameLocalClient() {
+  @Test public void localClientIsRevertedBackToMainScreenWhenPlanningPokerGameIsClosedBySameLocalClient() {
     // Create a Planning Poker Game with User
     Platform.runLater(() -> {
       try {
@@ -444,13 +497,13 @@ class PlanningPokerViewControllerTestWithServerConnection
     assertEquals(true, testResult, "Expected that the MainView should be the active window after closing the planning poker view.");
   }
 
-  @Test public void testIfLocalClientIsRevertedBackToMainScreenWhenPlanningPokerGameIsClosedByANetworkConnectedClient() {
+  @Test public void localClientIsRevertedBackToMainScreenWhenPlanningPokerGameIsClosedByANetworkConnectedClient() {
     assertEquals(true, false, "Must be tested manually!! Please review Test-Cases for Use Case #2 for details. "
         + "(ALT0, Brugeren kan til enhver til afslutte en sessions-oprettelse, hvorefter at alle tilsluttede brugere sendes retur til “opret/tilslut” skærmen.)"
         + "\nAs of 01/05-2024 this functionality IS NOT implemented NOR functioning. This should be tested with several clients running in each their own JVM.");
   }
 
-  @Test public void testLocalUserDeletedATaskFromTheTaskList() {
+  @Test public void localUserDeletedATaskFromTheTaskList() {
     // Create a Planning Poker Game with User
     Platform.runLater(() -> {
       try {
@@ -549,7 +602,7 @@ class PlanningPokerViewControllerTestWithServerConnection
   }
 
 
-  @Test public void testCreateANewPlanningPokerSessionWithoutAddingAnyTasks() {
+  @Test public void startingANewPlanningPokerSessionWithoutAddingAnyTasksIsNotPossible() {
     Platform.runLater(() -> {
       try {
         // Simulate user pressing the 'Create Planning Poker' button:

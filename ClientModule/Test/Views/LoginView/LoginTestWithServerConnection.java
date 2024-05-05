@@ -6,36 +6,54 @@ import Application.ViewFactory;
 import Networking.ClientConnection_RMI;
 import Networking.ServerConnection_RMI;
 import Networking.Server_RMI;
+import Views.ForceSynchronizationOfScenarioTestClasses;
 import javafx.application.Platform;
 import javafx.stage.Stage;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.rmi.AlreadyBoundException;
+import java.rmi.NoSuchObjectException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class LoginViewControllerTestWithServerConnection
+@TestClassOrder(ClassOrderer.OrderAnnotation.class)
+class LoginTestWithServerConnection
 {
   private static LoginViewController loginViewController;
   private static ClientConnection_RMI client;
   private static ServerConnection_RMI server;
+  private static Registry registry;
   private boolean runLaterExecuted = false;
   private static final int maxWaitingTicks = 1000;
   private static Thread serverThread;
   private static Thread clientThread;
+  
 
   @BeforeAll public static void initServerAndJavaFxClient()
   {
+    //Try to acquire a centralized lock, in order to force UI related scenario test classes to be run 1 at a time instead of randomly:
+    boolean lockAcquired = false;
+    while(!lockAcquired) {
+      lockAcquired = ForceSynchronizationOfScenarioTestClasses.getSynchronizationLock().tryLock();
+      if(!lockAcquired) {
+        try {
+          Thread.sleep(500);
+        } catch (InterruptedException e) {
+          continue;
+        }
+      }
+    }
+    System.out.println("Running LoginTestWithServerConnection");
+
     AtomicBoolean serverInitialized = new AtomicBoolean(false);
     AtomicBoolean clientInitialized = new AtomicBoolean(false);
 
@@ -44,7 +62,7 @@ class LoginViewControllerTestWithServerConnection
       try
       {
         server = new Server_RMI();
-        Registry registry = LocateRegistry.createRegistry(1099);
+        registry = LocateRegistry.createRegistry(1099);
         registry.bind("Model", server);
         serverInitialized.set(true);
       }
@@ -71,7 +89,8 @@ class LoginViewControllerTestWithServerConnection
 
     //Initializes the javaFx component library, and starts the server which the client uses to connect with.
     clientThread = new Thread (() -> {
-      Platform.startup(() -> {
+      try {
+        Platform.startup(() -> {
           try
           {
             client = ClientFactory.getInstance().getClient();
@@ -82,7 +101,20 @@ class LoginViewControllerTestWithServerConnection
             throw new RuntimeException(e);
           }
         });
-      });
+      } catch (IllegalStateException e) {
+        Platform.runLater(() -> {
+          try
+          {
+            client = ClientFactory.getInstance().getClient();
+            clientInitialized.set(true);
+          }
+          catch (RemoteException ee)
+          {
+            throw new RuntimeException(ee);
+          }
+        });
+      }
+    });
     clientThread.start();
 
     // Wait for the javaFx component library to be initialized in a separate thread (Simulate the Client Connection running on a separate thread):
@@ -99,6 +131,27 @@ class LoginViewControllerTestWithServerConnection
     }
   }
 
+  @AfterAll public static void shutDownJavaFxThreadAndServer()
+  {
+    //Terminate server:
+    try {
+      server.unRegisterClient(client);
+      registry.unbind("Model");
+    } catch (RemoteException | NotBoundException e) {
+      throw new RuntimeException(e);
+    }
+
+    try {
+      UnicastRemoteObject.unexportObject(registry, true);
+    } catch (NoSuchObjectException e) {
+      throw new RuntimeException(e);
+    }
+
+    // Release the centralized lock in order to allow other UI related test classes to execute their scenario tests:
+    ForceSynchronizationOfScenarioTestClasses.getSynchronizationLock().unlock();
+    System.out.println("Finished LoginTestWithServerConnection");
+  }
+
   @BeforeEach void setUp()
   {
     //Does nothing at the moment
@@ -110,12 +163,12 @@ class LoginViewControllerTestWithServerConnection
     runLaterExecuted = false;
   }
 
-  @Test public void testClientDoesNotThrowRunTimeExceptionWhenServerConnectionIsEstablished()
+  @Test public void clientDoesNotThrowRunTimeExceptionWhenServerConnectionIsEstablished()
   {
     assertDoesNotThrow(() -> ClientFactory.getInstance().getClient());
   }
 
-  @Test public void testCreateUserMainSunnyScenario()
+  @Test public void createUserMainSunnyScenario()
   {
     // Arrange test parameters:
     String username = "testBruger1";
@@ -163,7 +216,10 @@ class LoginViewControllerTestWithServerConnection
     }
 
     // 5. Check if the user is created on the server, by reading the servers' response:
-    boolean wasUserCreated = testListener.getPropertyName().equals("userCreatedSuccess");
+    boolean wasUserCreated = false;
+    if(testListener.getPropertyName() != null) {
+      wasUserCreated = testListener.getPropertyName().equals("userCreatedSuccess");
+    }
 
     // 6. Check if the user exists in the server data, by attempting to log in with the created user:
     try {
@@ -199,6 +255,7 @@ class LoginViewControllerTestWithServerConnection
         activeStage.hide();
 
         // 2. Do not enter any userName:
+        loginViewController.usernameTextField.setText(null);
 
         // 3. Enter a password "qwerty123":
         loginViewController.passwordTextField.setText(password);
@@ -226,7 +283,10 @@ class LoginViewControllerTestWithServerConnection
     }
 
     // 5. Check if the user is created on the server, by reading the servers' response:
-    boolean wasUserCreated = testListener.getPropertyName().equals("userCreatedSuccess");
+    boolean wasUserCreated = false;
+    if(testListener.getPropertyName() != null) {
+      wasUserCreated = testListener.getPropertyName().equals("userCreatedSuccess");
+    }
 
     // 6. Check if the user exists in the server data, by attempting to log in with the created user:
     try {
@@ -244,7 +304,7 @@ class LoginViewControllerTestWithServerConnection
   }
 
 
-  @Test public void testCreateUserWithNoPasswordSpecified() {
+  @Test public void createUserWithNoPasswordSpecified() {
     // Arrange test parameters:
     String username = "testBruger1";
     InnerTestClassListener testListener = new InnerTestClassListener();
@@ -265,6 +325,7 @@ class LoginViewControllerTestWithServerConnection
         loginViewController.usernameTextField.setText(username);
 
         // 3. Do not enter any password:
+        loginViewController.passwordTextField.setText(null);
 
         // 4. Click "Opret Bruger":
         loginViewController.createUserButton.fire();
@@ -289,7 +350,10 @@ class LoginViewControllerTestWithServerConnection
     }
 
     // 5. Check if the user is created on the server, by reading the servers' response:
-    boolean wasUserCreated = testListener.getPropertyName().equals("userCreatedSuccess");
+    boolean wasUserCreated = false;
+    if(testListener.getPropertyName() != null) {
+      wasUserCreated = testListener.getPropertyName().equals("userCreatedSuccess");
+    }
 
     // 6. Check if the user exists in the server data, by attempting to log in with the created user:
     try {
@@ -307,7 +371,7 @@ class LoginViewControllerTestWithServerConnection
   }
 
 
-  @Test public void testCreateUserWithBlankNameSpecified() {
+  @Test public void createUserWithBlankNameSpecified() {
     // Arrange test parameters:
     String username = "     ";
     String password = "qwerty123";
@@ -354,7 +418,10 @@ class LoginViewControllerTestWithServerConnection
     }
 
     // 5. Check if the user is created on the server, by reading the servers' response:
-    boolean wasUserCreated = testListener.getPropertyName().equals("userCreatedSuccess");
+    boolean wasUserCreated = false;
+    if(testListener.getPropertyName() != null) {
+      wasUserCreated = testListener.getPropertyName().equals("userCreatedSuccess");
+    }
 
     // 6. Check if the user exists in the server data, by attempting to log in with the created user:
     try {
@@ -372,7 +439,7 @@ class LoginViewControllerTestWithServerConnection
   }
 
 
-  @Test public void testCreateUserWithBlankPasswordSpecified() {
+  @Test public void createUserWithBlankPasswordSpecified() {
     // Arrange test parameters:
     String username = "testBruger1";
     String password = "     ";
@@ -419,7 +486,10 @@ class LoginViewControllerTestWithServerConnection
     }
 
     // 5. Check if the user is created on the server, by reading the servers' response:
-    boolean wasUserCreated = testListener.getPropertyName().equals("userCreatedSuccess");
+    boolean wasUserCreated = false;
+    if(testListener.getPropertyName() != null) {
+      wasUserCreated = testListener.getPropertyName().equals("userCreatedSuccess");
+    }
 
     // 6. Check if the user exists in the server data, by attempting to log in with the created user:
     try {
@@ -437,11 +507,11 @@ class LoginViewControllerTestWithServerConnection
   }
 
 
-  @Test public void testLoginMainSunnyScenario()
+  @Test public void loginMainSunnyScenario()
   {
     // Arrange test parameters:
     String username = "test";
-    String password = "123";
+    String password = "1234";
     InnerTestClassListener testListener = new InnerTestClassListener();
 
     // Act
@@ -456,14 +526,16 @@ class LoginViewControllerTestWithServerConnection
         Stage activeStage = (Stage) loginViewController.createUserButton.getScene().getWindow();
         activeStage.hide();
 
-        // 2. Enter a username "testBruger1":
+        // 2. Enter a username "test":
         loginViewController.usernameTextField.setText(username);
 
-        // 3. Enter a password "qwerty123":
+        // 3. Enter a password "qwerty1234":
         loginViewController.passwordTextField.setText(password);
 
-        // 4. Click "Login":
-        loginViewController.loginButton.fire();
+        // 4. Attempt to Click "Login":
+        if(!loginViewController.loginButton.isDisabled()) {
+          loginViewController.loginButton.fire();
+        }
         runLaterExecuted = true;
       } catch (IOException e)
       {
@@ -485,7 +557,10 @@ class LoginViewControllerTestWithServerConnection
     }
 
     // 5. Check if the user was logged in, by reading the servers' response:
-    boolean wasUserCreated = testListener.getPropertyName().equals("userLoginSuccess");
+    boolean wasUserLoggedIn = false;
+    if(testListener.getPropertyName() != null) {
+      wasUserLoggedIn = testListener.getPropertyName().equals("userLoginSuccess");
+    }
 
     // 6. Check if the logged-in user is assigned to the local Session object:
     try {
@@ -496,14 +571,14 @@ class LoginViewControllerTestWithServerConnection
     boolean isCurrentUserSet = Session.getCurrentUser().getUsername().equals(username);
 
     // 7. Check partial results and combine to total result:
-    boolean testResult = wasUserCreated && isCurrentUserSet;
+    boolean testResult = wasUserLoggedIn && isCurrentUserSet;
 
     //Assert if test was successful or not:
     assertEquals(true, testResult, "Expected to be able to Login with user named [" + username + "] with password [" + password + "]");
   }
 
 
-  @Test public void testLoginWithFreshlyCreatedUser()
+  @Test public void loginWithFreshlyCreatedUser()
   {
 
     // Arrange test parameters:
@@ -552,7 +627,10 @@ class LoginViewControllerTestWithServerConnection
     }
 
     // 5. Check if the user is created on the server, by reading the servers' response:
-    boolean wasUserCreated = testListener.getPropertyName().equals("userCreatedSuccess");
+    boolean wasUserCreated = false;
+    if(testListener.getPropertyName() != null) {
+      wasUserCreated = testListener.getPropertyName().equals("userCreatedSuccess");
+    }
 
 
     // 6. Attempt to log in with the freshly created user:
@@ -564,8 +642,10 @@ class LoginViewControllerTestWithServerConnection
         // 2. Enter a password "qwerty123":
         loginViewController.passwordTextField.setText(password);
 
-        // 3. Click "Login":
-        loginViewController.loginButton.fire();
+        // 3. Attempt to Click "Login":
+        if(!loginViewController.loginButton.isDisabled()) {
+          loginViewController.loginButton.fire();
+        }
         runLaterExecuted = true;
     });
 
@@ -583,7 +663,10 @@ class LoginViewControllerTestWithServerConnection
     }
 
     // 7. Check if user was logged-in successfully:
-    boolean wasUserLoggedIn = testListener.getPropertyName().equals("userLoginSuccess");
+    boolean wasUserLoggedIn = false;
+    if(testListener.getPropertyName() != null) {
+      wasUserLoggedIn = testListener.getPropertyName().equals("userLoginSuccess");
+    }
 
 
     // 8. Check if the logged-in user is assigned to the local Session object:
@@ -603,11 +686,11 @@ class LoginViewControllerTestWithServerConnection
   }
 
 
-  @Test public void testLoginWithNonExistantUsernameSpecified()
+  @Test public void loginWithNonExistantUsernameSpecified()
   {
     // Arrange test parameters:
     String username = "test27_qwerty112";
-    String password = "123";
+    String password = "1234";
     InnerTestClassListener testListener = new InnerTestClassListener();
 
     // Act
@@ -628,8 +711,10 @@ class LoginViewControllerTestWithServerConnection
         // 3. Enter a password "qwerty123":
         loginViewController.passwordTextField.setText(password);
 
-        // 4. Click "Login":
-        loginViewController.loginButton.fire();
+        // 4. Attempt to Click "Login":
+        if(!loginViewController.loginButton.isDisabled()) {
+          loginViewController.loginButton.fire();
+        }
         runLaterExecuted = true;
       } catch (IOException e)
       {
@@ -651,14 +736,17 @@ class LoginViewControllerTestWithServerConnection
     }
 
     // 5. Check if the user was logged in, by reading the servers' response:
-    boolean wasUserLoggedIn = testListener.getPropertyName().equals("userLoginSuccess");
+    boolean wasUserLoggedIn = false;
+    if(testListener.getPropertyName() != null) {
+      wasUserLoggedIn = testListener.getPropertyName().equals("userLoginSuccess");
+    }
 
     //Assert if test was successful or not:
     assertEquals(false, wasUserLoggedIn, "Expected to NOT be able to Login with non-existent user named [" + username + "] with password [" + password + "]");
   }
 
 
-  @Test public void testLoginWithExistingUsernameButInvalidPasswordSpecified()
+  @Test public void loginWithExistingUsernameButInvalidPasswordSpecified()
   {
     // Arrange test parameters:
     String username = "test";
@@ -683,8 +771,10 @@ class LoginViewControllerTestWithServerConnection
         // 3. Enter a password:
         loginViewController.passwordTextField.setText(password);
 
-        // 4. Click "Login":
-        loginViewController.loginButton.fire();
+        // 4. Attempt to Click "Login":
+        if(!loginViewController.loginButton.isDisabled()) {
+          loginViewController.loginButton.fire();
+        }
         runLaterExecuted = true;
       } catch (IOException e)
       {
@@ -706,14 +796,17 @@ class LoginViewControllerTestWithServerConnection
     }
 
     // 5. Check if the user was logged in, by reading the servers' response:
-    boolean wasUserLoggedIn = testListener.getPropertyName().equals("userLoginSuccess");
+    boolean wasUserLoggedIn = false;
+    if(testListener.getPropertyName() != null) {
+      wasUserLoggedIn = testListener.getPropertyName().equals("userLoginSuccess");
+    }
 
     //Assert if test was successful or not:
     assertEquals(false, wasUserLoggedIn, "Expected to NOT be able to Login with existing user named [" + username + "] with invalid password [" + password + "]");
   }
 
 
-  @Test public void testLoginWithNoUsernameSpecified()
+  @Test public void loginWithNoUsernameSpecified()
   {
     // Arrange test parameters:
     String password = "qwerty123";
@@ -732,12 +825,15 @@ class LoginViewControllerTestWithServerConnection
         activeStage.hide();
 
         // 2. Do not enter any username:
+        loginViewController.usernameTextField.setText(null);
 
         // 3. Enter a password:
         loginViewController.passwordTextField.setText(password);
 
-        // 4. Click "Login":
-        loginViewController.loginButton.fire();
+        // 4. Attempt to Click "Login":
+        if(!loginViewController.loginButton.isDisabled()) {
+          loginViewController.loginButton.fire();
+        }
         runLaterExecuted = true;
       } catch (IOException e)
       {
@@ -759,14 +855,17 @@ class LoginViewControllerTestWithServerConnection
     }
 
     // 5. Check if the user was logged in, by reading the servers' response:
-    boolean wasUserLoggedIn = testListener.getPropertyName().equals("userLoginSuccess");
+    boolean wasUserLoggedIn = false;
+    if(testListener.getPropertyName() != null) {
+      wasUserLoggedIn = testListener.getPropertyName().equals("userLoginSuccess");
+    }
 
     //Assert if test was successful or not:
     assertEquals(false, wasUserLoggedIn, "Expected to NOT be able to Login when no username is specified [" + null + "] with invalid password [" + password + "]");
   }
 
 
-  @Test public void testLoginWithExistingUsernameButNoPasswordSpecified()
+  @Test public void loginWithExistingUsernameButNoPasswordSpecified()
   {
     // Arrange test parameters:
     String username = "test";
@@ -788,9 +887,13 @@ class LoginViewControllerTestWithServerConnection
         loginViewController.usernameTextField.setText(username);
 
         // 3.Do not enter any password
+        loginViewController.passwordTextField.setText(null);
 
-        // 4. Click "Login":
-        loginViewController.loginButton.fire();
+        // 4. Attempt to Click "Login":
+        if(!loginViewController.loginButton.isDisabled()) {
+          loginViewController.loginButton.fire();
+        }
+
         runLaterExecuted = true;
       } catch (IOException e)
       {
@@ -812,18 +915,21 @@ class LoginViewControllerTestWithServerConnection
     }
 
     // 5. Check if the user was logged in, by reading the servers' response:
-    boolean wasUserLoggedIn = testListener.getPropertyName().equals("userLoginSuccess");
+    boolean wasUserLoggedIn = false;
+    if(testListener.getPropertyName() != null) {
+      wasUserLoggedIn = testListener.getPropertyName().equals("userLoginSuccess");
+    }
 
     //Assert if test was successful or not:
     assertEquals(false, wasUserLoggedIn, "Expected to NOT be able to Login with existing user named [" + username + "] with no password specified [" + null + "]");
   }
 
 
-  @Test public void testLoginWithBlankUsernameSpecified()
+  @Test public void loginWithBlankUsernameSpecified()
   {
     // Arrange test parameters:
     String username = "     ";
-    String password = "123";
+    String password = "1234";
     InnerTestClassListener testListener = new InnerTestClassListener();
 
     // Act
@@ -844,8 +950,10 @@ class LoginViewControllerTestWithServerConnection
         // 3. Enter a password:
         loginViewController.passwordTextField.setText(password);
 
-        // 4. Click "Login":
-        loginViewController.loginButton.fire();
+        // 4. Attempt to Click "Login":
+        if(!loginViewController.loginButton.isDisabled()) {
+          loginViewController.loginButton.fire();
+        }
         runLaterExecuted = true;
       } catch (IOException e)
       {
@@ -867,14 +975,17 @@ class LoginViewControllerTestWithServerConnection
     }
 
     // 5. Check if the user was logged in, by reading the servers' response:
-    boolean wasUserLoggedIn = testListener.getPropertyName().equals("userLoginSuccess");
+    boolean wasUserLoggedIn = false;
+    if(testListener.getPropertyName() != null) {
+      wasUserLoggedIn = testListener.getPropertyName().equals("userLoginSuccess");
+    }
 
     //Assert if test was successful or not:
     assertEquals(false, wasUserLoggedIn, "Expected to NOT be able to Login when a blank user name is specified [" + username + "] with password [" + password + "]");
   }
 
 
-  @Test public void testLoginWithValidUsernameAndBlankPasswordSpecified()
+  @Test public void loginWithValidUsernameAndBlankPasswordSpecified()
   {
     // Arrange test parameters:
     String username = "test";
@@ -899,8 +1010,10 @@ class LoginViewControllerTestWithServerConnection
         // 3. Enter a password:
         loginViewController.passwordTextField.setText(password);
 
-        // 4. Click "Login":
-        loginViewController.loginButton.fire();
+        // 4. Attempt to Click "Login":
+        if(!loginViewController.loginButton.isDisabled()) {
+          loginViewController.loginButton.fire();
+        }
         runLaterExecuted = true;
       } catch (IOException e)
       {
@@ -922,7 +1035,10 @@ class LoginViewControllerTestWithServerConnection
     }
 
     // 5. Check if the user was logged in, by reading the servers' response:
-    boolean wasUserLoggedIn = testListener.getPropertyName().equals("userLoginSuccess");
+    boolean wasUserLoggedIn = false;
+    if(testListener.getPropertyName() != null) {
+      wasUserLoggedIn = testListener.getPropertyName().equals("userLoginSuccess");
+    }
 
     //Assert if test was successful or not:
     assertEquals(false, wasUserLoggedIn, "Expected to NOT be able to Login when a valid user name is specified [" + username + "] with a blank password [" + password + "]");
@@ -930,14 +1046,14 @@ class LoginViewControllerTestWithServerConnection
 
 
 
-  @Test public void testLoginViewCanBeTerminatedAfterEnteringNameAndPassword()
+  @Test public void loginViewCanBeTerminatedAfterEnteringNameAndPassword()
   {
     assertEquals(true, false, "This test must be run manually! Please check the Test-Case documentation for Use Case #1. As of 01/05-24 this test-case does NOT pass manual evaluation!");
 
     /* This test is not working as intended. Commented out for now.
     // Arrange test parameters:
     String username = "test";
-    String password = "123";
+    String password = "1234";
     InnerTestClassListener testListener = new InnerTestClassListener();
 
     // Act

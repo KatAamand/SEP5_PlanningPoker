@@ -76,6 +76,7 @@ public class Server_RMI implements ServerConnection_RMI {
     @Override
     public void unRegisterClient(ClientConnection_RMI client) {
         connectedClients.remove(client);
+        this.unRegisterClientsFromAnyConnectedGames(client);
     }
 
     @Override public void unRegisterClientFromGame(ClientConnection_RMI client, String gameId)
@@ -84,6 +85,25 @@ public class Server_RMI implements ServerConnection_RMI {
 
         if(existingClients != null && existingClients.remove(client)) {
             clientsInEachGame.put(gameId, existingClients);
+        }
+    }
+
+    private void unRegisterClientsFromAnyConnectedGames(ClientConnection_RMI client) {
+        ArrayList<String> gameIdsToRemoveClientsFrom = new ArrayList<>();
+        ArrayList<ClientConnection_RMI> clientsToRemove = new ArrayList<>();
+
+        for (Map.Entry<String, ArrayList<ClientConnection_RMI>> contents : clientsInEachGame.entrySet()) {
+            for (int i = 0; i < contents.getValue().size(); i++)
+            {
+                if(contents.getValue().get(i).equals(client)) {
+                    gameIdsToRemoveClientsFrom.add(contents.getKey());
+                    clientsToRemove.add(contents.getValue().get(i));
+                }
+            }
+        }
+        for (int i = 0; i < gameIdsToRemoveClientsFrom.size(); i++)
+        {
+            this.unRegisterClientFromGame(clientsToRemove.get(i), gameIdsToRemoveClientsFrom.get(i));
         }
     }
 
@@ -160,27 +180,34 @@ public class Server_RMI implements ServerConnection_RMI {
     /** Responsible for broadcasting taskListUpdates ONLY to the clients connected to the Game with the provided gameId */
     private void broadcastTaskListUpdate(String gameId) {
         ArrayList<ClientConnection_RMI> receivingClients = clientsInEachGame.get(gameId);
+        if(receivingClients != null) {
+            for (int i = 0; i < receivingClients.size(); i++) {
+                if(receivingClients.get(i) == null) {
+                    receivingClients.remove(i);
+                }
+            }
 
-        System.out.println("Server: Broadcasting changes to the task list to clients in game [" + gameId + "]");
-        for (ClientConnection_RMI client : receivingClients) {
-            //Create a new thread for each connected client, and then call the desired broadcast operation. This minimizes server lag/hanging due to clients who have connection issues.
-            Thread transmitThread = new Thread(() -> {
-                try {
-                    client.loadTaskListFromServer(gameId);
-                }
-                catch (RemoteException e) {
-                    if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
-                        //Unregisters clients from the Game Server, who have lost connection in order to avoid further server errors.
-                        unRegisterClientFromGame(client, gameId);
+            System.out.println("Server: Broadcasting changes to the task list to clients in game [" + gameId + "]");
+            for (ClientConnection_RMI client : receivingClients) {
+                //Create a new thread for each connected client, and then call the desired broadcast operation. This minimizes server lag/hanging due to clients who have connection issues.
+                Thread transmitThread = new Thread(() -> {
+                    try {
+                        client.loadTaskListFromServer(gameId);
                     }
-                    else {
-                        //Error is something else:
-                        throw new RuntimeException();
+                    catch (RemoteException e) {
+                        if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
+                            //Unregisters clients from the Game Server, who have lost connection in order to avoid further server errors.
+                            unRegisterClientFromGame(client, gameId);
+                        }
+                        else {
+                            //Error is something else:
+                            throw new RuntimeException();
+                        }
                     }
-                }
-            });
-            transmitThread.setDaemon(true);
-            transmitThread.start();
+                });
+                transmitThread.setDaemon(true);
+                transmitThread.start();
+            }
         }
     }
 

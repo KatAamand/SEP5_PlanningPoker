@@ -58,8 +58,9 @@ public class PlanningPokerModelImpl implements PlanningPokerModel
 
   /** Assigns all the required listeners to the clientConnection allowing for Observable behavior between these classes. */
   private void assignListeners() throws RemoteException {
-    ((Client) ClientFactory.getInstance().getClient()).addPropertyChangeListener("planningPokerIDValidatedSuccess", evt ->
-      activePlanningPokerGame = (PlanningPoker) evt.getNewValue());
+    ((Client) ClientFactory.getInstance().getClient()).addPropertyChangeListener("planningPokerIDValidatedSuccess", evt -> {
+      //Does nothing at the moment.
+    });
 
     ((Client) ClientFactory.getInstance().getClient()).addPropertyChangeListener("planningPokerCreatedSuccess", evt ->
       activePlanningPokerGame = (PlanningPoker) evt.getNewValue());
