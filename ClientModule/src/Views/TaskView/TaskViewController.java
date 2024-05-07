@@ -2,6 +2,7 @@ package Views.TaskView;
 
 import Application.ViewModelFactory;
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -44,4 +45,5 @@ public class TaskViewController implements Initializable
             this.taskViewModel.refresh();
         });
     }
+
 }

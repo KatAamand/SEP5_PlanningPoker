@@ -3,8 +3,7 @@ package Views.TaskView;
 import Application.ModelFactory;
 import Model.Task.TaskModel;
 import javafx.application.Platform;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -24,6 +23,7 @@ public class TaskViewModel {
     private Property<String> labelUserId;
     private ArrayList<SingleTaskViewController> taskControllerList;
     private ArrayList<SingleTaskViewModel> singleTaskViewModelList;
+    private BooleanProperty isTaskListEmpty;
 
 
     public TaskViewModel() throws RemoteException {
@@ -32,8 +32,17 @@ public class TaskViewModel {
         sessionId = new SimpleStringProperty("UNDEFINED");
         labelUserId = new SimpleStringProperty("UNDEFINED");
         this.taskModel = ModelFactory.getInstance().getTaskModel();
-    }
 
+        this.isTaskListEmpty = new SimpleBooleanProperty(true);
+
+        updateTaskListEmptyProperty(); // updates upon creation
+
+        // Add a listener to the taskModel to update the isTaskListEmptyProperty when the taskList is updated
+        taskModel.addPropertyChangeListener("taskListUpdated", evt -> {
+            Platform.runLater(this::updateTaskListEmptyProperty);
+        });
+    }
+    
 
     public void initialize(Button btnCreateTask, Button btnEditTask, VBox taskWrapper) {
         setButtonReferences(btnCreateTask, btnEditTask);
@@ -44,6 +53,16 @@ public class TaskViewModel {
 
         //Assign listeners:
         taskModel.addPropertyChangeListener("taskListUpdated", evt -> {Platform.runLater(this::refresh);});
+    }
+
+
+    // Makes sure to update isTaskListEmptyProperty when the taskList is updated
+    private void updateTaskListEmptyProperty() {
+        isTaskListEmpty.set(taskModel.getTaskList().isEmpty());
+    }
+
+    public ReadOnlyBooleanProperty isTaskListEmptyProperty() {
+        return isTaskListEmpty;
     }
 
 
@@ -69,6 +88,7 @@ public class TaskViewModel {
 
         //Refresh all the data in the nested viewControllers
         try {
+            isTaskListEmptyProperty();
             taskWrapper.getChildren().clear();
             displayTaskData();
         } catch (IOException e) {
