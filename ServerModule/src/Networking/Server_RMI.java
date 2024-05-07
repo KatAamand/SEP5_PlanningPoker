@@ -288,4 +288,13 @@ public class Server_RMI implements ServerConnection_RMI {
         }
         return planningPoker;
     }
+
+    @Override
+    public void addConnectedUserToSession(User user) {
+        try {
+            chatServerModel.addAndBroadcastUserToSession(user, connectedClients, this);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

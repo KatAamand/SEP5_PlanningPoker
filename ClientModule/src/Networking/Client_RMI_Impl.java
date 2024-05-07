@@ -153,7 +153,6 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
         //PlanningPoker created successfully
         System.out.println("Opdatering fra server: planningPokerID is created succesfully");
         propertyChangeSupport.firePropertyChange("planningPokerCreatedSuccess", null, serverAnswer);
-
         return serverAnswer;
       }
     }
@@ -232,6 +231,15 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
       }
     }
 
+  @Override
+  public void sendUser() {
+      try {
+          server.addConnectedUserToSession(Session.getCurrentUser());
+      } catch (RemoteException e) {
+          throw new RuntimeException(e);
+      }
+  }
+
   @Override public void addTaskToServer(Task task, String gameId) throws RemoteException {
       server.addTask(task, gameId);
     }
@@ -254,5 +262,12 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     public User getCurrentUser() throws RemoteException {
         return Session.getCurrentUser();
     }
+
+  @Override
+  public void receiveUser(ArrayList<User> users) throws RemoteException {
+    System.out.println("Client receiving user");
+    propertyChangeSupport.firePropertyChange("userReceived", null, users);
+  }
+
 
 }

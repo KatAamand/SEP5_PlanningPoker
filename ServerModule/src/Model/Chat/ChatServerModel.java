@@ -12,4 +12,5 @@ import java.util.ArrayList;
 public interface ChatServerModel extends PropertyChangeSubject
 {
     void receiveAndBroadcastMessage(Message message, User sender, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) throws RemoteException;
+    void addAndBroadcastUserToSession(User user, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) throws RemoteException;
 }
