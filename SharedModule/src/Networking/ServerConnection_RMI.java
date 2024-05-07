@@ -1,5 +1,6 @@
 package Networking;
 
+import DataTypes.Message;
 import DataTypes.PlanningPoker;
 import DataTypes.Task;
 import DataTypes.User;
@@ -14,7 +15,7 @@ public interface ServerConnection_RMI extends Remote {
     void unRegisterClient(ClientConnection_RMI client) throws RemoteException;
     void unRegisterClientFromGame(ClientConnection_RMI client, String gameId) throws RemoteException;
 
-    void sendMessage(String message, User sender) throws RemoteException;
+    void sendMessage(Message message, User sender) throws RemoteException;
 
     void validateUser(String username, String password, ClientConnection_RMI client) throws RemoteException;
 

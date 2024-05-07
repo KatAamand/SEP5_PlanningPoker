@@ -1,5 +1,6 @@
 package Networking;
 
+import DataTypes.Message;
 import DataTypes.PlanningPoker;
 import DataTypes.Task;
 import DataTypes.User;
@@ -108,7 +109,7 @@ public class Server_RMI implements ServerConnection_RMI {
     }
 
     @Override
-    public void sendMessage(String message, User sender) {
+    public void sendMessage(Message message, User sender) {
         try {
             chatServerModel.receiveAndBroadcastMessage(message, sender, connectedClients);
         } catch (RemoteException e) {

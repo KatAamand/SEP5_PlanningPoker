@@ -1,6 +1,7 @@
 package Networking;
 
 import Application.Session;
+import DataTypes.Message;
 import DataTypes.Task;
 import DataTypes.PlanningPoker;
 import DataTypes.User;
@@ -195,7 +196,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     }
 
     @Override
-    public void sendMessage(String message, User sender) {
+    public void sendMessage(Message message, User sender) {
         try {
             server.sendMessage(message, sender);
         } catch (RemoteException e) {
@@ -203,7 +204,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
         }
     }
 
-  @Override public void receiveMessage(String message)
+  @Override public void receiveMessage(Message message)
   {
     propertyChangeSupport.firePropertyChange("messageReceived", null, message);
   }
