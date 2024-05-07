@@ -64,6 +64,7 @@ public class PlanningPokerViewModel
       // Redirect the local user to the main view:
       Platform.runLater(() -> {
           ViewFactory.getInstance().getMainViewStage().show();
+          ViewFactory.getInstance().resetPlanningPokerViewController();
           currentStage.close();
       });
     });

@@ -40,37 +40,6 @@ class LoginTestWithoutServerConnection
 
 
   @Test public void clientThrowsRunTimeExceptionWhenMissingServerConnection () {
-    //Initializes a local server, that can be tested against:
-    /*AtomicBoolean serverInitialized = new AtomicBoolean(false);
-    int maxWaitingTicks = 500;
-    Thread serverThread = new Thread(() -> {
-      try
-      {
-        ServerConnection_RMI server = new Server_RMI();
-        Registry registry = LocateRegistry.createRegistry(1099);
-        registry.bind("Model", server);
-        serverInitialized.set(true);
-      }
-      catch (RemoteException | AlreadyBoundException e)
-      {
-        throw new RuntimeException(e);
-      }
-    });
-    serverThread.start();
-
-    // Wait for server to be initialized in separate thread (Simulate separate server):
-    int ticks = 0;
-    while(!serverInitialized.get() && maxWaitingTicks >= ticks) {
-      try {
-        if(!serverInitialized.get()) {
-          Thread.sleep(10);
-          ticks++;
-        }
-      } catch (InterruptedException e) {
-        ticks = Integer.MAX_VALUE;
-      }
-    }*/
-
     //Initializes the javaFx component library, and simulates a client connecting to a server. Throws an error if server is not running, which is intended
     try {
       Platform.startup(() -> {

@@ -92,4 +92,42 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
       sendMessageThread.start();
     }
   }
+
+  @Override
+  public void addAndBroadcastUserToSession(User user, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) throws RemoteException {
+
+    ArrayList<User> usersConnectedToSession = new ArrayList<>();
+    for (ClientConnection_RMI client : connectedClients) {
+      if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID().equals(user.getPlanningPoker().getPlanningPokerID()))
+      {
+        usersConnectedToSession.add(client.getCurrentUser());
+      }
+    }
+
+    for (ClientConnection_RMI client : connectedClients) {
+      Thread sendUserThread = new Thread(() -> {
+          try {
+              if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID().equals(user.getPlanningPoker().getPlanningPokerID()))
+              {
+                System.out.println("Sending user to client");
+                client.receiveUser(usersConnectedToSession);
+              }
+          } catch (RemoteException e) {
+            if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
+              //Unregisters clients from the Server, who have lost connection in order to avoid further server errors.
+              try {
+                server.unRegisterClient(client);
+              } catch (RemoteException ex) {
+                throw new RuntimeException();
+              }
+            } else {
+              //Error is something else:
+              throw new RuntimeException();
+            }
+          }
+      });
+      sendUserThread.setDaemon(true);
+      sendUserThread.start();
+    }
+  }
 }

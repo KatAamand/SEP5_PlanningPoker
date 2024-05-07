@@ -24,11 +24,12 @@ public class AddTaskViewModel
   public AddTaskViewModel(Button saveButtonRef) throws RemoteException
   {
     taskModel = ModelFactory.getInstance().getTaskModel();
-    textFieldTaskHeader = new SimpleStringProperty();
-    textAreaTaskDescription = new SimpleStringProperty();
+    textFieldTaskHeader = new SimpleStringProperty("");
+    textAreaTaskDescription = new SimpleStringProperty("");
 
     this.saveButtonRef = saveButtonRef;
     disableSaveButton();
+    validateData();
   }
 
   private void enableSaveButton()

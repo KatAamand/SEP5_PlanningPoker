@@ -100,6 +100,21 @@ class PlanningPokerTest
 
 
   /** Tests addConnectedUsers() & getConnectedUsers() method: Zombies: Many test */
+  @Test public void add2DuplicateConnectedUsers_IsNotPossible() {
+    // Arrange:
+    User user1 = new User("Test_User_One","Test_User_One_Password");
+
+    // Act:
+    planningPoker.addUserToSession(user1);
+    planningPoker.addUserToSession(user1);
+    boolean duplicateUserWasNotAddedToGame = planningPoker.getConnectedUsers().size() == 1;
+
+    // Assert:
+    assertTrue(duplicateUserWasNotAddedToGame);
+  }
+
+
+  /** Tests addConnectedUsers() & getConnectedUsers() method: Zombies: Many test */
   @Test public void addConnectedUsers_IsPossibleWith10Users() {
     // Arrange:
     User user1 = new User("Test_User_One","Test_User_Two_Password");
@@ -115,33 +130,25 @@ class PlanningPokerTest
 
     // Act;
     planningPoker.addUserToSession(user1);
-    boolean user1WasAddedToGame = planningPoker.getConnectedUsers().contains(user1);
-
     planningPoker.addUserToSession(user2);
-    boolean user2WasAddedToGame = planningPoker.getConnectedUsers().contains(user2);
-
     planningPoker.addUserToSession(user3);
-    boolean user3WasAddedToGame = planningPoker.getConnectedUsers().contains(user3);
-
     planningPoker.addUserToSession(user4);
-    boolean user4WasAddedToGame = planningPoker.getConnectedUsers().contains(user4);
-
     planningPoker.addUserToSession(user5);
-    boolean user5WasAddedToGame = planningPoker.getConnectedUsers().contains(user5);
-
     planningPoker.addUserToSession(user6);
-    boolean user6WasAddedToGame = planningPoker.getConnectedUsers().contains(user6);
-
     planningPoker.addUserToSession(user7);
-    boolean user7WasAddedToGame = planningPoker.getConnectedUsers().contains(user7);
-
     planningPoker.addUserToSession(user8);
-    boolean user8WasAddedToGame = planningPoker.getConnectedUsers().contains(user8);
-
     planningPoker.addUserToSession(user9);
-    boolean user9WasAddedToGame = planningPoker.getConnectedUsers().contains(user9);
-
     planningPoker.addUserToSession(user10);
+
+    boolean user1WasAddedToGame = planningPoker.getConnectedUsers().contains(user1);
+    boolean user2WasAddedToGame = planningPoker.getConnectedUsers().contains(user2);
+    boolean user3WasAddedToGame = planningPoker.getConnectedUsers().contains(user3);
+    boolean user4WasAddedToGame = planningPoker.getConnectedUsers().contains(user4);
+    boolean user5WasAddedToGame = planningPoker.getConnectedUsers().contains(user5);
+    boolean user6WasAddedToGame = planningPoker.getConnectedUsers().contains(user6);
+    boolean user7WasAddedToGame = planningPoker.getConnectedUsers().contains(user7);
+    boolean user8WasAddedToGame = planningPoker.getConnectedUsers().contains(user8);
+    boolean user9WasAddedToGame = planningPoker.getConnectedUsers().contains(user9);
     boolean user10WasAddedToGame = planningPoker.getConnectedUsers().contains(user10);
 
     boolean result = user1WasAddedToGame && user2WasAddedToGame

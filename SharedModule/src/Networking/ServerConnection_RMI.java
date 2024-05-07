@@ -29,4 +29,5 @@ public interface ServerConnection_RMI extends Remote {
     boolean validatePlanningPokerID(String planningPokerID) throws RemoteException;
     PlanningPoker createPlanningPoker(ClientConnection_RMI client) throws RemoteException;
     PlanningPoker loadPlanningPokerGame(String planningPokerId, ClientConnection_RMI client) throws RemoteException;
+    void addConnectedUserToSession(User user) throws RemoteException;
 }

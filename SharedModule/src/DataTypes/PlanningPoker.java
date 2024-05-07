@@ -42,7 +42,10 @@ public class PlanningPoker implements Serializable
     if(user == null) {
       throw new NullPointerException();
     }
-    connectedUsers.add(user);
+
+    if(!connectedUsers.contains(user)) {
+      connectedUsers.add(user);
+    }
   }
 
   //TODO: Do we need a removeUser method here?
