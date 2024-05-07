@@ -2,6 +2,7 @@ package Views.ChatView;
 
 import Application.ClientFactory;
 import Application.ViewFactory;
+import DataTypes.Message;
 import Networking.ClientConnection_RMI;
 import Networking.Client_RMI_Impl;
 import Networking.ServerConnection_RMI;
@@ -716,8 +717,8 @@ class ChatTestWithServerConnection
   @Test public void receiveSeveralChatMessagesRightAfterEachOtherBetween2Clients() {
     // Simulated data to transmit:
     String localUser_transmitString = "Dette er bruger1";
-    String remoteUser_firstMessage = "Test fra bruger2";
-    String remoteUser_secondMessage = "Dette er næste test fra Bruger2";
+    Message remoteUser_firstMessage = new Message("Test fra bruger2");
+    Message remoteUser_secondMessage = new Message("Dette er næste test fra Bruger2");
 
     // Simulate another user creating a planning poker game, on the server:
     runLaterExecuted = false;
@@ -872,8 +873,8 @@ class ChatTestWithServerConnection
 
     // Check that the received message appears on the chat history shown in the UI:
     boolean localUserSeesChatMessageInUI = planningPokerViewController.getChatViewController().chatTextArea.getText().contains(localUser_transmitString)
-        && planningPokerViewController.getChatViewController().chatTextArea.getText().contains(remoteUser_firstMessage)
-        && planningPokerViewController.getChatViewController().chatTextArea.getText().contains(remoteUser_secondMessage);
+        && planningPokerViewController.getChatViewController().chatTextArea.getText().contains(remoteUser_firstMessage.getMessage())
+        && planningPokerViewController.getChatViewController().chatTextArea.getText().contains(remoteUser_secondMessage.getMessage());
 
     // Combine earlier boolean evaluations:
     boolean result = localUserSeesChatMessageInUI && localUserReceivedThirdMessageFromServer && remoteUserReceivedThirdMessageFromServer && localUserReceivedSecondMessageFromServer && remoteUserReceivedSecondMessageFromServer && localUserReceivedFirstMessageFromServer && remoteUserReceivedFirstMessageFromServer && wasPlanningPokerGameCreated;
