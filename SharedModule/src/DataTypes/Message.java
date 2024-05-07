@@ -22,6 +22,10 @@ public class Message implements Serializable
 
   public String getMessage()
   {
+    if (message == null)
+    {
+      throw new NullPointerException();
+    }
     return this.message;
   }
 

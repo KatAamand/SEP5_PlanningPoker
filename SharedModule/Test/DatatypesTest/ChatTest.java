@@ -63,9 +63,58 @@ class ChatTest {
         });
     }
 
-    // Work on:
-    // Boundary: -1, 0, size(), size()-1
-    // Equals metoden. 2 forskellige chat objekter.
-    // Clear metoden.
-    // Copy metoden.
+    @Test
+    public void testOutSideOfBoundaryGetMessageIndexMinusOne()
+    {
+        assertThrows(IndexOutOfBoundsException.class, ()-> {
+            Message testMessage = new Message("test");
+            chat.addMessage(testMessage);
+            chat.getMessage(-1);
+        });
+    }
+
+    @Test
+    public void testEqualsMethodDifferentiatesTwoDifferentObjects()
+    {
+        chat.addMessage(new Message("Test1"));
+
+        Chat chat2 = new Chat();
+        chat2.addMessage(new Message("Test2"));
+
+        assertFalse(chat.equals(chat2));
+    }
+
+    @Test
+    public void testEqualsMethodOnTwoEqualObjects()
+    {
+        Chat chat2 = new Chat();
+
+        chat2.addMessage(new Message("test"));
+        chat.addMessage(new Message("test"));
+
+        assertTrue(chat.equals(chat2));
+    }
+
+    @Test
+    public void testClearMethodClearsChat()
+    {
+        chat.addMessage(new Message("Test"));
+        chat.addMessage(new Message("Test1"));
+        chat.addMessage(new Message("Test2"));
+        chat.addMessage(new Message("Test3"));
+        chat.clear();
+        assertThrows(IndexOutOfBoundsException.class, () -> {
+            chat.getMessage(0);
+        });
+    }
+
+    @Test
+    public void testCopyMethodMakesACopyOfObject()
+    {
+        chat.addMessage(new Message("Test"));
+        Chat copiedChat = chat.copy();
+
+        assertTrue(chat.equals(copiedChat));
+
+    }
 }

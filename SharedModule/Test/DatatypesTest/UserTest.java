@@ -37,6 +37,27 @@ class UserTest {
         assertEquals(user, poker.getConnectedUsers().get(0));
     }
 
+    @Test
+    void testEqualsMethodOnTwoDifferentObjects()
+    {
+        User user2 = new User("test2", "test2");
+        assertFalse(user.equals(user2));
+    }
+
+    @Test
+    void testEqualsOnTwoSameObjects()
+    {
+        User user2 = new User("Test", "test");
+        assertTrue(user2.equals(user));
+    }
+
+    @Test
+    void testCopyMethodMakesSameObject()
+    {
+        User copiedUser = user.copy();
+        assertTrue(user.equals(copiedUser));
+    }
+
     // Work on:
     // Getters and Setters
     // Equals metoden.
