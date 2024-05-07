@@ -52,6 +52,11 @@ public class ChatModelImpl implements ChatModel
       clientConnection.sendMessage(message, sender);
   }
 
+  @Override
+  public void loadUsers() {
+    clientConnection.sendUser();
+  }
+
 
   /** Assigns all the required listeners to the clientConnection allowing for Observable behavior betweeen these classes. */
   private void assignListeners()
@@ -60,6 +65,10 @@ public class ChatModelImpl implements ChatModel
     clientConnection.addPropertyChangeListener("messageReceived", evt -> {
         propertyChangeSupport.firePropertyChange("messageReceived", null, evt.getNewValue());
       });
+
+    clientConnection.addPropertyChangeListener("userReceived", evt -> {
+      propertyChangeSupport.firePropertyChange("userReceived", null, evt.getNewValue());
+    });
   }
 
 
