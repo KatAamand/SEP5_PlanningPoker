@@ -9,10 +9,10 @@ import java.util.Random;
 
 public class PlanningPoker implements Serializable
 {
-  private String connectionCode;
+  //private String connectionCode; TODO: Remove line if unnecessary
   private ArrayList<User> connectedUsers;
   private PlanningPokerState currentState;
-  private PlanningPoker planningPoker;
+  //private PlanningPoker planningPoker; TODO: Remove line if unnecessary
   private String planningPokerID;
   private Chat chat;
   private static final Random random = new Random();
@@ -37,8 +37,11 @@ public class PlanningPoker implements Serializable
     return connectedUsers;
   }
 
-  public void addUserToSession(User user)
+  public void addUserToSession(User user) throws NullPointerException
   {
+    if(user == null) {
+      throw new NullPointerException();
+    }
     connectedUsers.add(user);
   }
 
