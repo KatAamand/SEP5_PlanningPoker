@@ -36,4 +36,9 @@ class UserTest {
         user.setPlanningPoker(poker);
         assertEquals(user, poker.getConnectedUsers().get(0));
     }
+
+    // Work on:
+    // Getters and Setters
+    // Equals metoden.
+    // Copy metoden.
 }

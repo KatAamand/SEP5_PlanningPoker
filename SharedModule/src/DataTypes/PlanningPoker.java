@@ -50,15 +50,16 @@ public class PlanningPoker implements Serializable
     this.taskList = taskList;
   }
 
+  // Rasmus start her (Slet denne linje)
+
   public void setCurrentState(PlanningPokerState planningPokerState)
   {
     this.currentState = planningPokerState;
   }
 
-  public PlanningPokerState getCurrentState(
-      PlanningPokerState planningPokerState)
+  public PlanningPokerState getCurrentState()
   {
-    return planningPokerState;
+    return this.currentState;
   }
 
   public void declareFinalEffort(Task task)

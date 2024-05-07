@@ -11,7 +11,6 @@ public class Message implements Serializable
   public Message(String message)
   {
     setMessage(message);
-
   }
 
 

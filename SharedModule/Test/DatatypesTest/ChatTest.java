@@ -62,4 +62,10 @@ class ChatTest {
             chat.getMessage(15);
         });
     }
+
+    // Work on:
+    // Boundary: -1, 0, size(), size()-1
+    // Equals metoden. 2 forskellige chat objekter.
+    // Clear metoden.
+    // Copy metoden.
 }

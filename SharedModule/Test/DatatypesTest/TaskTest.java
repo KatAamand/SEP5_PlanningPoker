@@ -12,4 +12,9 @@ class TaskTest {
     @AfterEach
     void tearDown() {
     }
+
+    // Work on:
+    // Getters and Setters
+    // Equals metoden.
+    // Copy metoden.
 }

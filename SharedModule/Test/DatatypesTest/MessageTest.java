@@ -24,4 +24,9 @@ class MessageTest {
         Message copiedMessage = testMessage1.copy();
         assertEquals("test", copiedMessage.getMessage());
     }
+
+    // Work on:
+    // (Hvad sker der hvis man søger efter en besked vha. getMessage(null) som ikke findes?)
+    // Equals metoden.
+    // Copy metoden.
 }
