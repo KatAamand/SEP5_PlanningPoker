@@ -7,67 +7,70 @@ public class Task implements Serializable
   private String name;
   private String description;
   private String finalEffort;
-  private int taskNumber;
 
 
+  public Task(String taskName, String description) throws NullPointerException {
+    if(taskName == null || description == null) {
+      throw new NullPointerException();
+    }
 
-  public Task(String taskName, String description)
-  {
     setTaskName(taskName);
     setDescription(description);
     setFinalEffort("Undefined");
-    setTaskNumber(0);
   }
 
 
-  public void setTaskName(String name)
-  {
+  public void setTaskName(String name) throws NullPointerException {
+    if(name == null) {
+      throw new NullPointerException();
+    }
     this.name = name;
   }
 
-  public String getTaskName()
-  {
+  public String getTaskName() {
     return this.name;
   }
 
 
-
-  public void setDescription(String desc)
-  {
+  public void setDescription(String desc) throws NullPointerException {
+    if(desc == null) {
+      throw new NullPointerException();
+    }
     this.description = desc;
   }
 
-  public String getDescription()
-  {
+
+  public String getDescription() {
     return this.description;
   }
 
 
+  public void setFinalEffort(String effort) throws NullPointerException, IllegalArgumentException {
+    //TODO: Update this method to only allow certain effort values to be saved, otherwise throw an exception.
+    if(effort == null) {
+      throw new NullPointerException();
+    }
 
-  public void setFinalEffort(String effort)
-  {
+    // Below is commented out until we have defined what values are legal values to evaluate against here:
+    /*ArrayList<String> legalEffortValues = new ArrayList<>();
+    //TODO: Add legal effort values here:
+    legalEffortValues.add("Undefined");
+    legalEffortValues.add("THIS_IS_A_LEGAL_EFFORT_VALUE"); // <- Remove/Refactor this line.
+
+    if(!legalEffortValues.contains(effort)) {
+      throw new IllegalArgumentException();
+    }*/
+
     this.finalEffort = effort;
   }
 
-  public String getFinalEffort()
-  {
+
+  public String getFinalEffort() {
     return this.finalEffort;
   }
 
 
-  /** Task number refers to the index/order this task has been assigned, and is used when loading the tasks, so they appear in the created/assigned order - rather than at random. */
-  public void setTaskNumber(int num) {
-    this.taskNumber = num;
-  }
-
-  /** Task number refers to the index/order this task has been assigned, and is used when loading the tasks, so they appear in the created/assigned order - rather than at random. */
-  public int getTaskNumber() {
-    return this.taskNumber;
-  }
-
-
-  public Task copy()
-  {
+  public Task copy() {
     Task copy = new Task(this.getTaskName(), this.getDescription());
     copy.setFinalEffort(this.getFinalEffort());
 
@@ -75,9 +78,7 @@ public class Task implements Serializable
   }
 
 
-
-  @Override public boolean equals(Object obj)
-  {
+  @Override public boolean equals(Object obj) {
     if(!(obj instanceof Task))
     {
       return false;
@@ -86,6 +87,6 @@ public class Task implements Serializable
     return (this.getTaskName().equals(task.getTaskName())
         && this.getDescription().equals(task.getDescription())
         && this.getFinalEffort().equals(task.getFinalEffort())
-        && this.getTaskNumber() == task.getTaskNumber());
+    );
   }
 }
