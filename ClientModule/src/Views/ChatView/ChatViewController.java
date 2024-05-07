@@ -39,8 +39,12 @@ public class ChatViewController {
 
     public void onMessageSendButtonPressed()
     {
-        String message = messageInputTextField.getText();
-        viewModel.sendMessage(message);
-        messageInputTextField.clear();
+        if (!messageInputTextField.getText().isEmpty())
+        {
+            String message = messageInputTextField.getText();
+            viewModel.sendMessage(message);
+            messageInputTextField.clear();
+        }
+
     }
 }

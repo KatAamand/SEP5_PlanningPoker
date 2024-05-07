@@ -33,7 +33,7 @@
                         <Insets />
                      </VBox.margin>
                   </VBox>
-                  <Button fx:id="StartGameButton" alignment="CENTER" minHeight="40.0" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" onAction="#onStartGameButtonPressed" prefHeight="130.0" prefWidth="245.0" style="-fx-background-color: #fff; -fx-border-color: #ccc;" text="Start game">
+                  <Button fx:id="startGameButton" alignment="CENTER" minHeight="40.0" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" onAction="#onStartGameButtonPressed" prefHeight="130.0" prefWidth="245.0" style="-fx-background-color: #fff; -fx-border-color: #ccc;" text="Start PlanningPoker">
                      <VBox.margin>
                         <Insets bottom="20.0" top="40.0" />
                      </VBox.margin>

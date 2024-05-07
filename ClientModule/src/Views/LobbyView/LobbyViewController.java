@@ -19,7 +19,7 @@ public class LobbyViewController implements Initializable
   @FXML private Label titleLabel;
   @FXML private VBox addTask;
   @FXML private AddTaskViewController addTaskController;
-  @FXML private Button StartGameButton;
+  @FXML private Button startGameButton;
 
   private LobbyViewModel lobbyViewModel;
   private PlanningPokerViewController parentController;
@@ -37,7 +37,7 @@ public class LobbyViewController implements Initializable
   @Override public void initialize(URL location, ResourceBundle resources)
   {
     addTaskController.isEmbedded(true);
-
+    startGameButton.disableProperty().bind(lobbyViewModel.isTaskListEmptyProperty());
   }
 
   public AddTaskViewController getEmbeddedAddTaskViewController() {

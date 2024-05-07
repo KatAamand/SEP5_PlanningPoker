@@ -6,6 +6,8 @@ import Views.GameView.GameViewController;
 import Views.LobbyView.LobbyViewController;
 import Views.TaskView.TaskViewController;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -23,6 +25,8 @@ public class PlanningPokerViewController
     @FXML private GameViewController gameViewController;
     @FXML private ChatViewController chatViewController;
     @FXML private LobbyViewController lobbyViewController;
+
+    private BooleanProperty isTaskListEmpty = new SimpleBooleanProperty(); // This is a property that is used to bind the startGameButton to the taskList being empty
 
     private PlanningPokerViewModel planningPokerViewModel;
 
@@ -70,5 +74,9 @@ public class PlanningPokerViewController
 
     public ChatViewController getChatViewController() {
         return this.chatViewController;
+    }
+
+    public BooleanProperty isTaskListEmptyProperty() {
+        return isTaskListEmpty;
     }
 }
