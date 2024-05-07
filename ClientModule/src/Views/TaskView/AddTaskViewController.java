@@ -4,8 +4,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
+
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ResourceBundle;
@@ -15,56 +18,70 @@ public class AddTaskViewController implements Initializable
   @FXML private Button buttonSave;
   @FXML public TextField textFieldTaskHeader;
   @FXML public TextArea textAreaTaskDescription;
+  @FXML public Label tasknameErrorLabel;
+
   private AddTaskViewModel viewModel;
   private boolean isEmbedded; //Used to distinguish between whether this controller is initialized in a popup window, or embedded into the main view.
 
-
-  public AddTaskViewController() {
+  public AddTaskViewController()
+  {
     isEmbedded = false;
   }
 
-
-  @FXML public void validateData() {
+  @FXML public void validateData()
+  {
     viewModel.validateData();
   }
 
-
-  @FXML public void onSavePressed(ActionEvent event) {
-    if(isEmbedded) {
+  @FXML public void onSavePressed(ActionEvent event)
+  {
+   validateData();
+    if (isEmbedded)
+    {
       viewModel.saveEmbedded(event);
-    } else {
+    }
+    else
+    {
       viewModel.saveStandalone(event);
     }
   }
 
-
-  @FXML public void onCancelPressed(ActionEvent event) {
-    if(isEmbedded) {
+  @FXML public void onCancelPressed(ActionEvent event)
+  {
+    if (isEmbedded)
+    {
       viewModel.cancelEmbedded(event);
-    } else {
+    }
+    else
+    {
       viewModel.cancelStandalone(event);
     }
   }
 
-  /** Used to control the state of this controller. True, this controller will act as if embedded inside another view. False, this controller will act as if it is its own window.*/
-  public void isEmbedded(boolean state) {
+  /** Used to control the state of this controller. True, this controller will act as if embedded inside another view. False, this controller will act as if it is its own window. */
+  public void isEmbedded(boolean state)
+  {
     this.isEmbedded = state;
   }
 
-
-  @Override public void initialize(URL location, ResourceBundle resources) {
+  @Override public void initialize(URL location, ResourceBundle resources)
+  {
     textAreaTaskDescription.setStyle("-fx-background-color:  #E5FAE4");
     try
     {
       viewModel = new AddTaskViewModel(buttonSave);
 
       //Create bindings
-      viewModel.textFieldTaskHeaderProperty().bindBidirectional(textFieldTaskHeader.textProperty());
-      viewModel.textAreaTaskDescriptionProperty().bindBidirectional(textAreaTaskDescription.textProperty());
+      viewModel.textFieldTaskHeaderProperty()
+          .bindBidirectional(textFieldTaskHeader.textProperty());
+      viewModel.textAreaTaskDescriptionProperty()
+          .bindBidirectional(textAreaTaskDescription.textProperty());
+    tasknameErrorLabel.textProperty().bind(viewModel.tasknameErrorMessageProperty());
     }
     catch (RemoteException e)
     {
-      System.out.println("ERROR: Occurred in AddTaskViewController.java while attempting to initialize its assigned ViewModel");
+      System.out.println(
+          "ERROR: Occurred in AddTaskViewController.java while attempting to initialize its assigned ViewModel");
       e.printStackTrace();
     }
   }
