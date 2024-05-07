@@ -678,18 +678,23 @@ class ChatTestWithServerConnection
     planningPokerViewController.getChatViewController().messageInputTextField.setText(transmitString);
 
     // 2. Local user clicks 'send'
-    planningPokerViewController.getChatViewController().onMessageSendButtonPressed();
-
-    // Check if local user received the sent message from the server:
     boolean localUserReceivedMessageFromServer = false;
-    if(testListenerlocalClient.getPropertyName() != null) {
-      localUserReceivedMessageFromServer = testListenerlocalClient.getPropertyName().equals("messageReceived");
-    }
-
-    // Check if simulated remote user received the sent message from the server:
     boolean remoteUserReceivedMessageFromServer = false;
-    if(testlistenerRemoteClient1.getPropertyName() != null) {
-      remoteUserReceivedMessageFromServer = testlistenerRemoteClient1.getPropertyName().equals("messageReceived");
+
+    try {
+      planningPokerViewController.getChatViewController().onMessageSendButtonPressed();
+
+      // Check if local user received the sent message from the server:
+      if(testListenerlocalClient.getPropertyName() != null) {
+        localUserReceivedMessageFromServer = testListenerlocalClient.getPropertyName().equals("messageReceived");
+      }
+
+      // Check if simulated remote user received the sent message from the server:
+      if(testlistenerRemoteClient1.getPropertyName() != null) {
+        remoteUserReceivedMessageFromServer = testlistenerRemoteClient1.getPropertyName().equals("messageReceived");
+      }
+    } catch (NullPointerException ignored) {
+
     }
 
     // Unassign the remote listener created during this test:

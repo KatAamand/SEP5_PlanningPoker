@@ -45,11 +45,16 @@ public class PlanningPoker implements Serializable
     connectedUsers.add(user);
   }
 
+  //TODO: Do we need a removeUser method here?
+
   public List<Task> getTaskList() {
     return this.taskList;
   }
 
-  public void setTaskList(List<Task> taskList) {
+  public void setTaskList(List<Task> taskList) throws NullPointerException {
+    if(taskList == null) {
+      throw new NullPointerException();
+    }
     this.taskList = taskList;
   }
 
