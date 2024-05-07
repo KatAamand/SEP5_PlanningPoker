@@ -109,6 +109,11 @@ public class ViewFactory {
         return planningPokerViewController;
     }
 
+    /** Necessary when exiting a Planning Poker game and joining another game. Should be run just before the loadPlanningPokerView() method. */
+    public void resetPlanningPokerViewController() {
+        planningPokerViewController = null;
+    }
+
 
     // For closing loginView upon login
     public void closeLoginView() {

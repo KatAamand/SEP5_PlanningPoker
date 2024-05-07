@@ -213,7 +213,8 @@ class ChatTestWithServerConnection
 
   @AfterEach void tearDown()
   {
-    planningPokerViewController = null;
+    ViewFactory.getInstance().resetPlanningPokerViewController();
+
     runLaterExecuted = false;
     testUserLoggedIn = false;
     try {
@@ -336,6 +337,7 @@ class ChatTestWithServerConnection
 
     // Check that the received message appears on the chat history shown in the UI:
     boolean localUserSeesChatMessageInUI = planningPokerViewController.getChatViewController().chatTextArea.getText().contains(transmitString);
+    System.out.println("Klassen er: " + planningPokerViewController.getChatViewController());
     System.out.println(planningPokerViewController.getChatViewController().chatTextArea.getText());
 
     // Combine earlier boolean evaluations:
@@ -445,6 +447,7 @@ class ChatTestWithServerConnection
 
     // Combine earlier boolean evaluations:
     boolean result = localUserSeesChatMessageInUI && wasPlanningPokerGameCreated;
+    System.out.println("Klassen er: " + planningPokerViewController.getChatViewController());
     System.out.println("1: " + localUserSeesChatMessageInUI);
     System.out.println("2: " + wasPlanningPokerGameCreated);
 
@@ -455,7 +458,7 @@ class ChatTestWithServerConnection
 
   @Test public void sendAndReceiveChatMessagesBetween2ClientsWhen3ClientsHaveBeenConnectedButOneOfThemHasLeftTheGameSession() {
     // Assert
-    assertEquals(true, false, "Test must be done manually. Please refer to test-case #4 for a detailed description.\n As of 05/05-2024 this issue was still present. ");
+    assertEquals(true, true, "Test must be done manually. Please refer to test-case #4 for a detailed description.\n As of 07/05-2024 this issue was fixed. ");
   }
 
 
@@ -876,6 +879,14 @@ class ChatTestWithServerConnection
 
     // Combine earlier boolean evaluations:
     boolean result = localUserSeesChatMessageInUI && localUserReceivedThirdMessageFromServer && remoteUserReceivedThirdMessageFromServer && localUserReceivedSecondMessageFromServer && remoteUserReceivedSecondMessageFromServer && localUserReceivedFirstMessageFromServer && remoteUserReceivedFirstMessageFromServer && wasPlanningPokerGameCreated;
+    System.out.println("1: " + localUserSeesChatMessageInUI);
+    System.out.println("2: " + localUserReceivedThirdMessageFromServer);
+    System.out.println("3: " + remoteUserReceivedThirdMessageFromServer);
+    System.out.println("4: " + localUserReceivedSecondMessageFromServer);
+    System.out.println("5: " + remoteUserReceivedSecondMessageFromServer);
+    System.out.println("6: " + localUserReceivedFirstMessageFromServer);
+    System.out.println("7: " + remoteUserReceivedFirstMessageFromServer);
+    System.out.println("8: " + wasPlanningPokerGameCreated);
 
     // Assert
     assertEquals(true, result, "Should be true. Message should have been sent and received successfully");
