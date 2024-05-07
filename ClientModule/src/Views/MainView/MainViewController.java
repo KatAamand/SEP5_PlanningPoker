@@ -4,6 +4,7 @@ import Application.ViewFactory;
 import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -30,6 +31,7 @@ public class MainViewController
         this::onCreatePlanningPokerResult);
     mainViewModel.setOnPlanningPokerIDValidateResult(
         this::onConnectToPlanningPokerResult);
+    Platform.runLater(this::catchCloseRequests);
   }
 
   public void onCreatePlanningPokerResult(Boolean success)
@@ -87,5 +89,11 @@ public class MainViewController
       System.out.println("Invalid PlaningPoker_ID format.");
     }
 
+  }
+
+  public void catchCloseRequests()
+  {
+    Stage thisStage = (Stage) createPlanningPokerButton.getScene().getWindow();
+    mainViewModel.closeApplication(thisStage);
   }
 }

@@ -4,6 +4,7 @@ import DataTypes.User;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -11,7 +12,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class LoginServerModelImpl implements LoginServerModel, Runnable {
 
   private PropertyChangeSupport support;
-  private static LoginServerModel instance;
+  private volatile static LoginServerModel instance;
   private static final Lock lock = new ReentrantLock();
   private ArrayList<User> users;
 
@@ -62,6 +63,12 @@ public class LoginServerModelImpl implements LoginServerModel, Runnable {
     } else {
       return false;
     }
+  }
+
+  @Override public boolean logoutUser(String username, String password)
+  {
+    //TODO: Logout functionality is not yet implemented
+    return false;
   }
 
   private void addTestUsers() {

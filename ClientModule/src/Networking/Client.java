@@ -9,6 +9,8 @@ import DataTypes.User;
 public interface Client extends PropertyChangeSubject {
     void validateUser(String username, String password);
     void createUser(String username, String password);
+    void logoutUser(String username, String password);
+    void disconnectLocalClient();
     void userValidationFailed(String errorMessage);
     void userCreatedSuccessfully();
     void updateUser(User user);

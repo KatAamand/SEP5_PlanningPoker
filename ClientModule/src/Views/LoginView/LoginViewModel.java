@@ -1,6 +1,7 @@
 package Views.LoginView;
 
 import Application.Session;
+import Application.ViewFactory;
 import DataTypes.User;
 import Model.Login.LoginModel;
 import Views.ViewModel;
@@ -8,6 +9,7 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.control.Alert;
+import javafx.stage.Stage;
 
 import java.beans.PropertyChangeEvent;
 import java.util.function.Consumer;
@@ -159,5 +161,20 @@ public class LoginViewModel extends ViewModel {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    public void closeApplication(Stage currentStage)
+    {
+        currentStage.setOnCloseRequest(event -> {
+            // Consume the event to prevent the default close behavior:
+            event.consume();
+
+            // Logout and Unregister this client from the server:
+            if(Session.getCurrentUser() == null) {
+                loginModel.requestLogout(null, null);
+            } else {
+                loginModel.requestLogout(Session.getCurrentUser().getUsername(), Session.getCurrentUser().getPassword());
+            }
+        });
     }
 }

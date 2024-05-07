@@ -18,4 +18,5 @@ public interface LoginClientInterface extends Remote {
     void removePropertyChangeListener(PropertyChangeListener listener) throws RemoteException;
 
     void removePropertyChangeListener(String name, PropertyChangeListener listener) throws RemoteException;
+    void logoutUserFromServer(String username, String password) throws RemoteException;
 }

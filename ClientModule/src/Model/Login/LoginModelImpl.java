@@ -2,6 +2,7 @@ package Model.Login;
 
 import Application.ClientFactory;
 
+import Application.Session;
 import Networking.Client;
 import Networking.ClientInterfaces.LoginClientInterface;
 import javafx.application.Platform;
@@ -41,7 +42,7 @@ public class LoginModelImpl implements LoginModel
     clientConnection.createUser(username, password);
   }
 
-
+  @Override public void requestLogout(String username, String password) {clientConnection.logoutUser(username, password);}
 
   @Override public void addPropertyChangeListener(PropertyChangeListener listener)
   {

@@ -7,4 +7,5 @@ public interface LoginModel extends PropertyChangeSubject
 {
   void requestLogin(String username, String password);
   void requestCreateUser(String username, String password);
+  void requestLogout(String username, String password);
 }

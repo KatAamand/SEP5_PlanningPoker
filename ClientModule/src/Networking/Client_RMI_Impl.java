@@ -9,6 +9,7 @@ import DataTypes.User;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
+import java.rmi.NoSuchObjectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -62,6 +63,46 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
       throw new RuntimeException(e);
     }
     System.out.println("Client_RMI: user trying to create user");
+  }
+
+  @Override public void logoutUser(String username, String password)
+  {
+    //Check that the requested user is the local user before logging out (prevent local user from logging out other remote users):
+    if(Session.getCurrentUser() != null
+        && Session.getCurrentUser().getUsername().equals(username)
+        && Session.getCurrentUser().getUsername().equals(password)) {
+      try {
+        this.logoutUserFromServer(username, password);
+      } catch (RemoteException e) {
+        throw new RuntimeException();
+      }
+    }
+
+    //Disconnect the client:
+    this.disconnectLocalClient();
+  }
+
+
+  @Override public void disconnectLocalClient() {
+    try {
+      // Unregister the client from the server:
+      server.unRegisterClient(this);
+
+      // Unexport the client from the RMI:
+      UnicastRemoteObject.unexportObject(this, true);
+
+      System.out.println("Client_RMI: Local Client is disconnected");
+    } catch (RemoteException e) {
+      throw new RuntimeException();
+    }
+
+    // Shut down the client thread:
+    System.exit(0);
+  }
+
+
+  @Override public void logoutUserFromServer(String username, String password) throws RemoteException {
+      server.logoutUser(username, password);
   }
 
   @Override
@@ -191,7 +232,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
       }
     }
 
-    @Override public void addTaskToServer(Task task, String gameId) throws RemoteException {
+  @Override public void addTaskToServer(Task task, String gameId) throws RemoteException {
       server.addTask(task, gameId);
     }
 

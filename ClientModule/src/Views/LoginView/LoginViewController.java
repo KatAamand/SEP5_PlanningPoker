@@ -8,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 
@@ -29,6 +30,7 @@ public class LoginViewController {
     public void initialize() {
         loginViewModel.setOnLoginResult(this::onLoginResult);
         loginViewModel.setOnUserCreatedResult(this::onUserCreatedResult);
+        Platform.runLater(this::catchCloseRequests);
 
         // Binding properties
         usernameTextField.textProperty().bindBidirectional(loginViewModel.usernameProperty());
@@ -68,6 +70,12 @@ public class LoginViewController {
                 loginViewModel.showAlertBox("Brugeroprettelse fejlet", "Din bruger kan ikke oprettes, vent og prøv igen senere");
             }
         });
+    }
+
+    public void catchCloseRequests()
+    {
+        Stage thisStage = (Stage) loginButton.getScene().getWindow();
+        loginViewModel.closeApplication(thisStage);
     }
 
 

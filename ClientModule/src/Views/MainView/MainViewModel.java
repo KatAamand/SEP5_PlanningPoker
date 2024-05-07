@@ -4,6 +4,7 @@ import Application.ModelFactory;
 import Application.Session;
 import Model.MainView.MainModel;
 import javafx.application.Platform;
+import javafx.stage.Stage;
 
 import java.beans.PropertyChangeEvent;
 import java.rmi.RemoteException;
@@ -49,5 +50,28 @@ public class MainViewModel  {
 
     public void requestConnectPlanningPokerID(String planningPokerID) throws RemoteException {
         mainModel.requestConnectPlanningPoker(planningPokerID);
+    }
+
+    public void closeApplication(Stage currentStage)
+    {
+        currentStage.setOnCloseRequest(event -> {
+            // Consume the event to prevent the default close behavior:
+            event.consume();
+
+            // Logout and Unregister this client from the server:
+            if(Session.getCurrentUser() == null) {
+                try {
+                    ModelFactory.getInstance().getLoginModel().requestLogout(null, null);
+                } catch (RemoteException e) {
+                    throw new RuntimeException();
+                }
+            } else {
+                try {
+                    ModelFactory.getInstance().getLoginModel().requestLogout(Session.getCurrentUser().getUsername(), Session.getCurrentUser().getPassword());
+                } catch (RemoteException e) {
+                    throw new RuntimeException();
+                }
+            }
+        });
     }
 }

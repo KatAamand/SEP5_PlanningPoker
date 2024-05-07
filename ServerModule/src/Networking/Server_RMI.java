@@ -163,6 +163,13 @@ public class Server_RMI implements ServerConnection_RMI {
         }
     }
 
+    @Override public void logoutUser(String username, String password) throws RemoteException
+    {
+        //TODO: This feature is not implemented yet.
+        System.out.println("Server_RMI: Logging out user " + username);
+        loginServerModel.logoutUser(username, password);
+    }
+
     // Adding listeners to the client
     @Override
     public void registerClientListener(ClientConnection_RMI client) {
