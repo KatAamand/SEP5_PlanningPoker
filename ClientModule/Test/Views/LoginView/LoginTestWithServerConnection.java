@@ -32,7 +32,6 @@ class LoginTestWithServerConnection
   private static LoginViewController loginViewController;
   private static ClientConnection_RMI client;
   private static ServerConnection_RMI server;
-  private static Registry registry;
   private boolean runLaterExecuted = false;
   private static final int maxWaitingTicks = 1000;
   private static Thread serverThread;

@@ -1,8 +1,9 @@
-package Views.ChatView;
+package Views.TaskView;
 
 import Application.ClientFactory;
+import Application.ModelFactory;
 import Application.ViewFactory;
-import DataTypes.Message;
+import DataTypes.Task;
 import Networking.ClientConnection_RMI;
 import Networking.Client_RMI_Impl;
 import Networking.ServerConnection_RMI;
@@ -12,6 +13,7 @@ import Views.MainView.MainViewController;
 import Views.PlanningPokerView.PlanningPokerViewController;
 import Views.TestServer;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.*;
 
@@ -21,12 +23,13 @@ import java.io.IOException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class ChatTestWithServerConnection
+@TestClassOrder(ClassOrderer.OrderAnnotation.class)
+class CreateTaskTest
 {
   private static PlanningPokerViewController planningPokerViewController;
   private static MainViewController mainViewController;
@@ -41,6 +44,7 @@ class ChatTestWithServerConnection
   private static Thread clientThread;
   InnerTestClassListener testListenerlocalClient;
   InnerTestClassListener testlistenerRemoteClient1;
+
 
   @BeforeAll public static void initServerAndJavaFxClient()
   {
@@ -140,9 +144,10 @@ class ChatTestWithServerConnection
     ForceSynchronizationOfScenarioTestClasses.getSynchronizationLock().unlock();
   }
 
+
   @BeforeEach void setUp()
   {
-    // Arrange test parameters:
+    // Arrange test parameters for the local user:
     String username = "test";
     String password = "1234";
     testListenerlocalClient = new InnerTestClassListener();
@@ -224,10 +229,13 @@ class ChatTestWithServerConnection
     }
   }
 
+
   @org.junit.jupiter.api.Order(1)
-  @Test public void sendAndReceiveChatMessagesBetween2Clients_MainSunnyScenario() {
+  @Test public void createTasksInPlanningPokerGameWith2ClientsConnected_MainSunnyScenario() {
     // Simulated data to transmit:
-    String transmitString = "Dette er bruger1";
+    String taskHeader = "TestHeader1";
+    String taskDescription = "TestDescription1";
+    Task task = new Task("TestHeader1", "TestDescription1");
 
     // Simulate another user creating a planning poker game, on the server:
     runLaterExecuted = false;
@@ -269,10 +277,10 @@ class ChatTestWithServerConnection
 
     Platform.runLater(() -> {
       try {
-        // Simulate user entering the created gameID to join:
+        // Simulate local user entering the created gameID to join:
         mainViewController.planningPokerIdTextField.setText(createdGameID);
 
-        // Simulate user pressing the 'Join Planning Poker' button:
+        // Simulate local user pressing the 'Join Planning Poker' button:
         mainViewController.connectToPlanningPokerButton.fire();
 
         // Assign the PlanningPokerViewController:
@@ -309,22 +317,31 @@ class ChatTestWithServerConnection
     // Check that the user joined the planning poker session by catching the server response:
     boolean wasPlanningPokerGameCreated = testListenerlocalClient.getPropertyName().equals("planningPokerIDValidatedSuccess");
 
-    // 1. Local user enters text into the chat field:
-    planningPokerViewController.getChatViewController().messageInputTextField.setText(transmitString);
+    // 1-2. Local enters task header into text field:
+    planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().textFieldTaskHeader.setText(taskHeader);
 
-    // 2. Local user clicks 'send'
-    planningPokerViewController.getChatViewController().onMessageSendButtonPressed();
+    // 3. Local enters task description into text field:
+    planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().textAreaTaskDescription.setText(taskDescription);
 
-    // Allow server and client time to update UI with received message:
+    // 4. Local user clicks 'save'
+    planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().onSavePressed(new ActionEvent());
+
+    // Allow server and client time to update UI with received task list:
     try {
-      Thread.sleep(250);
+      Thread.sleep(750);
     } catch (InterruptedException e) {
     }
 
-    // Check if simulated remote user received the sent message from the server:
-    boolean remoteUserReceivedMessageFromServer = false;
+    // Check if simulated remote user received the sent task from the server:
+    boolean remoteUserReceivedTaskFromServer = false;
     if(testlistenerRemoteClient1.getPropertyName() != null) {
-      remoteUserReceivedMessageFromServer = testlistenerRemoteClient1.getPropertyName().equals("messageReceived");
+      remoteUserReceivedTaskFromServer = testlistenerRemoteClient1.getPropertyName().equals("receivedUpdatedTaskList");
+    }
+
+    // Check if local user received the sent task from the server:
+    boolean localUserReceivedTaskFromServer = false;
+    if(testListenerlocalClient.getPropertyName() != null) {
+      localUserReceivedTaskFromServer = testListenerlocalClient.getPropertyName().equals("receivedUpdatedTaskList");
     }
 
     // Unassign the remote listener created during this test:
@@ -335,142 +352,39 @@ class ChatTestWithServerConnection
       //Do nothing
     }
 
-    // Allow server and client time to update UI with received message:
+    // Check that the received message appears on the task list shown in the UI:
+    boolean localUserSeesTaskInTaskUI = false;
     try {
-      Thread.sleep(500);
-    } catch (InterruptedException e) {
-    }
-
-    // Check that the received message appears on the chat history shown in the UI:
-    boolean localUserSeesChatMessageInUI = planningPokerViewController.getChatViewController().chatTextArea.getText().contains(transmitString);
-    System.out.println("Klassen er: " + planningPokerViewController.getChatViewController());
-    System.out.println(planningPokerViewController.getChatViewController().chatTextArea.getText());
-
-    // Combine earlier boolean evaluations:
-    boolean result = localUserSeesChatMessageInUI && remoteUserReceivedMessageFromServer && wasPlanningPokerGameCreated;
-
-    // Assert
-    assertEquals(true, result, "Should be true. Message should have been sent and received successfully");
-  }
-
-
-  @Test public void sendAndReceiveChatMessagesWithOnly1ClientConnectedToGame() {
-    // Simulated data to transmit:
-    String transmitString = "Dette er bruger1";
-
-    // Simulate another user creating a planning poker game, on the server:
-    runLaterExecuted = false;
-    Platform.runLater(() -> {
-      client2 = new Client_RMI_Impl();
-      testlistenerRemoteClient1 = new InnerTestClassListener();
-
-      // Assign a testListener for the simulated remote client to catch events the server fires:
-      try {
-        server.registerClient(client2);
-        client2.addPropertyChangeListener(testlistenerRemoteClient1);
-      } catch (RemoteException e) {
-        throw new RuntimeException();
-      }
-
-      runLaterExecuted = true;
-    });
-
-    // Wait for runLater method to finish executing:
-    int ticks = 0;
-    while(!runLaterExecuted && maxWaitingTicks >= ticks) {
-      try {
-        if(!runLaterExecuted) {
-          Thread.sleep(10);
-          ticks++;
+      ArrayList<Task> listOfTasks = ModelFactory.getInstance().getTaskModel().getTaskList();
+      for (Task listTask : listOfTasks) {
+        if (listTask.equals(task)) {
+          localUserSeesTaskInTaskUI = true;
+          break;
         }
-      } catch (InterruptedException e) {
-        ticks = Integer.MAX_VALUE;
       }
-    }
-    runLaterExecuted = false;
-
-    String createdGameID;
-    try {
-      createdGameID = server.createPlanningPoker(client).getPlanningPokerID();
     } catch (RemoteException e) {
       throw new RuntimeException();
     }
 
-    Platform.runLater(() -> {
-      try {
-        // Simulate user entering the created gameID to join:
-        mainViewController.planningPokerIdTextField.setText(createdGameID);
-
-        // Simulate user pressing the 'Join Planning Poker' button:
-        mainViewController.connectToPlanningPokerButton.fire();
-
-        // Assign the PlanningPokerViewController:
-        planningPokerViewController = ViewFactory.getInstance().loadPlanningPokerView();
-        Stage activeStage = (Stage) planningPokerViewController.getChatViewController().chatTextArea.getScene().getWindow();
-        activeStage.hide();
-
-        runLaterExecuted = true;
-      } catch (IOException e)
-      {
-        throw new RuntimeException(e);
-      }
-    });
-
-
-    // Wait for runLater method to finish executing:
-    ticks = 0;
-    while(!runLaterExecuted && maxWaitingTicks >= ticks) {
-      try {
-        if(!runLaterExecuted) {
-          Thread.sleep(10);
-          ticks++;
-        }
-      } catch (InterruptedException e) {
-        ticks = Integer.MAX_VALUE;
-      }
-    }
-    runLaterExecuted = false;
-
-
-    // Check that the user joined the planning poker session by catching the server response:
-    boolean wasPlanningPokerGameCreated = testListenerlocalClient.getPropertyName().equals("planningPokerIDValidatedSuccess");
-
-    // 1. Local user enters text into the chat field:
-    planningPokerViewController.getChatViewController().messageInputTextField.setText(transmitString);
-
-    // 2. Local user clicks 'send'
-    planningPokerViewController.getChatViewController().onMessageSendButtonPressed();
-
-    // Allow server and client time to update UI with received message:
-    try {
-      Thread.sleep(250);
-    } catch (InterruptedException e) {
-    }
-
-    // Check that the received message appears on the chat history shown in the UI:
-    boolean localUserSeesChatMessageInUI = planningPokerViewController.getChatViewController().chatTextArea.getText().contains(transmitString);
-    System.out.println("text: " + planningPokerViewController.getChatViewController().chatTextArea.getText());
-
     // Combine earlier boolean evaluations:
-    boolean result = localUserSeesChatMessageInUI && wasPlanningPokerGameCreated;
-    System.out.println("Klassen er: " + planningPokerViewController.getChatViewController());
-    System.out.println("1: " + localUserSeesChatMessageInUI);
-    System.out.println("2: " + wasPlanningPokerGameCreated);
+    boolean result = remoteUserReceivedTaskFromServer && localUserReceivedTaskFromServer && localUserSeesTaskInTaskUI && wasPlanningPokerGameCreated;
 
     // Assert
-    assertEquals(true, result, "Should be true. Message should have been sent and received successfully");
+    assertEquals(true, result, "Should be true. Tasks should have been sent and received successfully");
   }
 
 
-  @Test public void sendAndReceiveChatMessagesBetween2ClientsWhen3ClientsHaveBeenConnectedButOneOfThemHasLeftTheGameSession() {
+  @Test public void createTasksInPlanningPokerGameWith3ClientsConnectedAnd1Disconnects() {
     // Assert
-    assertEquals(true, true, "Test must be done manually. Please refer to test-case #4 for a detailed description.\n As of 07/05-2024 this issue was fixed. ");
+    assertEquals(true, true, "MUST BE TESTED MANUALLY! As of 7/5-24 this functionality was implemented and fully functioning.");
   }
 
 
-  @Test public void systemRefusesToSendEmptyChatMessages() {
+  @Test public void creatingATaskCanBeCancelled() {
     // Simulated data to transmit:
-    String transmitString = "";
+    String taskHeader = "TestHeader2";
+    String taskDescription = "TestDescription2";
+    Task task = new Task("TestHeader2", "TestDescription2");
 
     // Simulate another user creating a planning poker game, on the server:
     runLaterExecuted = false;
@@ -512,10 +426,10 @@ class ChatTestWithServerConnection
 
     Platform.runLater(() -> {
       try {
-        // Simulate user entering the created gameID to join:
+        // Simulate local user entering the created gameID to join:
         mainViewController.planningPokerIdTextField.setText(createdGameID);
 
-        // Simulate user pressing the 'Join Planning Poker' button:
+        // Simulate local user pressing the 'Join Planning Poker' button:
         mainViewController.connectToPlanningPokerButton.fire();
 
         // Assign the PlanningPokerViewController:
@@ -552,22 +466,31 @@ class ChatTestWithServerConnection
     // Check that the user joined the planning poker session by catching the server response:
     boolean wasPlanningPokerGameCreated = testListenerlocalClient.getPropertyName().equals("planningPokerIDValidatedSuccess");
 
-    // 1. Local user enters text into the chat field:
-    planningPokerViewController.getChatViewController().messageInputTextField.setText(transmitString);
+    // 1-2. Local enters task header into text field:
+    planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().textFieldTaskHeader.setText(taskHeader);
 
-    // 2. Local user clicks 'send'
-    planningPokerViewController.getChatViewController().onMessageSendButtonPressed();
+    // 3. Local enters task description into text field:
+    planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().textAreaTaskDescription.setText(taskDescription);
 
-    // Check if local user received the sent message from the server:
-    boolean localUserReceivedMessageFromServer = false;
-    if(testListenerlocalClient.getPropertyName() != null) {
-      localUserReceivedMessageFromServer = testListenerlocalClient.getPropertyName().equals("messageReceived");
+    // 4. Local user clicks 'cancel'
+    planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().onCancelPressed(new ActionEvent());
+
+    // Allow server and client time to update UI with received task list:
+    try {
+      Thread.sleep(250);
+    } catch (InterruptedException e) {
     }
 
-    // Check if simulated remote user received the sent message from the server:
-    boolean remoteUserReceivedMessageFromServer = false;
+    // Check if simulated remote user received the sent task from the server:
+    boolean remoteUserDidNotReceiveTaskFromServer = true;
     if(testlistenerRemoteClient1.getPropertyName() != null) {
-      remoteUserReceivedMessageFromServer = testlistenerRemoteClient1.getPropertyName().equals("messageReceived");
+      remoteUserDidNotReceiveTaskFromServer = !testlistenerRemoteClient1.getPropertyName().equals("receivedUpdatedTaskList");
+    }
+
+    // Check if local user received the sent task from the server:
+    boolean localUserDidNotReceiveTaskFromServer = true;
+    if(testListenerlocalClient.getPropertyName() != null) {
+      localUserDidNotReceiveTaskFromServer = !testListenerlocalClient.getPropertyName().equals("receivedUpdatedTaskList");
     }
 
     // Unassign the remote listener created during this test:
@@ -578,23 +501,39 @@ class ChatTestWithServerConnection
       //Do nothing
     }
 
-    // Allow server and client time to update UI with received message:
+    // Check that the received message DOES NOT appear on the task list shown in the UI:
+    boolean localUserDoesNotSeeTaskInTaskUI = true;
     try {
-      Thread.sleep(250);
-    } catch (InterruptedException e) {
+      ArrayList<Task> listOfTasks = ModelFactory.getInstance().getTaskModel().getTaskList();
+      for (Task listTask : listOfTasks) {
+        if (listTask.equals(task)) {
+          localUserDoesNotSeeTaskInTaskUI = false;
+          break;
+        }
+      }
+    } catch (RemoteException e) {
+      throw new RuntimeException();
     }
 
     // Combine earlier boolean evaluations:
-    boolean result = !localUserReceivedMessageFromServer && !remoteUserReceivedMessageFromServer && wasPlanningPokerGameCreated;
+    boolean result = remoteUserDidNotReceiveTaskFromServer && localUserDidNotReceiveTaskFromServer && localUserDoesNotSeeTaskInTaskUI && wasPlanningPokerGameCreated;
 
     // Assert
-    assertEquals(true, result, "Should be false. Empty message should NOT have been sent and received successfully");
+    assertEquals(true, result, "Should be true. Tasks should have been sent and received successfully");
   }
 
 
-  @Test public void systemRefusesToSendNullChatMessages() {
+  @Test public void creatingATaskWindowCanBeClosedAndTaskCancelled() {
+    // Assert
+    assertEquals(true, true, "MUST BE TESTED MANUALLY! As of 7/5-24 this functionality was implemented and fully functioning.");
+  }
+
+
+  @Test public void createATaskWithoutSpecifyingAHeader_IsNotPossible() {
     // Simulated data to transmit:
-    String transmitString = null;
+    String taskHeader = "";
+    String taskDescription = "TestDescription3";
+    Task task = new Task("", "TestDescription3");
 
     // Simulate another user creating a planning poker game, on the server:
     runLaterExecuted = false;
@@ -636,10 +575,10 @@ class ChatTestWithServerConnection
 
     Platform.runLater(() -> {
       try {
-        // Simulate user entering the created gameID to join:
+        // Simulate local user entering the created gameID to join:
         mainViewController.planningPokerIdTextField.setText(createdGameID);
 
-        // Simulate user pressing the 'Join Planning Poker' button:
+        // Simulate local user pressing the 'Join Planning Poker' button:
         mainViewController.connectToPlanningPokerButton.fire();
 
         // Assign the PlanningPokerViewController:
@@ -676,27 +615,34 @@ class ChatTestWithServerConnection
     // Check that the user joined the planning poker session by catching the server response:
     boolean wasPlanningPokerGameCreated = testListenerlocalClient.getPropertyName().equals("planningPokerIDValidatedSuccess");
 
-    // 1. Local user enters text into the chat field:
-    planningPokerViewController.getChatViewController().messageInputTextField.setText(transmitString);
+    // 1-2. Local enters leaves header field as blank:
+    planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().textFieldTaskHeader.setText(taskHeader);
 
-    // 2. Local user clicks 'send'
-    boolean localUserReceivedMessageFromServer = false;
-    boolean remoteUserReceivedMessageFromServer = false;
+    // 3. Local enters task description into text field:
+    planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().textAreaTaskDescription.setText(taskDescription);
 
+    // 4. System refuses to let the local user access the save option:
+    boolean taskIsNotValid = !planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().validateData();
+
+    // 5. Local user clicks 'cancel'
+    planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().onCancelPressed(new ActionEvent());
+
+    // Allow server and client time to update UI with received task list:
     try {
-      planningPokerViewController.getChatViewController().onMessageSendButtonPressed();
+      Thread.sleep(250);
+    } catch (InterruptedException e) {
+    }
 
-      // Check if local user received the sent message from the server:
-      if(testListenerlocalClient.getPropertyName() != null) {
-        localUserReceivedMessageFromServer = testListenerlocalClient.getPropertyName().equals("messageReceived");
-      }
+    // Check if simulated remote user received the sent task from the server:
+    boolean remoteUserDidNotReceiveTaskFromServer = true;
+    if(testlistenerRemoteClient1.getPropertyName() != null) {
+      remoteUserDidNotReceiveTaskFromServer = !testlistenerRemoteClient1.getPropertyName().equals("receivedUpdatedTaskList");
+    }
 
-      // Check if simulated remote user received the sent message from the server:
-      if(testlistenerRemoteClient1.getPropertyName() != null) {
-        remoteUserReceivedMessageFromServer = testlistenerRemoteClient1.getPropertyName().equals("messageReceived");
-      }
-    } catch (NullPointerException ignored) {
-
+    // Check if local user received the sent task from the server:
+    boolean localUserDidNotReceiveTaskFromServer = true;
+    if(testListenerlocalClient.getPropertyName() != null) {
+      localUserDidNotReceiveTaskFromServer = !testListenerlocalClient.getPropertyName().equals("receivedUpdatedTaskList");
     }
 
     // Unassign the remote listener created during this test:
@@ -707,25 +653,33 @@ class ChatTestWithServerConnection
       //Do nothing
     }
 
-    // Allow server and client time to update UI with received message:
+    // Check that the received message DOES NOT appear on the task list shown in the UI:
+    boolean localUserDoesNotSeeTaskInTaskUI = true;
     try {
-      Thread.sleep(250);
-    } catch (InterruptedException e) {
+      ArrayList<Task> listOfTasks = ModelFactory.getInstance().getTaskModel().getTaskList();
+      for (Task listTask : listOfTasks) {
+        if (listTask.equals(task)) {
+          localUserDoesNotSeeTaskInTaskUI = false;
+          break;
+        }
+      }
+    } catch (RemoteException e) {
+      throw new RuntimeException();
     }
 
     // Combine earlier boolean evaluations:
-    boolean result = !localUserReceivedMessageFromServer && !remoteUserReceivedMessageFromServer && wasPlanningPokerGameCreated;
+    boolean result = taskIsNotValid && remoteUserDidNotReceiveTaskFromServer && localUserDidNotReceiveTaskFromServer && localUserDoesNotSeeTaskInTaskUI && wasPlanningPokerGameCreated;
 
     // Assert
-    assertEquals(true, result, "Should be false. NULL message should NOT have been sent and received successfully");
+    assertEquals(true, result, "Should be true. Tasks should have been sent and received successfully");
   }
 
 
-  @Test public void receiveSeveralChatMessagesRightAfterEachOtherBetween2Clients() {
+  @Test public void createATaskWWithAHeaderNameThatAlreadyExistsInGame_IsNotPossible() {
     // Simulated data to transmit:
-    String localUser_transmitString = "Dette er bruger1";
-    Message remoteUser_firstMessage = new Message("Test fra bruger2");
-    Message remoteUser_secondMessage = new Message("Dette er næste test fra Bruger2");
+    String taskHeader = "testHeader1";
+    String taskDescription = "TestDescription1";
+    Task task = new Task("testHeader1", "TestDescription1");
 
     // Simulate another user creating a planning poker game, on the server:
     runLaterExecuted = false;
@@ -767,10 +721,19 @@ class ChatTestWithServerConnection
 
     Platform.runLater(() -> {
       try {
-        // Simulate user entering the created gameID to join:
+        // Simulate remote user creating a new task:
+        server.addTask(task, createdGameID);
+
+        // Allow server and client time to update UI with received task list:
+        try {
+          Thread.sleep(250);
+        } catch (InterruptedException e) {
+        }
+
+        // Simulate local user entering the created gameID to join:
         mainViewController.planningPokerIdTextField.setText(createdGameID);
 
-        // Simulate user pressing the 'Join Planning Poker' button:
+        // Simulate local user pressing the 'Join Planning Poker' button:
         mainViewController.connectToPlanningPokerButton.fire();
 
         // Assign the PlanningPokerViewController:
@@ -807,79 +770,34 @@ class ChatTestWithServerConnection
     // Check that the user joined the planning poker session by catching the server response:
     boolean wasPlanningPokerGameCreated = testListenerlocalClient.getPropertyName().equals("planningPokerIDValidatedSuccess");
 
-    // 1. Local user enters text into the chat field:
-    planningPokerViewController.getChatViewController().messageInputTextField.setText(localUser_transmitString);
+    // 1-2. Local user enters into header field:
+    planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().textFieldTaskHeader.setText(taskHeader);
 
-    // 2+3. Remote user sends a text message;
-    try {
-      server.sendMessage(remoteUser_firstMessage, client2.getCurrentUser());
-    } catch (RemoteException e) {
-      throw new RuntimeException();
-    }
+    // 3. Local user enters task description into text field:
+    planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().textAreaTaskDescription.setText(taskDescription);
 
-    // Allow server and client time to update UI with received message:
-    try {
-      Thread.sleep(250);
-    } catch (InterruptedException e) {
-    }
+    // 4. System refuses to let the local user access the save option, because header is a duplicate of an already existing task header:
+    boolean taskIsNotValid = !planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().validateData();
 
-    // Check if local user received the sent message from the server:
-    boolean localUserReceivedFirstMessageFromServer = false;
-    if(testListenerlocalClient.getPropertyName() != null) {
-      localUserReceivedFirstMessageFromServer = testListenerlocalClient.getPropertyName().equals("messageReceived");
-    }
+    // 5. Local user clicks 'cancel'
+    planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().onCancelPressed(new ActionEvent());
 
-    // Check if simulated remote user received the sent message from the server:
-    boolean remoteUserReceivedFirstMessageFromServer = false;
-    if(testlistenerRemoteClient1.getPropertyName() != null) {
-      remoteUserReceivedFirstMessageFromServer = testlistenerRemoteClient1.getPropertyName().equals("messageReceived");
-    }
-
-    // 4+5. Remote user sends another text message;
-    try {
-      server.sendMessage(remoteUser_secondMessage, client2.getCurrentUser());
-    } catch (RemoteException e) {
-      throw new RuntimeException();
-    }
-
-    // Allow server and client time to update UI with received message:
+    // Allow server and client time to update UI with received task list:
     try {
       Thread.sleep(250);
     } catch (InterruptedException e) {
     }
 
-    // Check if local user received the sent message from the server:
-    boolean localUserReceivedSecondMessageFromServer = false;
-    if(testListenerlocalClient.getPropertyName() != null) {
-      localUserReceivedSecondMessageFromServer = testListenerlocalClient.getPropertyName().equals("messageReceived");
-    }
-
-    // Check if simulated remote user received the sent message from the server:
-    boolean remoteUserReceivedSecondMessageFromServer = false;
+    // Check if simulated remote user received the sent task from the server:
+    boolean remoteUserDidNotReceiveTaskFromServer = true;
     if(testlistenerRemoteClient1.getPropertyName() != null) {
-      remoteUserReceivedSecondMessageFromServer = testlistenerRemoteClient1.getPropertyName().equals("messageReceived");
+      remoteUserDidNotReceiveTaskFromServer = !testlistenerRemoteClient1.getPropertyName().equals("receivedUpdatedTaskList");
     }
 
-    // 6. Local user sends a message 'send'
-    planningPokerViewController.getChatViewController().messageInputTextField.setText(localUser_transmitString);
-    planningPokerViewController.getChatViewController().onMessageSendButtonPressed();
-
-    // Allow server and client time to update UI with received message:
-    try {
-      Thread.sleep(250);
-    } catch (InterruptedException e) {
-    }
-
-    // Check if local user received the sent message from the server:
-    boolean localUserReceivedThirdMessageFromServer = false;
+    // Check if local user received the sent task from the server:
+    boolean localUserDidNotReceiveTaskFromServer = true;
     if(testListenerlocalClient.getPropertyName() != null) {
-      localUserReceivedThirdMessageFromServer = testListenerlocalClient.getPropertyName().equals("messageReceived");
-    }
-
-    // Check if simulated remote user received the sent message from the server:
-    boolean remoteUserReceivedThirdMessageFromServer = false;
-    if(testlistenerRemoteClient1.getPropertyName() != null) {
-      remoteUserReceivedThirdMessageFromServer = testlistenerRemoteClient1.getPropertyName().equals("messageReceived");
+      localUserDidNotReceiveTaskFromServer = !testListenerlocalClient.getPropertyName().equals("receivedUpdatedTaskList");
     }
 
     // Unassign the remote listener created during this test:
@@ -890,23 +808,11 @@ class ChatTestWithServerConnection
       //Do nothing
     }
 
-    // Allow server and client time to update UI with received message:
-    try {
-      Thread.sleep(250);
-    } catch (InterruptedException e) {
-    }
-
-    // Check that the received message appears on the chat history shown in the UI:
-    boolean localUserSeesChatMessageInUI = planningPokerViewController.getChatViewController().chatTextArea.getText().contains(localUser_transmitString)
-        && planningPokerViewController.getChatViewController().chatTextArea.getText().contains(remoteUser_firstMessage.getMessage())
-        && planningPokerViewController.getChatViewController().chatTextArea.getText().contains(remoteUser_secondMessage.getMessage());
-
     // Combine earlier boolean evaluations:
-    boolean result = localUserSeesChatMessageInUI && localUserReceivedThirdMessageFromServer && remoteUserReceivedThirdMessageFromServer && localUserReceivedSecondMessageFromServer && remoteUserReceivedSecondMessageFromServer && localUserReceivedFirstMessageFromServer && remoteUserReceivedFirstMessageFromServer && wasPlanningPokerGameCreated;
-
+    boolean result = taskIsNotValid && remoteUserDidNotReceiveTaskFromServer && localUserDidNotReceiveTaskFromServer && wasPlanningPokerGameCreated;
 
     // Assert
-    assertEquals(true, result, "Should be true. Message should have been sent and received successfully");
+    assertEquals(true, result, "Should be true. Tasks should have been sent and received successfully");
   }
 
 

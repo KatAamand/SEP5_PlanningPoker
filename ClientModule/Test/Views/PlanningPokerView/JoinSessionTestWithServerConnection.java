@@ -38,7 +38,6 @@ class JoinSessionTestWithServerConnection
   private static LoginViewController loginViewController;
   private static ClientConnection_RMI client;
   private static ClientConnection_RMI client2;
-  private static Registry registry;
   private static ServerConnection_RMI server;
   private boolean runLaterExecuted = false;
   private boolean testUserLoggedIn = false;

@@ -11,9 +11,9 @@
 
 <VBox prefHeight="275.0" prefWidth="375.0" style="-fx-border-color: #82B366; -fx-background-color: #D5E8D4;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Views.TaskView.AddTaskViewController">
     <children>
-      <TextField fx:id="textFieldTaskHeader" onKeyPressed="#validateData" promptText="Enter task header/name" style="-fx-background-color: #E5FAE4;" />
+      <TextField fx:id="textFieldTaskHeader" onKeyReleased="#validateData" promptText="Enter task header/name" style="-fx-background-color: #E5FAE4;" />
       <Line endX="130.0" startX="-200.0" strokeMiterLimit="5.0" strokeWidth="0.5" />
-      <TextArea fx:id="textAreaTaskDescription" onKeyPressed="#validateData" prefHeight="200.0" prefWidth="200.0" promptText="Enter task description" style="-fx-background-color: #E5FAE4;" />
+      <TextArea fx:id="textAreaTaskDescription" onKeyReleased="#validateData" prefHeight="200.0" prefWidth="200.0" promptText="Enter task description" style="-fx-background-color: #E5FAE4;" />
       <VBox alignment="CENTER">
          <VBox.margin>
             <Insets top="10.0" />

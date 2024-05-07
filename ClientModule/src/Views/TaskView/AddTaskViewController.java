@@ -28,9 +28,9 @@ public class AddTaskViewController implements Initializable
     isEmbedded = false;
   }
 
-  @FXML public void validateData()
+  @FXML public boolean validateData()
   {
-    viewModel.validateData();
+    return viewModel.validateData();
   }
 
   @FXML public void onSavePressed(ActionEvent event)
