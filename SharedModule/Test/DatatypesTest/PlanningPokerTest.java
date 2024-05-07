@@ -100,6 +100,21 @@ class PlanningPokerTest
 
 
   /** Tests addConnectedUsers() & getConnectedUsers() method: Zombies: Many test */
+  @Test public void add2DuplicateConnectedUsers_IsNotPossible() {
+    // Arrange:
+    User user1 = new User("Test_User_One","Test_User_One_Password");
+
+    // Act:
+    planningPoker.addUserToSession(user1);
+    planningPoker.addUserToSession(user1);
+    boolean duplicateUserWasNotAddedToGame = planningPoker.getConnectedUsers().size() == 1;
+
+    // Assert:
+    assertTrue(duplicateUserWasNotAddedToGame);
+  }
+
+
+  /** Tests addConnectedUsers() & getConnectedUsers() method: Zombies: Many test */
   @Test public void addConnectedUsers_IsPossibleWith10Users() {
     // Arrange:
     User user1 = new User("Test_User_One","Test_User_Two_Password");

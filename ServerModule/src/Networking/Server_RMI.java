@@ -273,6 +273,7 @@ public class Server_RMI implements ServerConnection_RMI {
 
       if(planningPoker != null) {
           this.registerClientToGame(client, planningPoker.getPlanningPokerID());
+          this.mainServerModel.getPlanningPokerGame(planningPoker.getPlanningPokerID()).addUserToSession(client.getCurrentUser());
       }
       return planningPoker;
     }
@@ -283,6 +284,7 @@ public class Server_RMI implements ServerConnection_RMI {
 
         if(planningPoker != null) {
             this.registerClientToGame(client, planningPokerId);
+            this.mainServerModel.getPlanningPokerGame(planningPoker.getPlanningPokerID()).addUserToSession(client.getCurrentUser());
         }
         return planningPoker;
     }
