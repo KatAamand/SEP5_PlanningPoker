@@ -111,7 +111,7 @@ public class Server_RMI implements ServerConnection_RMI {
     @Override
     public void sendMessage(Message message, User sender) {
         try {
-            chatServerModel.receiveAndBroadcastMessage(message, sender, connectedClients);
+            chatServerModel.receiveAndBroadcastMessage(message, sender, connectedClients, this);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }

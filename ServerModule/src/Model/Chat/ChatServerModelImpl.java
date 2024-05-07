@@ -3,6 +3,7 @@ package Model.Chat;
 import DataTypes.Message;
 import DataTypes.User;
 import Networking.ClientConnection_RMI;
+import Networking.ServerConnection_RMI;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -59,19 +60,36 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
   }
 
   @Override
-  public void receiveAndBroadcastMessage(Message message, User sender, ArrayList<ClientConnection_RMI> connectedClients) throws RemoteException {
+  public void receiveAndBroadcastMessage(Message message, User sender, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) throws RemoteException {
     System.out.println(connectedClients);
     sender.getPlanningPoker().getChat().addMessage(message);
+
     for (ClientConnection_RMI client : connectedClients)
     {
+      // Run this in a try brackets:
+      Thread sendMessageThread = new Thread(() -> {
+        try {
           if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID().equals(sender.getPlanningPoker().getPlanningPokerID()))
           {
             client.receiveMessage(message);
             System.out.println("Sending message to: " + client);
           }
-      }
-
+        } catch (RemoteException e) {
+          if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
+            //Unregisters clients from the Server, who have lost connection in order to avoid further server errors.
+            try {
+              server.unRegisterClient(client);
+            } catch (RemoteException ex) {
+              throw new RuntimeException();
+            }
+          } else {
+            //Error is something else:
+            throw new RuntimeException();
+          }
+        }
+      });
+      sendMessageThread.setDaemon(true);
+      sendMessageThread.start();
+    }
   }
-
-
 }
