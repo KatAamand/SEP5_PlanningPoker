@@ -1,6 +1,7 @@
 package Model.Chat;
 
 import Application.ClientFactory;
+import DataTypes.Message;
 import DataTypes.User;
 import Networking.Client;
 import javafx.application.Platform;
@@ -47,7 +48,7 @@ public class ChatModelImpl implements ChatModel
   }
 
   @Override
-  public void sendMessage(String message, User sender) {
+  public void sendMessage(Message message, User sender) {
       clientConnection.sendMessage(message, sender);
   }
 

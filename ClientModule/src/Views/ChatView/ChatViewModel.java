@@ -1,6 +1,7 @@
 package Views.ChatView;
 
 import Application.Session;
+import DataTypes.Message;
 import Model.Chat.ChatModel;
 import Views.ViewModel;
 import javafx.beans.property.SimpleStringProperty;
@@ -17,8 +18,8 @@ public class ChatViewModel extends ViewModel {
         this.chatModel = chatModel;
 
         chatModel.addPropertyChangeListener("messageReceived", evt -> {
-            String message = (String) evt.getNewValue();
-            messageProperty().set(message);
+            Message message = (Message) evt.getNewValue();
+            messageProperty().set(message.getMessage());
         });
     }
 
@@ -29,7 +30,7 @@ public class ChatViewModel extends ViewModel {
 
     public void sendMessage(String message)
     {
-        chatModel.sendMessage(session.getCurrentUser().getUsername() + ": " + message, session.getCurrentUser());
+        chatModel.sendMessage(new Message(Session.getCurrentUser().getUsername() + ": " + message), session.getCurrentUser());
     }
 
 

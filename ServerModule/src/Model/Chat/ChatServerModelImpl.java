@@ -1,5 +1,6 @@
 package Model.Chat;
 
+import DataTypes.Message;
 import DataTypes.User;
 import Networking.ClientConnection_RMI;
 
@@ -58,8 +59,9 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
   }
 
   @Override
-  public void receiveAndBroadcastMessage(String message, User sender, ArrayList<ClientConnection_RMI> connectedClients) throws RemoteException {
+  public void receiveAndBroadcastMessage(Message message, User sender, ArrayList<ClientConnection_RMI> connectedClients) throws RemoteException {
     System.out.println(connectedClients);
+    sender.getPlanningPoker().getChat().addMessage(message);
     for (ClientConnection_RMI client : connectedClients)
     {
           if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID().equals(sender.getPlanningPoker().getPlanningPokerID()))
