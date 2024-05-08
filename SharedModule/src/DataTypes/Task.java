@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 public class Task implements Serializable
 {
+  private int taskID;
   private String name;
   private String description;
   private String finalEffort;
@@ -19,6 +20,31 @@ public class Task implements Serializable
     setFinalEffort("Undefined");
   }
 
+  public Task(int id, String taskName, String description) throws NullPointerException {
+    if(taskName == null || description == null) {
+      throw new NullPointerException();
+    }
+
+    setTaskID(id);
+    setTaskName(taskName);
+    setDescription(description);
+    setFinalEffort("Undefined");
+  }
+
+  public Task(int id, String header, String description, String finalEffort) {
+    this.taskID = id;
+    this.name = header;
+    this.description = description;
+    this.finalEffort = finalEffort;
+  }
+
+  public void setTaskID(int taskID) {
+    this.taskID = taskID;
+  }
+
+  public int getTaskID() {
+    return taskID;
+  }
 
   public void setTaskName(String name) throws NullPointerException {
     if(name == null) {
