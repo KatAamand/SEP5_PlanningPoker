@@ -6,13 +6,13 @@ import java.sql.SQLException;
 
 public abstract class DatabaseConnection
 {
-  private String user;
-  private String password;
-  private String url;
+  private final String user = "piefiptf";;
+  private final String password = "gFnqYKMTdno36JWY5Fv8ZBx4oBSgXxgM";
+  private final String url = "jdbc:postgresql://ella.db.elephantsql.com:5432/piefiptf/postgres?currentSchema=planningpokerschema=jdbc";
 
   public Connection getConnection() throws SQLException
   {
-    return DriverManager.getConnection("jdbc:postgresql://ella.db.elephantsql.com:5432/piefiptf","piefiptf","gFnqYKMTdno36JWY5Fv8ZBx4oBSgXxgM");
+    return DriverManager.getConnection(url,user,password);
   }
 
 }
