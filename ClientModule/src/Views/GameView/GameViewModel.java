@@ -1,7 +1,6 @@
 package Views.GameView;
 
 import Application.ModelFactory;
-import Application.Session;
 import DataTypes.Task;
 import Model.Game.GameModel;
 import javafx.beans.property.Property;
@@ -26,7 +25,7 @@ public class GameViewModel
     Task nextTask = gameModel.nextTaskToEvaluate();
 
     if(nextTask != null) {
-      taskHeaderPropertyProperty().setValue(nextTask.getTaskName());
+      taskHeaderPropertyProperty().setValue(nextTask.getTaskHeader());
       taskDescPropertyProperty().setValue(nextTask.getDescription());
     } else {
       taskHeaderPropertyProperty().setValue("No more tasks");

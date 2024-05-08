@@ -5,17 +5,17 @@ import java.io.Serializable;
 public class Task implements Serializable
 {
   private int taskID;
-  private String name;
+  private String header;
   private String description;
   private String finalEffort;
 
 
-  public Task(String taskName, String description) throws NullPointerException {
-    if(taskName == null || description == null) {
+  public Task(String taskHeader, String description) throws NullPointerException {
+    if(taskHeader == null || description == null) {
       throw new NullPointerException();
     }
 
-    setTaskName(taskName);
+    setTaskHeader(taskHeader);
     setDescription(description);
     setFinalEffort("Undefined");
   }
@@ -26,14 +26,14 @@ public class Task implements Serializable
     }
 
     setTaskID(id);
-    setTaskName(taskName);
+    setTaskHeader(taskName);
     setDescription(description);
     setFinalEffort("Undefined");
   }
 
   public Task(int id, String header, String description, String finalEffort) {
     this.taskID = id;
-    this.name = header;
+    this.header = header;
     this.description = description;
     this.finalEffort = finalEffort;
   }
@@ -46,15 +46,15 @@ public class Task implements Serializable
     return taskID;
   }
 
-  public void setTaskName(String name) throws NullPointerException {
-    if(name == null) {
+  public void setTaskHeader(String taskHeader) throws NullPointerException {
+    if(taskHeader == null) {
       throw new NullPointerException();
     }
-    this.name = name;
+    this.header = taskHeader;
   }
 
-  public String getTaskName() {
-    return this.name;
+  public String getTaskHeader() {
+    return this.header;
   }
 
 
@@ -97,7 +97,7 @@ public class Task implements Serializable
 
 
   public Task copy() {
-    Task copy = new Task(this.getTaskName(), this.getDescription());
+    Task copy = new Task(this.getTaskHeader(), this.getDescription());
     copy.setFinalEffort(this.getFinalEffort());
 
     return copy;
@@ -110,7 +110,7 @@ public class Task implements Serializable
       return false;
     }
     Task task = (Task) obj;
-    return (this.getTaskName().equals(task.getTaskName())
+    return (this.getTaskHeader().equals(task.getTaskHeader())
         && this.getDescription().equals(task.getDescription())
         && this.getFinalEffort().equals(task.getFinalEffort())
     );

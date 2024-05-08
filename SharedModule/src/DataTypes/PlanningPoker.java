@@ -61,8 +61,6 @@ public class PlanningPoker implements Serializable
     this.taskList = taskList;
   }
 
-  // Rasmus start her (Slet denne linje)
-
   public void setCurrentState(PlanningPokerState planningPokerState)
   {
     this.currentState = planningPokerState;

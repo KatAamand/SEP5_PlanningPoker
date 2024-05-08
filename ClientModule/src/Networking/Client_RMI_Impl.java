@@ -222,14 +222,22 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     }
   }
 
-    @Override public void addTask(Task task, String gameId) {
-      try {
-        this.addTaskToServer(task, gameId);
-      } catch (RemoteException e) {
-        //TODO: Add proper exception handling
-        e.printStackTrace();
-      }
+  @Override public void addTask(Task task, String gameId) {
+    try {
+      this.addTaskToServer(task, gameId);
+    } catch (RemoteException e) {
+      throw new RuntimeException();
     }
+  }
+
+  @Override public boolean removeTask(Task task, String gameId)
+  {
+    try {
+      return this.removeTaskFromServer(task, gameId);
+    } catch (RemoteException e) {
+      throw new RuntimeException();
+    }
+  }
 
   @Override
   public void sendUser() {
@@ -254,14 +262,18 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
       server.addTask(task, gameId);
     }
 
-    @Override
-    public void sendMessage(Message message, User sender) {
-        try {
-            server.sendMessage(message, sender);
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
-    }
+  @Override public boolean removeTaskFromServer(Task task, String gameId) throws RemoteException {
+    return server.removeTask(task, gameId);
+  }
+
+  @Override
+  public void sendMessage(Message message, User sender) {
+      try {
+          server.sendMessage(message, sender);
+      } catch (RemoteException e) {
+          throw new RuntimeException(e);
+      }
+  }
 
   @Override public void receiveMessage(Message message)
   {

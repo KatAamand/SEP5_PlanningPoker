@@ -5,13 +5,12 @@ import Application.ViewFactory;
 import Application.ViewModelFactory;
 import Networking.ClientConnection_RMI;
 import Networking.ServerConnection_RMI;
-import Networking.Server_RMI;
 import Views.ForceSynchronizationOfScenarioTestClasses;
 import Views.GameView.GameViewModel;
 import Views.LobbyView.LobbyViewController;
 import Views.LoginView.LoginViewController;
 import Views.MainView.MainViewController;
-import Views.TaskView.SingleTaskViewModel;
+import Views.TaskView.SingleTaskListViewModel;
 import Views.TaskView.TaskViewModel;
 import Views.TestServer;
 import javafx.application.Platform;
@@ -27,9 +26,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.rmi.*;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -331,10 +327,10 @@ class CreateSessionTestWithServerConnection
     }
 
     // Check if the added task is displayed in the taskView
-    ArrayList<SingleTaskViewModel> currentTasks = taskViewModel.getSingleTaskViewModelList();
+    ArrayList<SingleTaskListViewModel> currentTasks = taskViewModel.getSingleTaskViewModelList();
     boolean taskWasAddedAndDisplayed = false;
 
-    for (SingleTaskViewModel model : currentTasks) {
+    for (SingleTaskListViewModel model : currentTasks) {
       if(model.getTaskHeaderLabelProperty().getValue().contains(header) && model.getTaskDescProperty().getValue().equals(descript)) {
         taskWasAddedAndDisplayed = true;
       }
@@ -445,10 +441,10 @@ class CreateSessionTestWithServerConnection
     }
 
     // Check if the added task is displayed in the taskView
-    ArrayList<SingleTaskViewModel> currentTasks = taskViewModel.getSingleTaskViewModelList();
+    ArrayList<SingleTaskListViewModel> currentTasks = taskViewModel.getSingleTaskViewModelList();
     boolean taskWasAddedAndDisplayed = false;
 
-    for (SingleTaskViewModel model : currentTasks) {
+    for (SingleTaskListViewModel model : currentTasks) {
       if(model.getTaskHeaderLabelProperty().getValue().contains(header) && model.getTaskDescProperty().getValue().equals(descript)) {
         taskWasAddedAndDisplayed = true;
       }
@@ -576,10 +572,10 @@ class CreateSessionTestWithServerConnection
     }
 
     // Check if the added task is displayed in the taskView
-    ArrayList<SingleTaskViewModel> currentTasks = taskViewModel.getSingleTaskViewModelList();
+    ArrayList<SingleTaskListViewModel> currentTasks = taskViewModel.getSingleTaskViewModelList();
     boolean taskWasAddedAndDisplayed = false;
 
-    for (SingleTaskViewModel model : currentTasks) {
+    for (SingleTaskListViewModel model : currentTasks) {
       if(model.getTaskHeaderLabelProperty().getValue().contains(header) && model.getTaskDescProperty().getValue().equals(descript)) {
         taskWasAddedAndDisplayed = true;
       }

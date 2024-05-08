@@ -1,8 +1,12 @@
 package Model.Task;
 
 import DataTypes.Task;
+import Networking.ClientConnection_RMI;
+import Networking.ServerConnection_RMI;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.rmi.RemoteException;
 import java.sql.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,20 +50,19 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable{
     propertyChangeSupport.firePropertyChange("TaskDataChanged", null, gameId);
   }
 
-  @Override public void removeTask(Task task, String gameId) {
+  @Override public boolean removeTask(Task task, String gameId) {
     List<Task> taskList;
 
-    if(tasklistMap.get(gameId) != null) {
+    if (tasklistMap.get(gameId) != null) {
       taskList = tasklistMap.get(gameId);
-      if(taskList.remove(task)) {
+      if (taskList.remove(task)) {
         System.out.println("TaskServerModelImpl: Removed a task.");
-      } else {
-        System.out.println("TaskServerModelImpl: FAILED to a remove task.");
+        propertyChangeSupport.firePropertyChange("TaskDataChanged", null, gameId);
+        return true;
       }
-      propertyChangeSupport.firePropertyChange("TaskDataChanged", null, null);
-    } else {
-      //Do nothing. The passed task does not exist in the mapping.
     }
+    System.out.println("TaskServerModelImpl: FAILED to remove task.");
+    return false;
   }
 
 
@@ -75,6 +78,43 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable{
     return taskList;
   }
 
+  @Override public void broadcastTaskListUpdate(Map<String, ArrayList<ClientConnection_RMI>> clientList, ServerConnection_RMI server, String gameId)
+  {
+    ArrayList<ClientConnection_RMI> receivingClients = clientList.get(gameId);
+    if(receivingClients != null) {
+      for (int i = 0; i < receivingClients.size(); i++) {
+        if(receivingClients.get(i) == null) {
+          receivingClients.remove(i);
+        }
+      }
+
+      System.out.println("Server: Broadcasting changes to the task list to clients in game [" + gameId + "]");
+      for (ClientConnection_RMI client : receivingClients) {
+        //Create a new thread for each connected client, and then call the desired broadcast operation. This minimizes server lag/hanging due to clients who have connection issues.
+        Thread transmitThread = new Thread(() -> {
+          try {
+            client.loadTaskListFromServer(gameId);
+          }
+          catch (RemoteException e) {
+            if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
+              //Unregisters clients from the Game Server, who have lost connection in order to avoid further server errors.
+              try {
+                server.unRegisterClientFromGame(client, gameId);
+              } catch (RemoteException ex) {
+                throw new RuntimeException();
+              }
+            }
+            else {
+              //Error is something else:
+              throw new RuntimeException();
+            }
+          }
+        });
+        transmitThread.setDaemon(true);
+        transmitThread.start();
+      }
+    }
+  }
 
   public static TaskServerModel getInstance() {
     //Here we use the "Double-checked lock" principle to ensure proper synchronization.

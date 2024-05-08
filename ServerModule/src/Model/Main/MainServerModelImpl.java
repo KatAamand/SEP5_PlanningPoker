@@ -11,7 +11,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class MainServerModelImpl implements MainServerModel, Runnable
 {
 
-  private PropertyChangeSupport support;
+  private final PropertyChangeSupport support;
   private volatile static MainServerModel instance;
   private static final Lock lock = new ReentrantLock();
   private ArrayList<PlanningPoker> planningPokerGames;

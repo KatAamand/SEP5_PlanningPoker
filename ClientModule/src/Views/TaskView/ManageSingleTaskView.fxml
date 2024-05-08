@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Line?>
 
-<VBox prefHeight="275.0" prefWidth="375.0" style="-fx-border-color: #82B366; -fx-background-color: #D5E8D4;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Views.TaskView.AddTaskViewController">
+<VBox prefHeight="275.0" prefWidth="375.0" style="-fx-border-color: #82B366; -fx-background-color: #D5E8D4;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Views.TaskView.ManageSingleTaskViewController">
     <children>
       <TextField fx:id="textFieldTaskHeader" onKeyReleased="#validateData" promptText="Enter task header/name" style="-fx-background-color: #E5FAE4;" />
       <Line endX="130.0" startX="-200.0" strokeMiterLimit="5.0" strokeWidth="0.5" />
@@ -19,17 +19,18 @@
             <Insets top="10.0" />
          </VBox.margin>
          <children>
-            <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" spacing="200.0">
+            <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" spacing="100.0">
                <children>
-                  <Button mnemonicParsing="false" onAction="#onCancelPressed" text="Annuller">
+                  <Button mnemonicParsing="false" onAction="#onCancelPressed" text="Cancel">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="buttonSave" mnemonicParsing="false" onAction="#onSavePressed" text="Gem" />
+                  <Button fx:id="buttonDelete" mnemonicParsing="false" onAction="#onDeletePressed" text="Delete" />
+                  <Button fx:id="buttonSave" layoutX="296.0" layoutY="10.0" mnemonicParsing="false" onAction="#onSavePressed" text="Save" />
                </children>
             </HBox>
-             <Label fx:id="tasknameErrorLabel" textFill="#b52b2b" />
+             <Label fx:id="taskHeaderErrorLabel" textFill="#b52b2b" />
          </children>
       </VBox>
     </children>

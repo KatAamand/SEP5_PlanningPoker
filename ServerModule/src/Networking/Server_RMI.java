@@ -187,36 +187,7 @@ public class Server_RMI implements ServerConnection_RMI {
 
     /** Responsible for broadcasting taskListUpdates ONLY to the clients connected to the Game with the provided gameId */
     private void broadcastTaskListUpdate(String gameId) {
-        ArrayList<ClientConnection_RMI> receivingClients = clientsInEachGame.get(gameId);
-        if(receivingClients != null) {
-            for (int i = 0; i < receivingClients.size(); i++) {
-                if(receivingClients.get(i) == null) {
-                    receivingClients.remove(i);
-                }
-            }
-
-            System.out.println("Server: Broadcasting changes to the task list to clients in game [" + gameId + "]");
-            for (ClientConnection_RMI client : receivingClients) {
-                //Create a new thread for each connected client, and then call the desired broadcast operation. This minimizes server lag/hanging due to clients who have connection issues.
-                Thread transmitThread = new Thread(() -> {
-                    try {
-                        client.loadTaskListFromServer(gameId);
-                    }
-                    catch (RemoteException e) {
-                        if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
-                            //Unregisters clients from the Game Server, who have lost connection in order to avoid further server errors.
-                            unRegisterClientFromGame(client, gameId);
-                        }
-                        else {
-                            //Error is something else:
-                            throw new RuntimeException();
-                        }
-                    }
-                });
-                transmitThread.setDaemon(true);
-                transmitThread.start();
-            }
-        }
+        taskServerModel.broadcastTaskListUpdate(clientsInEachGame, this, gameId);
     }
 
     private void sendUpdateToClient(Runnable updateAction, ClientConnection_RMI client) {
@@ -254,10 +225,23 @@ public class Server_RMI implements ServerConnection_RMI {
 
     @Override public void addTask(Task task, String gameId) throws RemoteException
     {
+        // Create the task
         taskServerModel.addTask(task, gameId);
+
+        // Update the Planning Poker object, so that it now holds the proper list of assigned tasks.
         mainServerModel.getPlanningPokerGame(gameId).setTaskList(taskServerModel.getTaskList(gameId));
     }
 
+    @Override public boolean removeTask(Task task, String gameId) throws RemoteException
+    {
+        // Attempt to remove the task
+        boolean success = taskServerModel.removeTask(task, gameId);
+        if(success) {
+            // If successful, update the Planning Poker object, so that it now holds the proper list of assigned tasks.
+            mainServerModel.getPlanningPokerGame(gameId).setTaskList(taskServerModel.getTaskList(gameId));
+        }
+        return success;
+    }
 
     // MainView related requests
     @Override public boolean validatePlanningPokerID(String planningPokerID)
