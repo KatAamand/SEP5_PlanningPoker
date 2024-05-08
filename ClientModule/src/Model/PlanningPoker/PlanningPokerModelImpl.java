@@ -40,6 +40,15 @@ public class PlanningPokerModelImpl implements PlanningPokerModel
     return this.activePlanningPokerGame;
   }
 
+  @Override
+  public void removeUserFromSession() {
+      try {
+          ModelFactory.getInstance().getChatModel().removeUserFromSession();
+      } catch (RemoteException e) {
+          throw new RuntimeException(e);
+      }
+  }
+
   public void setActivePlanningPokerGame(PlanningPoker activeGame) {
     this.activePlanningPokerGame = activeGame;
     Session.setConnectedGameId(activePlanningPokerGame.getPlanningPokerID());

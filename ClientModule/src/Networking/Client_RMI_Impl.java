@@ -171,17 +171,6 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
         if(serverAnswer != null) {
           //PlanningPoker loaded successfully
           System.out.println("Opdatering fra server: PlanningPoker game has been loaded successfully");
-
-          Thread sendUserThread = new Thread(() -> {
-              try {
-                  Thread.sleep(3000);
-              } catch (InterruptedException e) {
-                  throw new RuntimeException(e);
-              }
-              sendUser();
-          });
-          sendUserThread.setDaemon(true);
-          sendUserThread.start();
           return serverAnswer;
         }
       } catch (RemoteException e) {
@@ -250,6 +239,16 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
           throw new RuntimeException(e);
       }
   }
+
+  @Override
+  public void removeUserFromSession() {
+      try {
+          server.removeUserFromSession(Session.getCurrentUser());
+      } catch (RemoteException e) {
+          throw new RuntimeException(e);
+      }
+  }
+
 
   @Override public void addTaskToServer(Task task, String gameId) throws RemoteException {
       server.addTask(task, gameId);

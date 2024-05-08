@@ -57,6 +57,11 @@ public class ChatModelImpl implements ChatModel
     clientConnection.sendUser();
   }
 
+  @Override
+  public void removeUserFromSession() {
+    clientConnection.removeUserFromSession();
+  }
+
 
   /** Assigns all the required listeners to the clientConnection allowing for Observable behavior betweeen these classes. */
   private void assignListeners()

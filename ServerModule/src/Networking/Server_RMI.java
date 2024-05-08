@@ -290,11 +290,14 @@ public class Server_RMI implements ServerConnection_RMI {
     }
 
     @Override
-    public void addConnectedUserToSession(User user) {
-        try {
-            chatServerModel.addAndBroadcastUserToSession(user, connectedClients, this);
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
+    public void addConnectedUserToSession(User user) throws RemoteException {
+            chatServerModel.addUserToSession(user, connectedClients, this);
     }
+
+    @Override
+    public void removeUserFromSession(User user) throws RemoteException {
+        chatServerModel.removeUserFromSession(user, connectedClients, this);
+    }
+
+
 }

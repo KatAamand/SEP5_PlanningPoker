@@ -13,4 +13,6 @@ public interface PlanningPokerModel
 
   User getLocalUser();
   PlanningPoker getActivePlanningPokerGame();
+
+    void removeUserFromSession();
 }

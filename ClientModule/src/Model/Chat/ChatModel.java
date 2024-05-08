@@ -11,4 +11,6 @@ public interface ChatModel extends PropertyChangeSubject {
   void sendMessage(Message message, User sender);
 
     void loadUsers();
+
+  void removeUserFromSession();
 }
