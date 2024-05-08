@@ -22,6 +22,7 @@ public interface Client extends PropertyChangeSubject {
     void loadTaskList(String gameId);
     void addTask(Task task, String gameId);
     boolean removeTask(Task task, String gameId);
+    boolean editTask(Task oldTask, Task newTask, String gameId);
     void sendUser();
     void removeUserFromSession();
 }

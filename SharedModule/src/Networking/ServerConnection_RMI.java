@@ -23,6 +23,7 @@ public interface ServerConnection_RMI extends Remote {
     ArrayList<Task> getTaskList(String gameId) throws RemoteException;
     void addTask(Task task, String gameId) throws RemoteException;
     boolean removeTask(Task task, String gameId) throws RemoteException;
+    boolean editTask(Task oldTask, Task newTask, String gameId) throws RemoteException;
     boolean validatePlanningPokerID(String planningPokerID) throws RemoteException;
     PlanningPoker createPlanningPoker(ClientConnection_RMI client) throws RemoteException;
     PlanningPoker loadPlanningPokerGame(String planningPokerId, ClientConnection_RMI client) throws RemoteException;

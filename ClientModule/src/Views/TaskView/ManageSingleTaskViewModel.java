@@ -120,26 +120,42 @@ public class ManageSingleTaskViewModel
 
 
   public void saveStandalone(ActionEvent event, boolean isUserEditing) {
+    boolean saveSuccessful;
+
     if(!isUserEditing) {
       taskModel.addTask(new Task(textFieldTaskHeaderProperty().getValue(), textAreaTaskDescriptionProperty().getValue()));
+      saveSuccessful = true;
     } else {
-      // TODO: Edit operations
+      Task newTask = new Task(textFieldTaskHeaderProperty().getValue(), textAreaTaskDescriptionProperty().getValue());
+      saveSuccessful = taskModel.editTask(uneditedTask, newTask);
     }
 
     //Close the popup window after adding the task to the system:
-    cancelStandalone(event);
+    if(saveSuccessful) {
+      cancelStandalone(event);
+    } else {
+      this.taskHeaderErrorMessage.setValue("ERROR: Failed to perform action");
+    }
   }
 
 
   public void saveEmbedded(ActionEvent event, boolean isUserEditing) {
+    boolean saveSuccessful;
+
     if(!isUserEditing) {
       taskModel.addTask(new Task(textFieldTaskHeaderProperty().getValue(), textAreaTaskDescriptionProperty().getValue()));
+      saveSuccessful = true;
     } else {
-      // TODO: Edit operations
+      Task newTask = new Task(textFieldTaskHeaderProperty().getValue(), textAreaTaskDescriptionProperty().getValue());
+      saveSuccessful = taskModel.editTask(uneditedTask, newTask);
     }
 
     //Reset the data entry fields:
-    cancelEmbedded(event, isUserEditing);
+    if(saveSuccessful) {
+      cancelEmbedded(event, isUserEditing);
+    } else {
+      this.taskHeaderErrorMessage.setValue("ERROR: Failed to perform action");
+    }
   }
 
 

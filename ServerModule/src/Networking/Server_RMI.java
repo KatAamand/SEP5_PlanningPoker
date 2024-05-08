@@ -49,7 +49,11 @@ public class Server_RMI implements ServerConnection_RMI {
 
     /** These listeners are local to this server, and listen for events inside the server models. <br> They are not intended for clients to call. */
     private void assignServerListeners() {
-        taskServerModel.addPropertyChangeListener("TaskDataChanged", (evt) -> broadcastTaskListUpdate((String) evt.getNewValue()));
+        taskServerModel.addPropertyChangeListener("TaskDataChanged", (evt) -> {
+            if(evt.getNewValue() != null) {
+                broadcastTaskListUpdate((String) evt.getNewValue());
+            }}
+        );
     }
 
 
@@ -225,7 +229,7 @@ public class Server_RMI implements ServerConnection_RMI {
 
     @Override public void addTask(Task task, String gameId) throws RemoteException
     {
-        // Create the task
+        // Create the task:
         taskServerModel.addTask(task, gameId);
 
         // Update the Planning Poker object, so that it now holds the proper list of assigned tasks.
@@ -234,8 +238,19 @@ public class Server_RMI implements ServerConnection_RMI {
 
     @Override public boolean removeTask(Task task, String gameId) throws RemoteException
     {
-        // Attempt to remove the task
+        // Attempt to remove the task:
         boolean success = taskServerModel.removeTask(task, gameId);
+        if(success) {
+            // If successful, update the Planning Poker object, so that it now holds the proper list of assigned tasks.
+            mainServerModel.getPlanningPokerGame(gameId).setTaskList(taskServerModel.getTaskList(gameId));
+        }
+        return success;
+    }
+
+    @Override public boolean editTask(Task oldTask, Task newTask, String gameId) throws RemoteException
+    {
+        // Attempt to edit the task:
+        boolean success = taskServerModel.editTask(oldTask, newTask, gameId);
         if(success) {
             // If successful, update the Planning Poker object, so that it now holds the proper list of assigned tasks.
             mainServerModel.getPlanningPokerGame(gameId).setTaskList(taskServerModel.getTaskList(gameId));

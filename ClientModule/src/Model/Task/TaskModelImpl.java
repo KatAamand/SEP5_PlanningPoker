@@ -40,7 +40,9 @@ public class TaskModelImpl extends PlanningPokerModelImpl implements TaskModel
   private void assignListeners() {
     clientConnection.addPropertyChangeListener("receivedUpdatedTaskList", evt -> {
       try {
-        setTaskList((ArrayList<Task>) evt.getNewValue());
+        if(evt.getNewValue() != null) {
+          setTaskList((ArrayList<Task>) evt.getNewValue());
+        }
       } catch (RemoteException e) {
         throw new RuntimeException();
       }
@@ -67,8 +69,8 @@ public class TaskModelImpl extends PlanningPokerModelImpl implements TaskModel
     return clientConnection.removeTask(task, super.getActivePlanningPokerGame().getPlanningPokerID());
   }
 
-  @Override public void editTask(Task uneditedTask, Task editedTask) {
-    // TODO
+  @Override public boolean editTask(Task uneditedTask, Task editedTask) {
+    return clientConnection.editTask(uneditedTask, editedTask, super.getActivePlanningPokerGame().getPlanningPokerID());
   }
 
   @Override public void addPropertyChangeListener(PropertyChangeListener listener) {
