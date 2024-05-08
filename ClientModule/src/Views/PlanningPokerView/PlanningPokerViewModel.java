@@ -61,6 +61,8 @@ public class PlanningPokerViewModel
 
       // TODO: Implement at network call to tell all connected users that the current game has been closed, as described in Use Case #2, ALT0 Sequence.
 
+      // TODO: Implement user leaving connected list User story #11
+
       // Redirect the local user to the main view:
       Platform.runLater(() -> {
           ViewFactory.getInstance().getMainViewStage().show();

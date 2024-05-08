@@ -33,8 +33,6 @@ public class ChatViewModel extends ViewModel {
             ObservableList<User> observableList = FXCollections.observableArrayList(users);
             userProperty().set(observableList);
         });
-
-        chatModel.loadUsers();
     }
 
     public StringProperty messageProperty()
@@ -44,6 +42,10 @@ public class ChatViewModel extends ViewModel {
     public ListProperty userProperty()
     {
         return users;
+    }
+    public void loadUsers()
+    {
+        chatModel.loadUsers();
     }
 
     public void sendMessage(String message)

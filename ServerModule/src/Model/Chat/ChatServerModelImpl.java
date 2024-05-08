@@ -100,7 +100,9 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
     for (ClientConnection_RMI client : connectedClients) {
       if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID().equals(user.getPlanningPoker().getPlanningPokerID()))
       {
-        usersConnectedToSession.add(client.getCurrentUser());
+        if (!usersConnectedToSession.contains(client.getCurrentUser())) {
+          usersConnectedToSession.add(client.getCurrentUser());
+        }
       }
     }
 

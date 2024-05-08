@@ -53,7 +53,6 @@ public class MainModelImpl implements MainModel
     if(clientConnection.validatePlanningPokerID(planningPokerID)) {
       ModelFactory.getInstance().getPlanningPokerModel().setActivePlanningPokerGame(clientConnection.loadPlanningPoker(planningPokerID));
       Session.getCurrentUser().setPlanningPoker(ModelFactory.getInstance().getPlanningPokerModel().getActivePlanningPokerGame());
-
     }
   }
 

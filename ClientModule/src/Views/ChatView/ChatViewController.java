@@ -39,6 +39,10 @@ public class ChatViewController {
         viewModel.userProperty().addListener((obs, oldMessage, newMessage) -> {
             onUserReceived((ObservableList<User>) newMessage);
         });
+
+        Platform.runLater(() -> {
+        viewModel.loadUsers();
+        });
     }
 
     public void onMessageRecieved(String message)
