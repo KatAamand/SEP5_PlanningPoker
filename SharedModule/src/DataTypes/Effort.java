@@ -2,12 +2,20 @@ package DataTypes;
 
 public class Effort
 {
-  private int effortValue;
-  private int imgPath;
+  private String effortValue;
+  private String imgPath;
 
-  public Effort(int effortValue, int imgPath)
+  public Effort(String effortValue, String imgPath)
   {
     this.effortValue = effortValue;
     this.imgPath = imgPath;
+  }
+
+  public String getEffortValue() {
+    return effortValue;
+  }
+
+  public String getImgPath() {
+    return imgPath;
   }
 }
