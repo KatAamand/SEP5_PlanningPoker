@@ -1,11 +1,10 @@
 package Database.Effort;
 
 import DataTypes.Effort;
+import DataTypes.User;
 import Database.Connection.DatabaseConnection;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class EffortDAOImpl extends DatabaseConnection implements EffortDAO
 {
@@ -23,9 +22,21 @@ public class EffortDAOImpl extends DatabaseConnection implements EffortDAO
     return instance;
   }
 
-  @Override public Effort read() throws SQLException
+  @Override public Effort readByEffort(String effort) throws SQLException
   {
-    return null;
+    try (Connection connection = getConnection()) {
+      PreparedStatement statement = connection.prepareStatement(
+          "SELECT value, imagepath FROM Effort WHERE value = ?");
+      statement.setString(1, effort);
+      ResultSet resultSet = statement.executeQuery();
+      if (resultSet.next()) {
+        String retrievedEffortValue = resultSet.getString("value");
+        String retrievedImgPath = resultSet.getString("imagepath");
+        return new Effort(retrievedEffortValue, retrievedImgPath);
+      } else {
+        return null;
+      }
+    }
   }
 
   @Override public Connection getConnection() throws SQLException

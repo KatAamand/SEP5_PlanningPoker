@@ -6,5 +6,5 @@ import java.sql.SQLException;
 
 public interface EffortDAO
 {
-  Effort read() throws SQLException;
+  Effort readByEffort(String effort) throws SQLException;
 }
