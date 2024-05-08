@@ -2,8 +2,10 @@ package Database.PlanningPoker;
 
 import DataTypes.PlanningPoker;
 
+import java.sql.SQLException;
+
 public interface PlanningPokerDAO
 {
-  PlanningPoker create();
-  PlanningPoker readByPlanningPoker(int id);
+  PlanningPoker create() throws SQLException;
+  PlanningPoker readByPlanningPoker(int planningPokerid) throws SQLException;
 }
