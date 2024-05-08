@@ -18,4 +18,5 @@ public interface TaskClientInterface extends Remote
 
   void loadTaskListFromServer(String gameId) throws RemoteException;
   void addTaskToServer(Task task, String gameId) throws RemoteException;
+  boolean removeTaskFromServer(Task task, String gameId) throws RemoteException;
 }

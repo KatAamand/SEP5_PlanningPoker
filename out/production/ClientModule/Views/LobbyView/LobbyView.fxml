@@ -27,7 +27,7 @@
                <children>
                   <VBox fx:id="addTaskWrapper" prefHeight="491.0" prefWidth="425.0">
                      <children>
-                        <fx:include fx:id="addTask" source="../TaskView/AddTaskView.fxml" />
+                        <fx:include fx:id="addTask" source="../TaskView/ManageSingleTaskView.fxml" />
                      </children>
                      <VBox.margin>
                         <Insets />

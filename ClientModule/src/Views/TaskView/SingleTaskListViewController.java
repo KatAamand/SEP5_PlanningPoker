@@ -1,26 +1,29 @@
 package Views.TaskView;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 
-public class SingleTaskViewController
+public class SingleTaskListViewController
 {
   @FXML private Label taskHeaderLabel;
   @FXML private Label taskDescLabel;
+  @FXML private VBox sourceVBox;
   private int rowId;
-  private SingleTaskViewModel viewModel;
+  private SingleTaskListViewModel viewModel;
 
 
-  public SingleTaskViewController() {
+  public SingleTaskListViewController() {
     //Does nothing at the moment
   }
 
 
-  public void initialize(int rowId, SingleTaskViewModel viewModel) {
+  public void initialize(int rowId, SingleTaskListViewModel viewModel) {
     setRowId(rowId);
     this.viewModel = viewModel;
+    Platform.runLater(() -> this.viewModel.setCurrentSource(sourceVBox));
 
     //Assign the necessary property bindings:
     assignBindings();

@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER_LEFT" onMouseClicked="#onTaskSelected" onMouseEntered="#onMouseEntered" onMouseExited="#onMouseExited" prefHeight="80.0" prefWidth="142.0" style="-fx-border-color: #82B366; -fx-background-color: #D5E8D4;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Views.TaskView.SingleTaskViewController">
+<VBox fx:id="sourceVBox" alignment="CENTER_LEFT" onMouseClicked="#onTaskSelected" onMouseEntered="#onMouseEntered" onMouseExited="#onMouseExited" prefHeight="80.0" prefWidth="142.0" style="-fx-border-color: #82B366; -fx-background-color: #D5E8D4;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Views.TaskView.SingleTaskListViewController">
    <children>
       <Label fx:id="taskHeaderLabel" text="taskName">
          <font>

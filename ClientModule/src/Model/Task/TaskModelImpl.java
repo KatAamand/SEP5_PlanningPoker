@@ -63,6 +63,13 @@ public class TaskModelImpl extends PlanningPokerModelImpl implements TaskModel
     clientConnection.addTask(task, super.getActivePlanningPokerGame().getPlanningPokerID());
   }
 
+  @Override public boolean removeTask(Task task) {
+    return clientConnection.removeTask(task, super.getActivePlanningPokerGame().getPlanningPokerID());
+  }
+
+  @Override public void editTask(Task uneditedTask, Task editedTask) {
+    // TODO
+  }
 
   @Override public void addPropertyChangeListener(PropertyChangeListener listener) {
     propertyChangeSupport.addPropertyChangeListener(listener);

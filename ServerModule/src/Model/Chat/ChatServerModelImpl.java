@@ -17,12 +17,14 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
   private PropertyChangeSupport propertyChangeSupport;
   private static ChatServerModel instance;
   private static final Lock lock = new ReentrantLock();
+  private ArrayList<User> usersConnectedToSession;
 
 
 
   private ChatServerModelImpl()
   {
     //TODO
+    usersConnectedToSession = new ArrayList<>();
   }
 
   public static ChatServerModel getInstance()
@@ -94,9 +96,8 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
   }
 
   @Override
-  public void addAndBroadcastUserToSession(User user, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) throws RemoteException {
+  public void addUserToSession(User user, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) throws RemoteException {
 
-    ArrayList<User> usersConnectedToSession = new ArrayList<>();
     for (ClientConnection_RMI client : connectedClients) {
       if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID().equals(user.getPlanningPoker().getPlanningPokerID()))
       {
@@ -105,31 +106,47 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
         }
       }
     }
+    broadcastUsers(user, connectedClients, server);
+  }
 
+  @Override
+  public void broadcastUsers(User user, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) throws RemoteException {
     for (ClientConnection_RMI client : connectedClients) {
       Thread sendUserThread = new Thread(() -> {
-          try {
-              if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID().equals(user.getPlanningPoker().getPlanningPokerID()))
-              {
-                System.out.println("Sending user to client");
-                client.receiveUser(usersConnectedToSession);
-              }
-          } catch (RemoteException e) {
-            if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
-              //Unregisters clients from the Server, who have lost connection in order to avoid further server errors.
-              try {
-                server.unRegisterClient(client);
-              } catch (RemoteException ex) {
-                throw new RuntimeException();
-              }
-            } else {
-              //Error is something else:
+        try {
+          if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID().equals(user.getPlanningPoker().getPlanningPokerID()))
+          {
+            System.out.println("Sending user to client");
+            client.receiveUser(usersConnectedToSession);
+          }
+        } catch (RemoteException e) {
+          if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
+            //Unregisters clients from the Server, who have lost connection in order to avoid further server errors.
+            try {
+              server.unRegisterClient(client);
+            } catch (RemoteException ex) {
               throw new RuntimeException();
             }
+          } else {
+            //Error is something else:
+            throw new RuntimeException();
           }
+        }
       });
       sendUserThread.setDaemon(true);
       sendUserThread.start();
     }
   }
+
+  @Override
+  public void removeUserFromSession(User user, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) throws RemoteException {
+    if (usersConnectedToSession.contains(user))
+    {
+      usersConnectedToSession.remove(user);
+      broadcastUsers(user, connectedClients, server);
+    }
+
+  }
+
+
 }

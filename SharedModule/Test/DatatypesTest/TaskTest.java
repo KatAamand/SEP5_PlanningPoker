@@ -42,7 +42,7 @@ class TaskTest {
         Task task = new Task(header, description);
 
         // Assert
-        boolean headerIsEqualToArgument = task.getTaskName().equals(header);
+        boolean headerIsEqualToArgument = task.getTaskHeader().equals(header);
         boolean descriptIsEqualToArgument = task.getDescription().equals(description);
         boolean result = headerIsEqualToArgument && descriptIsEqualToArgument;
 
@@ -58,7 +58,7 @@ class TaskTest {
 
         // Act & Assert:
         Task task = new Task("", "");
-        assertThrows(NullPointerException.class, () -> task.setTaskName(header));
+        assertThrows(NullPointerException.class, () -> task.setTaskHeader(header));
     }
 
 
@@ -70,10 +70,10 @@ class TaskTest {
 
         // Act:
         Task task = new Task("", "");
-        task.setTaskName(header);
+        task.setTaskHeader(header);
 
         // Assert:
-        assertEquals(header, task.getTaskName());
+        assertEquals(header, task.getTaskHeader());
     }
 
 

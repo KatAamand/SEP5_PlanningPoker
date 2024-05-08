@@ -2,7 +2,7 @@ package Views.LobbyView;
 
 import Application.ViewModelFactory;
 import Views.PlanningPokerView.PlanningPokerViewController;
-import Views.TaskView.AddTaskViewController;
+import Views.TaskView.ManageSingleTaskViewController;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -18,7 +18,7 @@ public class LobbyViewController implements Initializable
   @FXML private VBox addTaskWrapper;
   @FXML private Label titleLabel;
   @FXML private VBox addTask;
-  @FXML private AddTaskViewController addTaskController;
+  @FXML private ManageSingleTaskViewController addTaskController;
   @FXML private Button startGameButton;
 
   private LobbyViewModel lobbyViewModel;
@@ -40,7 +40,7 @@ public class LobbyViewController implements Initializable
     startGameButton.disableProperty().bind(lobbyViewModel.isTaskListEmptyProperty());
   }
 
-  public AddTaskViewController getEmbeddedAddTaskViewController() {
+  public ManageSingleTaskViewController getEmbeddedAddTaskViewController() {
     return this.addTaskController;
   }
 
