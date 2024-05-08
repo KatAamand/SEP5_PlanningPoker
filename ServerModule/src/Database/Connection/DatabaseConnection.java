@@ -8,7 +8,7 @@ public abstract class DatabaseConnection
 {
   private final String user = "piefiptf";;
   private final String password = "gFnqYKMTdno36JWY5Fv8ZBx4oBSgXxgM";
-  private final String url = "jdbc:postgresql://ella.db.elephantsql.com:5432/piefiptf/postgres?currentSchema=planningpokerschema=jdbc";
+  private final String url = "jdbc:postgresql://ella.db.elephantsql.com:5432/piefiptf?currentSchema=planningpokerschema";
 
   public Connection getConnection() throws SQLException
   {
