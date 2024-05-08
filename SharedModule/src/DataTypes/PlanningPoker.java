@@ -27,6 +27,15 @@ public class PlanningPoker implements Serializable
     setPlanningPokerID(planningPokerID);
   }
 
+  public PlanningPoker(String planningPokerId)
+  {
+    connectedUsers = new ArrayList<>();
+    chat = new Chat();
+    taskList = new ArrayList<>();
+    generatePlanningPokerID();
+    setPlanningPokerID(planningPokerID);
+  }
+
   public Chat getChat()
   {
     return chat;

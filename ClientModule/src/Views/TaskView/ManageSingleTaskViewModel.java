@@ -77,6 +77,7 @@ public class ManageSingleTaskViewModel
         if(!isUserEditing) {
           // If we are creating an entirely new task, this is run.
           taskHeaderErrorMessage.set("Task already exists");
+          hideDeleteButton();
           disableSaveButton();
           isValid = false;
         } else {

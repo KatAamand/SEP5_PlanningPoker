@@ -51,7 +51,7 @@ public class TaskDAOImpl extends DatabaseConnection implements TaskDAO {
     public void update(Task task) throws SQLException {
         try (Connection connection = getConnection()) {
             PreparedStatement statement = connection.prepareStatement("UPDATE task SET header = ?, \"desc\" = ? WHERE taskid = ?");
-            statement.setString(1, task.getTaskName());
+            statement.setString(1, task.getTaskHeader());
             statement.setString(2, task.getDescription());
             statement.setInt(3, task.getTaskID());
             statement.executeUpdate();

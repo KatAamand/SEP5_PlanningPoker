@@ -87,7 +87,7 @@ public class ManageSingleTaskViewController implements Initializable
       manageSingleTaskViewModel = new ManageSingleTaskViewModel(buttonSave, buttonDelete, isUserEditing);
 
       Platform.runLater(() -> {
-        if(this.isEmbedded) {
+        if(this.isEmbedded || !this.isUserEditing) {
           manageSingleTaskViewModel.hideDeleteButton();
         }
       });
