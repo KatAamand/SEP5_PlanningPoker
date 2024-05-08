@@ -5,10 +5,7 @@ import Database.Connection.DatabaseConnection;
 import Database.Effort.EffortDAO;
 import Database.Effort.EffortDAOImpl;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class UserDAOImpl extends DatabaseConnection implements UserDAO
 {
@@ -44,10 +41,25 @@ public class UserDAOImpl extends DatabaseConnection implements UserDAO
 
   }
 
+
   @Override public User readByLoginInfo(String username, String password)
       throws SQLException
   {
-    return null;
+    try (Connection connection = getConnection())
+    {
+      PreparedStatement statement = connection.prepareStatement(
+          "SELECT * FROM USER WHERE username = ? AND password = ?");
+      statement.setString(1, username);
+      statement.setString(2, password);
+      ResultSet resultSet = statement.executeQuery();
+      if (resultSet.next()) {
+        String retrievedUsername = resultSet.getString("username");
+        String retrievedPassword = resultSet.getString("password");
+        return new User(retrievedUsername, retrievedPassword);
+      } else {
+        return null;
+      }
+    }
   }
 
   @Override public Connection getConnection() throws SQLException
