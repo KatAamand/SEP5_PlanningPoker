@@ -1,9 +1,6 @@
 package Networking;
 
-import DataTypes.Message;
-import DataTypes.PlanningPoker;
-import DataTypes.Task;
-import DataTypes.User;
+import DataTypes.*;
 import Model.Chat.ChatServerModel;
 import Model.Chat.ChatServerModelImpl;
 import Model.Game.GameServerModel;
@@ -299,4 +296,10 @@ public class Server_RMI implements ServerConnection_RMI {
     }
 
 
+
+    // Game related requests
+    @Override public ArrayList<Effort> getEffortList() throws RemoteException
+    {
+        return gameServerModel.getEfforts();
+    }
 }

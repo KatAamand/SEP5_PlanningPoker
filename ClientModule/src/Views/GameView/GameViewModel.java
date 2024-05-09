@@ -1,12 +1,16 @@
 package Views.GameView;
 
 import Application.ModelFactory;
+import Application.Session;
+import DataTypes.Effort;
 import DataTypes.Task;
 import Model.Game.GameModel;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameViewModel
 {
@@ -41,5 +45,9 @@ public class GameViewModel
   public Property<String> taskDescPropertyProperty()
   {
     return taskDescProperty;
+  }
+
+  public ArrayList<Effort> getEfforts() {
+    return gameModel.getEfforts();
   }
 }

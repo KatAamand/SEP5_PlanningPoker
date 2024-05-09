@@ -1,9 +1,6 @@
 package Networking;
 
-import DataTypes.Message;
-import DataTypes.PlanningPoker;
-import DataTypes.Task;
-import DataTypes.User;
+import DataTypes.*;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -28,5 +25,6 @@ public interface ServerConnection_RMI extends Remote {
     PlanningPoker createPlanningPoker(ClientConnection_RMI client) throws RemoteException;
     PlanningPoker loadPlanningPokerGame(String planningPokerId, ClientConnection_RMI client) throws RemoteException;
     void addConnectedUserToSession(User user) throws RemoteException;
+    ArrayList<Effort> getEffortList() throws RemoteException;
     void removeUserFromSession(User user) throws RemoteException;
 }
