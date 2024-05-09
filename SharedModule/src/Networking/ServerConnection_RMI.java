@@ -27,5 +27,4 @@ public interface ServerConnection_RMI extends Remote {
     void addConnectedUserToSession(User user) throws RemoteException;
     ArrayList<Effort> getEffortList() throws RemoteException;
     void removeUserFromSession(User user) throws RemoteException;
-    ArrayList<Effort> getEffortList() throws RemoteException;
 }
