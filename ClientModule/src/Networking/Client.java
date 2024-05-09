@@ -1,10 +1,9 @@
 package Networking;
 
-import DataTypes.Message;
-import DataTypes.PlanningPoker;
-import DataTypes.Task;
+import DataTypes.*;
 import Util.PropertyChangeSubject;
-import DataTypes.User;
+
+import java.util.ArrayList;
 
 public interface Client extends PropertyChangeSubject {
     void validateUser(String username, String password);
@@ -22,6 +21,8 @@ public interface Client extends PropertyChangeSubject {
     void loadTaskList(String gameId);
     void addTask(Task task, String gameId);
     boolean removeTask(Task task, String gameId);
+    boolean editTask(Task oldTask, Task newTask, String gameId);
     void sendUser();
     void removeUserFromSession();
+    ArrayList<Effort> getEffortList();
 }

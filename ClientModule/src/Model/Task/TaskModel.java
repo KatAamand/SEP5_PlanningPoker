@@ -16,5 +16,5 @@ public interface TaskModel extends PropertyChangeSubject
 
   void addTask(Task task);
   boolean removeTask(Task task);
-  void editTask(Task uneditedTask, Task editedTask);
+  boolean editTask(Task uneditedTask, Task editedTask);
 }

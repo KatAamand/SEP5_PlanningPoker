@@ -6,6 +6,7 @@ import Database.Effort.EffortDAO;
 import Database.Effort.EffortDAOImpl;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class UserDAOImpl extends DatabaseConnection implements UserDAO
 {
@@ -32,7 +33,7 @@ public class UserDAOImpl extends DatabaseConnection implements UserDAO
 
     {
       PreparedStatement statement = connection.prepareStatement(
-          "insert into User(username, password) VALUES (?,?);");
+          "insert into \"user\"(username, password) VALUES (?,?);");
       statement.setString(1, username);
       statement.setString(2, password);
       statement.executeUpdate();
@@ -41,14 +42,13 @@ public class UserDAOImpl extends DatabaseConnection implements UserDAO
 
   }
 
-
   @Override public User readByLoginInfo(String username, String password)
       throws SQLException
   {
     try (Connection connection = getConnection())
     {
       PreparedStatement statement = connection.prepareStatement(
-          "SELECT * FROM USER WHERE username = ? AND password = ?");
+          "SELECT * FROM \"user\" WHERE username = ? AND password = ?");
       statement.setString(1, username);
       statement.setString(2, password);
       ResultSet resultSet = statement.executeQuery();
@@ -59,6 +59,21 @@ public class UserDAOImpl extends DatabaseConnection implements UserDAO
       } else {
         return null;
       }
+    }
+  }
+
+  @Override
+  public ArrayList<User> getAllUsers() throws SQLException {
+    try (Connection connection = getConnection()) {
+      PreparedStatement statement = connection.prepareStatement("SELECT * FROM \"user\"");
+      ResultSet resultSet = statement.executeQuery();
+      ArrayList<User> users = new ArrayList<>();
+      while (resultSet.next()) {
+        String username = resultSet.getString("username");
+        String password = resultSet.getString("password");
+        users.add(new User(username, password));
+      }
+      return users;
     }
   }
 

@@ -8,9 +8,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="768.0" prefWidth="225.0" style="-fx-background-color: #D5E8D4;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Views.TaskView.TaskViewController">
+<VBox prefHeight="760.0" prefWidth="200.0" style="-fx-background-color: #D5E8D4;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Views.TaskView.TaskViewController">
    <children>
-      <VBox alignment="CENTER_LEFT" prefHeight="60.0" prefWidth="170.0" style="-fx-background-color: #DAE8FC;">
+      <VBox alignment="CENTER_LEFT" prefHeight="60.0" style="-fx-background-color: #DAE8FC;">
          <children>
             <HBox prefHeight="22.0" prefWidth="150.0" spacing="10.0">
                <children>
@@ -35,11 +35,11 @@
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </padding>
       </VBox>
-      <VBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="170.0" style="-fx-background-color: #FFE6CC;">
+      <VBox alignment="CENTER_LEFT" prefHeight="50.0" style="-fx-background-color: #FFE6CC;">
          <children>
             <Label text="Task list">
                <font>
-                  <Font name="System Bold" size="18.0" />
+                  <Font size="16.0" />
                </font>
             </Label>
          </children>
@@ -47,28 +47,22 @@
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </padding>
       </VBox>
-      <ScrollPane fitToWidth="true" minViewportHeight="300.0" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #D5E8D4;" VBox.vgrow="ALWAYS">
+      <ScrollPane fitToWidth="true" minViewportHeight="300.0" minViewportWidth="200.0" prefHeight="561.0" prefWidth="239.0" style="-fx-background-color: #D5E8D4;" VBox.vgrow="ALWAYS">
          <padding>
             <Insets right="2.0" />
          </padding>
          <content>
-            <VBox fx:id="taskWrapper" prefHeight="571.0" prefWidth="168.0" style="-fx-border-color: #82B366; -fx-background-color: #D5E8D4;">
+            <VBox fx:id="taskWrapper" prefHeight="561.0" style="-fx-border-color: #82B366; -fx-background-color: #D5E8D4;">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>
             </VBox>
          </content>
       </ScrollPane>
-      <VBox alignment="CENTER" prefHeight="74.0" prefWidth="170.0" spacing="10.0" style="-fx-border-color: #82B366;">
+      <VBox alignment="CENTER" prefHeight="74.0" spacing="10.0" style="-fx-border-color: #82B366; -fx-background-color: #D5E8D4;">
          <children>
-            <Button fx:id="btnCreateTask" focusTraversable="false" mnemonicParsing="false" prefWidth="100.0" text="Opret task">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font></Button>
-            <Button fx:id="btnEditTask" focusTraversable="false" mnemonicParsing="false" prefWidth="100.0" text="Rediger task">
-               <font>
-                  <Font name="System Bold" size="12.0" />
-               </font></Button>
+            <Button fx:id="btnCreateTask" focusTraversable="false" mnemonicParsing="false" prefWidth="100.0" style="-fx-background-color: #fff; -fx-border-color: #222;" text="Opret task" />
+            <Button fx:id="btnEditTask" focusTraversable="false" mnemonicParsing="false" prefWidth="100.0" style="-fx-background-color: #FFE6CC; -fx-border-color: #D79B00;" text="Rediger task" />
          </children>
          <padding>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

@@ -16,7 +16,6 @@ import java.util.function.Consumer;
 
 public class LoginViewModel extends ViewModel {
     private final LoginModel loginModel;
-
     private Consumer<Boolean> onLoginResult;
     private Consumer<Boolean> onUserCreatedResult;
     private StringProperty username = new SimpleStringProperty();

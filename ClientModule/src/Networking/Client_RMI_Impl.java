@@ -1,10 +1,7 @@
 package Networking;
 
 import Application.Session;
-import DataTypes.Message;
-import DataTypes.Task;
-import DataTypes.PlanningPoker;
-import DataTypes.User;
+import DataTypes.*;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -208,8 +205,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
       this.loadTaskListFromServer(gameId);
     }
     catch (RemoteException e) {
-      //TODO: Add proper exception handling
-      e.printStackTrace();
+      throw new RuntimeException();
     }
   }
 
@@ -217,7 +213,11 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
   {
     ArrayList<Task> taskList = server.getTaskList(gameId);
     if(taskList != null) {
-      System.out.println("Loaded taskList from server.");
+      System.out.println("Client_RMI: Received taskList from server.");
+      // Fires a PropertyChange event with a Null value to absorb any similarities to the contents inside any of the already loaded taskList:
+      propertyChangeSupport.firePropertyChange("receivedUpdatedTaskList", null, null);
+
+      // Fires the proper PropertyChange event, with the taskList attached as the newValue():
       propertyChangeSupport.firePropertyChange("receivedUpdatedTaskList", null, taskList);
     }
   }
@@ -230,10 +230,17 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     }
   }
 
-  @Override public boolean removeTask(Task task, String gameId)
-  {
+  @Override public boolean removeTask(Task task, String gameId) {
     try {
       return this.removeTaskFromServer(task, gameId);
+    } catch (RemoteException e) {
+      throw new RuntimeException();
+    }
+  }
+
+  @Override public boolean editTask(Task oldTask, Task newTask, String gameId) {
+    try {
+      return this.editTaskOnServer(oldTask, newTask, gameId);
     } catch (RemoteException e) {
       throw new RuntimeException();
     }
@@ -257,6 +264,15 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
       }
   }
 
+  @Override
+  public ArrayList<Effort> getEffortList() {
+      try {
+          return server.getEffortList();
+      } catch (RemoteException e) {
+          throw new RuntimeException(e);
+      }
+  }
+
 
   @Override public void addTaskToServer(Task task, String gameId) throws RemoteException {
       server.addTask(task, gameId);
@@ -264,6 +280,10 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
 
   @Override public boolean removeTaskFromServer(Task task, String gameId) throws RemoteException {
     return server.removeTask(task, gameId);
+  }
+
+  @Override public boolean editTaskOnServer(Task oldTask, Task newTask, String gameId) throws RemoteException {
+    return server.editTask(oldTask, newTask, gameId);
   }
 
   @Override

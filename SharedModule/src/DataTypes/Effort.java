@@ -1,21 +1,21 @@
 package DataTypes;
 
-public class Effort
-{
-  private String effortValue;
-  private String imgPath;
+import java.io.Serializable;
 
-  public Effort(String effortValue, String imgPath)
-  {
-    this.effortValue = effortValue;
-    this.imgPath = imgPath;
-  }
+public class Effort implements Serializable {
+    private String effortValue;
+    private String imgPath;
 
-  public String getEffortValue() {
-    return effortValue;
-  }
+    public Effort(String effortValue, String imgPath) {
+        this.effortValue = effortValue;
+        this.imgPath = imgPath;
+    }
 
-  public String getImgPath() {
-    return imgPath;
-  }
+    public String getEffortValue() {
+        return effortValue;
+    }
+
+    public String getImgPath() {
+        return imgPath;
+    }
 }

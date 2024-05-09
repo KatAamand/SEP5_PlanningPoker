@@ -5,6 +5,7 @@ import DataTypes.User;
 import Database.Connection.DatabaseConnection;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class EffortDAOImpl extends DatabaseConnection implements EffortDAO
 {
@@ -38,6 +39,23 @@ public class EffortDAOImpl extends DatabaseConnection implements EffortDAO
       }
     }
   }
+
+  @Override
+  public ArrayList<Effort> getEffortList() throws SQLException {
+    try (Connection connection = getConnection()) {
+      PreparedStatement statement = connection.prepareStatement(
+          "SELECT value, imagepath FROM Effort");
+      ResultSet resultSet = statement.executeQuery();
+      ArrayList<Effort> effortList = new ArrayList<>();
+      while (resultSet.next()) {
+        String retrievedEffortValue = resultSet.getString("value");
+        String retrievedImgPath = resultSet.getString("imagepath");
+        effortList.add(new Effort(retrievedEffortValue, retrievedImgPath));
+      }
+      return effortList;
+    }
+  }
+
 
   @Override public Connection getConnection() throws SQLException
   {

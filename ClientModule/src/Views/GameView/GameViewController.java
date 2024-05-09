@@ -6,10 +6,17 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+
 import java.rmi.RemoteException;
 
 public class GameViewController
 {
+  @FXML public StackPane effortWrapper;
+  @FXML public HBox placedCardsWrapper;
   @FXML private Label taskHeaderLabel;
   @FXML private Label taskDescLabel;
   @FXML private Button setEffortButton;
@@ -25,6 +32,8 @@ public class GameViewController
   public void initialize() {
     applyBindings();
     gameViewModel.refresh();
+    gameViewModel.setPlacedCardsWrapper(placedCardsWrapper);
+    showPlayingCards();
   }
 
   private void applyBindings()
@@ -37,4 +46,10 @@ public class GameViewController
     gameViewModel.refresh();
     //TODO Functionality should be added
   }
+
+  public void showPlayingCards() {
+    gameViewModel.showPlayingCards(effortWrapper);
+  }
+
+
 }
