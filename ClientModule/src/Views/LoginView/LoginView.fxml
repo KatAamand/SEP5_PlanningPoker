@@ -8,13 +8,26 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Views.LoginView.LoginViewController">
+<VBox alignment="CENTER" style="-fx-background-color: #D5E8D4;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Views.LoginView.LoginViewController">
    <children>
-      <HBox alignment="CENTER" prefHeight="400.0" prefWidth="600.0" spacing="10.0" style="-fx-background-color: #D5E8D4;">
+      <Label text="PlanningPoker">
+         <font>
+            <Font name="Open Sans Regular" size="24.0" />
+         </font>
+         <VBox.margin>
+            <Insets bottom="10.0" left="20.0" right="20.0" top="20.0" />
+         </VBox.margin>
+      </Label>
+      <Label text="Nøjagtige estimeringer, bedre resultater">
+         <font>
+            <Font name="Open Sans Italic" size="14.0" />
+         </font>
+      </Label>
+      <HBox alignment="CENTER" prefHeight="132.0" prefWidth="600.0" spacing="10.0">
          <children>
             <VBox alignment="CENTER_LEFT">
                <children>
-                  <TextField fx:id="usernameTextField" promptText="Brugernavn" />
+                  <TextField fx:id="usernameTextField" promptText="Brugernavn" style="-fx-border-color: #222;" />
                   <Label fx:id="usernameErrorLabel" textFill="#b52b2b">
                      <VBox.margin>
                         <Insets top="5.0" />
@@ -27,7 +40,7 @@
             </VBox>
             <VBox alignment="CENTER_LEFT">
                <children>
-                  <TextField fx:id="passwordTextField" promptText="Adgangskode" />
+                  <TextField fx:id="passwordTextField" promptText="Adgangskode" style="-fx-border-color: #222;" />
                   <Label fx:id="passwordErrorLabel" textFill="#b52b2b">
                      <VBox.margin>
                         <Insets top="5.0" />
@@ -38,15 +51,18 @@
                   </Label>
                </children>
             </VBox>
-            <Button fx:id="loginButton" mnemonicParsing="false" onAction="#onLoginButtonPressed" prefWidth="100.0" style="-fx-background-color: #fff; -fx-border-color: #ccc;" text="Login">
+            <Button fx:id="loginButton" mnemonicParsing="false" onAction="#onLoginButtonPressed" prefWidth="100.0" style="-fx-background-color: #fff; -fx-border-color: #222;" text="Login">
                <HBox.margin>
                   <Insets bottom="20.0" />
                </HBox.margin></Button>
-            <Button fx:id="createUserButton" mnemonicParsing="false" onAction="#onCreateUserButtonPressed" prefWidth="100.0" style="-fx-background-color: #fff; -fx-border-color: #ccc;" text="Opret bruger">
+            <Button fx:id="createUserButton" mnemonicParsing="false" onAction="#onCreateUserButtonPressed" prefWidth="100.0" style="-fx-background-color: #fff; -fx-border-color: #222;" text="Opret bruger">
                <HBox.margin>
                   <Insets bottom="20.0" />
                </HBox.margin></Button>
          </children>
       </HBox>
    </children>
+   <padding>
+      <Insets bottom="80.0" left="20.0" right="20.0" top="80.0" />
+   </padding>
 </VBox>
