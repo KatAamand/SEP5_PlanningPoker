@@ -1,96 +1,108 @@
 package Model.Login;
 
 import DataTypes.User;
+import Database.User.UserDAO;
+import Database.User.UserDAOImpl;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class LoginServerModelImpl implements LoginServerModel, Runnable {
 
-  private PropertyChangeSupport support;
-  private volatile static LoginServerModel instance;
-  private static final Lock lock = new ReentrantLock();
-  private ArrayList<User> users;
+    private PropertyChangeSupport support;
+    private volatile static LoginServerModel instance;
+    private static final Lock lock = new ReentrantLock();
+    private ArrayList<User> users;
 
-  private LoginServerModelImpl()
-  {
-    support = new PropertyChangeSupport(this);
+    private LoginServerModelImpl() {
+        support = new PropertyChangeSupport(this);
 
-    users = new ArrayList<>();
-    addTestUsers();
-  }
+        users = new ArrayList<>();
+        users = getUsersFromDb();
+    }
 
-  public static LoginServerModel getInstance()
-  {
-    //Here we use the "Double-checked lock" principle to ensure proper synchronization.
-    if(instance == null)
-    {
-      synchronized (lock)
-      {
-        if(instance == null)
-        {
-          instance = new LoginServerModelImpl();
+    private ArrayList<User> getUsersFromDb() {
+        try {
+            UserDAO userDAO = UserDAOImpl.getInstance();
+            return userDAO.getAllUsers();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-      }
     }
-    return instance;
-  }
 
-  @Override
-  public User validateUser(String username, String password) {
-    System.out.println("Validating user: " + username + " " + password);
-    for (User user : users) {
-      if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
-        System.out.println("user found, now logging user in...");
-        return user;
-      }
+    public static LoginServerModel getInstance() {
+        //Here we use the "Double-checked lock" principle to ensure proper synchronization.
+        if (instance == null) {
+            synchronized (lock) {
+                if (instance == null) {
+                    instance = new LoginServerModelImpl();
+                }
+            }
+        }
+        return instance;
     }
-    return null;
-  }
 
-  @Override
-  public Boolean createUser(String username, String password) {
-    System.out.println("Creating user: " + username + " " + password);
-    User newUser = new User(username, password);
-    users.add(newUser);
-
-    if (users.contains(newUser)) {
-      return true;
-    } else {
-      return false;
+    @Override
+    public User validateUser(String username, String password) {
+        System.out.println("Validating user: " + username + " " + password);
+        for (User user : users) {
+            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+                System.out.println("user found, now logging user in...");
+                return user;
+            }
+        }
+        return null;
     }
-  }
 
-  @Override public boolean logoutUser(String username, String password)
-  {
-    //TODO: Logout functionality is not yet implemented
-    return false;
-  }
+    @Override
+    public Boolean createUser(String username, String password) {
+        System.out.println("Creating user: " + username + " " + password);
+        User newUser = new User(username, password);
+        users.add(newUser);
 
-  private void addTestUsers() {
-    this.users.add(new User("test", "1234"));
-    this.users.add(new User("test2", "1234"));
-  }
+        try {
+            UserDAO userDAO = UserDAOImpl.getInstance();
+            userDAO.create(username, password);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
-  @Override public void addPropertyChangeListener(PropertyChangeListener listener) {
-    support.addPropertyChangeListener(listener);
-  }
-  @Override public void addPropertyChangeListener(String name, PropertyChangeListener listener) {
-    support.addPropertyChangeListener(name, listener);
-  }
-  @Override public void removePropertyChangeListener(PropertyChangeListener listener) {
-    support.removePropertyChangeListener(listener);
-  }
-  @Override public void removePropertyChangeListener(String name, PropertyChangeListener listener) {
-    support.removePropertyChangeListener(name, listener);
-  }
+        return users.contains(newUser);
+    }
 
-  @Override public void run()
-  {}
+    @Override
+    public boolean logoutUser(String username, String password) {
+        return false;
+    }
+
+    @Override
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        support.addPropertyChangeListener(listener);
+    }
+
+    @Override
+    public void addPropertyChangeListener(String name, PropertyChangeListener listener) {
+        support.addPropertyChangeListener(name, listener);
+    }
+
+    @Override
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        support.removePropertyChangeListener(listener);
+    }
+
+    @Override
+    public void removePropertyChangeListener(String name, PropertyChangeListener listener) {
+        support.removePropertyChangeListener(name, listener);
+    }
+
+    @Override
+    public void run() {
+    }
 
 
 }
