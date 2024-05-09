@@ -39,7 +39,7 @@
          <children>
             <Label text="Task list">
                <font>
-                  <Font size="18.0" />
+                  <Font size="16.0" />
                </font>
             </Label>
          </children>

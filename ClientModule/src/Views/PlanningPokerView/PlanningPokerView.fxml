@@ -8,7 +8,7 @@
       fx:controller="Views.PlanningPokerView.PlanningPokerViewController">
     <children>
         <fx:include fx:id="taskView" source="../TaskView/TaskView.fxml"/>
-        <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="760.0" prefWidth="890.0">
+        <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="770.0" prefWidth="890.0">
             <children>
                 <fx:include fx:id="lobbyView" source="../LobbyView/LobbyView.fxml"/>
                 <fx:include fx:id="gameView" source="../GameView/GameView.fxml"/>
