@@ -7,34 +7,43 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
 
-<VBox prefHeight="275.0" prefWidth="375.0" style="-fx-border-color: #82B366; -fx-background-color: #D5E8D4;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Views.TaskView.ManageSingleTaskViewController">
+<VBox prefHeight="275.0" prefWidth="375.0" spacing="20.0" style="-fx-background-color: #D5E8D4;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Views.TaskView.ManageSingleTaskViewController">
     <children>
-      <TextField fx:id="textFieldTaskHeader" onKeyReleased="#validateData" promptText="Enter task header/name" style="-fx-background-color: #E5FAE4;" />
-      <Line endX="130.0" startX="-200.0" strokeMiterLimit="5.0" strokeWidth="0.5" />
-      <TextArea fx:id="textAreaTaskDescription" onKeyReleased="#validateData" prefHeight="200.0" prefWidth="200.0" promptText="Enter task description" style="-fx-background-color: #E5FAE4;" />
-      <VBox alignment="CENTER">
+      <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-border-color: #82B366;">
+         <children>
+            <TextField fx:id="textFieldTaskHeader" onKeyReleased="#validateData" promptText="Enter task header/name" style="-fx-background-color: #E5FAE4;" />
+            <TextArea fx:id="textAreaTaskDescription" onKeyReleased="#validateData" prefHeight="200.0" prefWidth="200.0" promptText="Enter task description" style="-fx-background-color: #E5FAE4;" />
+         </children>
+      </VBox>
+      <VBox alignment="CENTER" prefHeight="25.0" prefWidth="335.0">
          <VBox.margin>
-            <Insets top="10.0" />
+            <Insets />
          </VBox.margin>
          <children>
-            <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" spacing="100.0">
+            <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" spacing="25.0">
                <children>
-                  <Button mnemonicParsing="false" onAction="#onCancelPressed" text="Cancel">
+                  <Button fx:id="buttonDelete" mnemonicParsing="false" onAction="#onDeletePressed" style="-fx-background-color: #F8CECC; -fx-border-color: #B85450;" text="Delete" />
+                  <Button mnemonicParsing="false" onAction="#onCancelPressed" style="-fx-background-color: #f2f2f2; -fx-border-color: #80AD66;" text="Cancel">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="buttonDelete" mnemonicParsing="false" onAction="#onDeletePressed" text="Delete" />
-                  <Button fx:id="buttonSave" layoutX="296.0" layoutY="10.0" mnemonicParsing="false" onAction="#onSavePressed" text="Save" />
+                  <Button fx:id="buttonSave" layoutX="296.0" layoutY="10.0" mnemonicParsing="false" onAction="#onSavePressed" style="-fx-background-color: #DAE8FC; -fx-border-color: #6C8EBF;" text="Save">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font></Button>
                </children>
+               <VBox.margin>
+                  <Insets bottom="5.0" />
+               </VBox.margin>
             </HBox>
-             <Label fx:id="taskHeaderErrorLabel" textFill="#b52b2b" />
+             <Label fx:id="taskHeaderErrorLabel" text="retre" textFill="#d32c2c" />
          </children>
       </VBox>
     </children>
     <padding>
-        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+        <Insets bottom="10.0" left="20.0" right="20.0" top="20.0" />
     </padding>
 </VBox>

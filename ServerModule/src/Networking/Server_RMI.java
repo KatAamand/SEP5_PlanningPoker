@@ -287,7 +287,7 @@ public class Server_RMI implements ServerConnection_RMI {
 
     @Override
     public void addConnectedUserToSession(User user) throws RemoteException {
-            chatServerModel.addUserToSession(user, connectedClients, this);
+        chatServerModel.addUserToSession(user, connectedClients, this);
     }
 
     @Override
@@ -295,11 +295,8 @@ public class Server_RMI implements ServerConnection_RMI {
         chatServerModel.removeUserFromSession(user, connectedClients, this);
     }
 
-
-
-    // Game related requests
-    @Override public ArrayList<Effort> getEffortList() throws RemoteException
-    {
-        return gameServerModel.getEfforts();
+    @Override
+    public ArrayList<Effort> getEffortList() throws RemoteException {
+        return gameServerModel.getEffortList();
     }
 }

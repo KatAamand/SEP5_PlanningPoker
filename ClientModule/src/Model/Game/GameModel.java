@@ -10,6 +10,5 @@ public interface GameModel {
    * Platform.runLater() method to ensure increase thread safety with javaFx.*/
   void init();
   Task nextTaskToEvaluate();
-
-    ArrayList<Effort> getEfforts();
+  ArrayList<Effort> getEffortList();
 }

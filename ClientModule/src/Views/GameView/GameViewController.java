@@ -9,13 +9,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 
 import java.rmi.RemoteException;
-import java.util.Objects;
 
 public class GameViewController
 {
-  @FXML public HBox effortWrapper;
+  @FXML public StackPane effortWrapper;
+  @FXML public HBox placedCardsWrapper;
   @FXML private Label taskHeaderLabel;
   @FXML private Label taskDescLabel;
   @FXML private Button setEffortButton;
@@ -31,16 +32,8 @@ public class GameViewController
   public void initialize() {
     applyBindings();
     gameViewModel.refresh();
-
-    populateEfforts();
-  }
-
-  private void populateEfforts() {
-    for (int i = 0; i < gameViewModel.getEfforts().size(); i++) {
-      ImageView imageView = new ImageView();
-      imageView.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream(gameViewModel.getEfforts().get(i).getImgPath()))));
-      effortWrapper.getChildren().add(imageView);
-    }
+    gameViewModel.setPlacedCardsWrapper(placedCardsWrapper);
+    showPlayingCards();
   }
 
   private void applyBindings()
@@ -53,5 +46,10 @@ public class GameViewController
     gameViewModel.refresh();
     //TODO Functionality should be added
   }
+
+  public void showPlayingCards() {
+    gameViewModel.showPlayingCards(effortWrapper);
+  }
+
 
 }

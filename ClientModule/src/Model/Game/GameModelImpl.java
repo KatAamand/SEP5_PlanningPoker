@@ -54,8 +54,8 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel, 
   }
 
   @Override
-  public ArrayList<Effort> getEfforts() {
-      return (ArrayList<Effort>) super.getActivePlanningPokerGame().getEffortList();
+  public ArrayList<Effort> getEffortList() {
+      return clientConnection.getEffortList();
   }
 
   /** Assigns all the required listeners to the clientConnection allowing for Observable behavior between these classes. */

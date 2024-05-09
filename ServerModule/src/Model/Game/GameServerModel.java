@@ -7,5 +7,7 @@ import java.util.ArrayList;
 
 public interface GameServerModel extends PropertyChangeSubject
 {
-    ArrayList<Effort> getEfforts();
+    ArrayList<Effort> getEffortList();
+
+    ArrayList<Effort> getEffortListFromDB();
 }
