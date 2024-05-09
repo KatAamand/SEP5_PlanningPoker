@@ -1,10 +1,7 @@
 package Networking;
 
 import Application.Session;
-import DataTypes.Message;
-import DataTypes.Task;
-import DataTypes.PlanningPoker;
-import DataTypes.User;
+import DataTypes.*;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -262,6 +259,15 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
   public void removeUserFromSession() {
       try {
           server.removeUserFromSession(Session.getCurrentUser());
+      } catch (RemoteException e) {
+          throw new RuntimeException(e);
+      }
+  }
+
+  @Override
+  public ArrayList<Effort> getEffortList() {
+      try {
+          return server.getEffortList();
       } catch (RemoteException e) {
           throw new RuntimeException(e);
       }

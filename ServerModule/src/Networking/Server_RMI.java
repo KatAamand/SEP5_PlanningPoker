@@ -1,9 +1,6 @@
 package Networking;
 
-import DataTypes.Message;
-import DataTypes.PlanningPoker;
-import DataTypes.Task;
-import DataTypes.User;
+import DataTypes.*;
 import Model.Chat.ChatServerModel;
 import Model.Chat.ChatServerModelImpl;
 import Model.Game.GameServerModel;
@@ -290,7 +287,7 @@ public class Server_RMI implements ServerConnection_RMI {
 
     @Override
     public void addConnectedUserToSession(User user) throws RemoteException {
-            chatServerModel.addUserToSession(user, connectedClients, this);
+        chatServerModel.addUserToSession(user, connectedClients, this);
     }
 
     @Override
@@ -298,5 +295,8 @@ public class Server_RMI implements ServerConnection_RMI {
         chatServerModel.removeUserFromSession(user, connectedClients, this);
     }
 
-
+    @Override
+    public ArrayList<Effort> getEffortList() throws RemoteException {
+        return gameServerModel.getEffortList();
+    }
 }

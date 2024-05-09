@@ -1,6 +1,7 @@
 package Model.Game;
 
 import Application.ClientFactory;
+import DataTypes.Effort;
 import DataTypes.Task;
 import Model.PlanningPoker.PlanningPokerModelImpl;
 import Networking.Client;
@@ -50,6 +51,11 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel, 
     }
 
     return null;
+  }
+
+  @Override
+  public ArrayList<Effort> getEffortList() {
+      return clientConnection.getEffortList();
   }
 
   /** Assigns all the required listeners to the clientConnection allowing for Observable behavior between these classes. */
