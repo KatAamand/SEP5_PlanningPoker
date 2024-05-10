@@ -2,8 +2,7 @@ package Database.User;
 
 import DataTypes.User;
 import Database.Connection.DatabaseConnection;
-import Database.Effort.EffortDAO;
-import Database.Effort.EffortDAOImpl;
+
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -52,6 +51,7 @@ public class UserDAOImpl extends DatabaseConnection implements UserDAO
       statement.setString(1, username);
       statement.setString(2, password);
       ResultSet resultSet = statement.executeQuery();
+
       if (resultSet.next()) {
         String retrievedUsername = resultSet.getString("username");
         String retrievedPassword = resultSet.getString("password");
