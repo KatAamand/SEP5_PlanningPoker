@@ -48,6 +48,10 @@ public class GameViewController
     //TODO Functionality should be added
   }
 
+  public void onSkipEffortButtonPressed() {
+    gameViewModel.skipTask();
+  }
+
   public void showPlayingCards() {
     gameViewModel.showPlayingCards(effortWrapper);
   }

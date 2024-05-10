@@ -16,6 +16,7 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel, 
 {
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
   private Client clientConnection;
+  private ArrayList<Task> skippedTaskList;
 
 
   /** Primary constructor. Defers most of the declarations and definitions to the init method,
@@ -23,6 +24,7 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel, 
   public GameModelImpl() throws RemoteException {
     super();
     super.init();
+    skippedTaskList = new ArrayList<>();
 
     //Assign the network connection:
     clientConnection = (Client) ClientFactory.getInstance().getClient();
@@ -40,17 +42,42 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel, 
     this.assignListeners();
   }
 
-  @Override public Task nextTaskToEvaluate()
-  {
+  @Override public Task nextTaskToEvaluate() {
     ArrayList<Task> taskList = (ArrayList<Task>) super.getActivePlanningPokerGame().getTaskList();
 
+    // First check the list of tasks that haven't been estimated on yet:
     for (Task task : taskList) {
-      if (task.getFinalEffort() != null) {
+      // If the tasks do not already have a final effort assigned, and the task has not been skipped, we display it.
+      if (task.getFinalEffort() != null && !skippedTaskList.contains(task)) {
         return task;
       }
     }
 
+    // If we reach here, all tasks have either been estimated on - or have been skipped. Check the skipped list now:
+    for (Task task : taskList) {
+      // Remove the skipped task from the skipped list, so it is possible to skip this task again:
+      skippedTaskList.remove(task);
+
+      // If the tasks do not already have a final effort assigned.
+      if (task.getFinalEffort() != null && !skippedTaskList.contains(task)) {
+        return task;
+      }
+    }
     return null;
+  }
+
+  @Override public void skipTask(Task task) {
+    // Check if task is already skipped:
+    for (Task alreadySkippedTask : skippedTaskList) {
+      if(alreadySkippedTask.equals(task))
+      {
+        // Do nothing. We already skipped this task once.
+        return;
+      }
+    }
+
+    // Add the skipped task to a list of skipped tasks:
+    skippedTaskList.add(task);
   }
 
   @Override

@@ -39,7 +39,7 @@
                                     <Insets />
                                  </VBox.margin>
                               </Label>
-                              <HBox prefHeight="81.0" prefWidth="850.0" spacing="15.0">
+                              <HBox prefHeight="81.0" prefWidth="836.0" spacing="15.0">
                                  <children>
                                     <Label fx:id="taskDescLabel" alignment="TOP_LEFT" prefHeight="69.0" prefWidth="694.0" text="lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." wrapText="true">
                                        <HBox.margin>
@@ -48,6 +48,7 @@
                                     </Label>
                                     <VBox alignment="TOP_CENTER" prefHeight="102.0" prefWidth="105.0" spacing="15.0">
                                        <children>
+                                          <Button layoutX="13.0" layoutY="51.0" mnemonicParsing="false" onAction="#onSkipEffortButtonPressed" prefWidth="100.0" style="-fx-background-color: #fff; -fx-border-color: #ccc;" text="SKIP" />
                                           <TextField fx:id="insertEffortField" promptText="insert effort">
                                              <opaqueInsets>
                                                 <Insets top="100.0" />

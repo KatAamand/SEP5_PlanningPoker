@@ -7,6 +7,7 @@ import Database.Effort.EffortDAOImpl;
 
 import javax.xml.namespace.QName;
 import java.sql.*;
+import java.util.ArrayList;
 
 public class PlanningPokerDAOImpl extends DatabaseConnection implements PlanningPokerDAO {
     private static PlanningPokerDAOImpl instance;
@@ -66,6 +67,24 @@ public class PlanningPokerDAOImpl extends DatabaseConnection implements Planning
         }
 
         return null;
+    }
+
+    @Override
+    public ArrayList<PlanningPoker> getAllPlanningPoker() throws SQLException {
+        // TODO: Fix this mess ;) - Rasmus
+        try (Connection connection = getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM planning_poker");
+            ResultSet resultSet = statement.executeQuery();
+            ArrayList<PlanningPoker> planningPokers = new ArrayList<>();
+            while(resultSet.next())
+            {
+                int planningPokerID = resultSet.getInt("planning_pokerId");
+                planningPokers.add(new PlanningPoker(String.valueOf(planningPokerID)));
+            }
+            return planningPokers;
+        } catch (SQLException e) {
+            throw new SQLException("Failed to read planning poker");
+        }
     }
 
     @Override
