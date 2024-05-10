@@ -48,7 +48,7 @@ public class GameViewController
   }
 
   public void onSkipEffortButtonPressed() {
-    //TODO
+    gameViewModel.skipTask();
   }
 
   public void showPlayingCards() {

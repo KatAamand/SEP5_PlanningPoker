@@ -25,6 +25,7 @@ public class GameViewModel {
     private Property<String> taskHeaderProperty;
     private Property<String> taskDescProperty;
     private ArrayList<Effort> effortList;
+    private Task displayedTask;
     @FXML
     public HBox placedCardsWrapper;
     private ImageView selectedCard;
@@ -38,15 +39,24 @@ public class GameViewModel {
     }
 
     public void refresh() {
-        Task nextTask = gameModel.nextTaskToEvaluate();
+        displayedTask = gameModel.nextTaskToEvaluate();
+        System.out.println("showing: " + displayedTask);
 
-        if (nextTask != null) {
-            taskHeaderPropertyProperty().setValue(nextTask.getTaskHeader());
-            taskDescPropertyProperty().setValue(nextTask.getDescription());
+        if (displayedTask != null) {
+            taskHeaderPropertyProperty().setValue(displayedTask.getTaskHeader());
+            taskDescPropertyProperty().setValue(displayedTask.getDescription());
         } else {
             taskHeaderPropertyProperty().setValue("No more tasks");
             taskDescPropertyProperty().setValue("No more tasks");
         }
+    }
+
+
+    public void skipTask() {
+        if(displayedTask != null) {
+            gameModel.skipTask(displayedTask);
+        }
+        this.refresh();
     }
 
     public Property<String> taskHeaderPropertyProperty() {

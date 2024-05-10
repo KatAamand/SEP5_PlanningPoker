@@ -11,4 +11,5 @@ public interface GameModel {
   void init();
   Task nextTaskToEvaluate();
   ArrayList<Effort> getEffortList();
+  void skipTask(Task task);
 }
