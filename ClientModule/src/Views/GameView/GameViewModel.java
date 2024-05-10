@@ -85,7 +85,32 @@ public class GameViewModel {
     }
 
     public void handleCardSelection(ImageView selectedCard, StackPane effortWrapper) {
-        // TODO implement card selection
+        if (this.selectedCard != selectedCard) {
+            this.selectedCard = selectedCard;
+
+            // Removing styling from other cards
+            for (Node node : effortWrapper.getChildren()) {
+                node.getStyleClass().remove("card-selected");
+            }
+
+            // Adding shadow to selected card
+            if (!selectedCard.getStyleClass().contains("card-selected")) {
+                selectedCard.getStyleClass().add("card-selected");
+            }
+
+            VBox placedCardWrapper = new VBox();
+            placedCardWrapper.alignmentProperty().setValue(javafx.geometry.Pos.CENTER);
+            Label username = new Label(Session.getCurrentUser().getUsername());
+
+            ImageView clone = new ImageView(selectedCard.getImage());
+            clone.setFitHeight(140);
+            clone.setFitWidth(105);
+
+            placedCardWrapper.getChildren().add(username);
+            placedCardWrapper.getChildren().add(clone);
+
+            Platform.runLater(() -> placedCardsWrapper.getChildren().add(placedCardWrapper));
+        }
     }
 
     public void setPlacedCardsWrapper(HBox placedCardsWrapper) {
