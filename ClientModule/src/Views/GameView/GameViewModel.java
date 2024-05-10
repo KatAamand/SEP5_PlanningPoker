@@ -22,14 +22,7 @@ import java.util.ArrayList;
 
 public class GameViewModel
 {
-  private final GameModel gameModel;
-  private Property<String> taskHeaderProperty;
-  private Property<String> taskDescProperty;
-  private ArrayList<Effort> effortList;
-  @FXML public HBox placedCardsWrapper;
-  private ImageView selectedCard;
-  private ImageView backImageView;
-public class GameViewModel {
+
     private final GameModel gameModel;
     private Property<String> taskHeaderProperty;
     private Property<String> taskDescProperty;
@@ -51,9 +44,9 @@ public class GameViewModel {
   public void refresh()
   {
     Task nextTask = gameModel.nextTaskToEvaluate();
-    public void refresh() {
-        displayedTask = gameModel.nextTaskToEvaluate();
-        System.out.println("showing: " + displayedTask);
+
+    displayedTask = gameModel.nextTaskToEvaluate();
+    System.out.println("showing: " + displayedTask);
 
     if (nextTask != null)
     {
@@ -65,20 +58,9 @@ public class GameViewModel {
       taskHeaderPropertyProperty().setValue("No more tasks");
       taskDescPropertyProperty().setValue("No more tasks");
     }
-  }
-        if (displayedTask != null) {
-            taskHeaderPropertyProperty().setValue(displayedTask.getTaskHeader());
-            taskDescPropertyProperty().setValue(displayedTask.getDescription());
-        } else {
-            taskHeaderPropertyProperty().setValue("No more tasks");
-            taskDescPropertyProperty().setValue("No more tasks");
-        }
+
     }
 
-  public Property<String> taskHeaderPropertyProperty()
-  {
-    return taskHeaderProperty;
-  }
 
     public void skipTask() {
         if(displayedTask != null) {
