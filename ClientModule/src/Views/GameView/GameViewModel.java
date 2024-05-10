@@ -38,6 +38,9 @@ public class GameViewModel
     taskDescProperty = new SimpleStringProperty();
     effortList = new ArrayList<>();
     getEffortList();
+
+    //Assign listeners:
+    gameModel.addPropertyChangeListener("receivedListOfTasksToSkip", evt -> Platform.runLater(this::refresh));
   }
 
   public void refresh()

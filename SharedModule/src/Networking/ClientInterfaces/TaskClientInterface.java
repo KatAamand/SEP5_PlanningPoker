@@ -5,6 +5,7 @@ import DataTypes.Task;
 import java.beans.PropertyChangeListener;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 public interface TaskClientInterface extends Remote
 {
@@ -20,4 +21,6 @@ public interface TaskClientInterface extends Remote
   void addTaskToServer(Task task, String gameId) throws RemoteException;
   boolean removeTaskFromServer(Task task, String gameId) throws RemoteException;
   boolean editTaskOnServer(Task oldTask, Task newTask, String gameId) throws RemoteException;
+  void broadcastSkipTasksOnServer(ArrayList<Task> skippedTasksList, String gameId) throws RemoteException;
+  void updateSkippedTaskList(ArrayList<Task> skippedTasksList) throws RemoteException;
 }

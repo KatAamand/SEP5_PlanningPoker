@@ -200,17 +200,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     propertyChangeSupport.removePropertyChangeListener(name, listener);
   }
 
-  @Override public void loadTaskList(String gameId) {
-    try {
-      this.loadTaskListFromServer(gameId);
-    }
-    catch (RemoteException e) {
-      throw new RuntimeException();
-    }
-  }
-
-  @Override public void loadTaskListFromServer(String gameId) throws RemoteException
-  {
+  @Override public void loadTaskListFromServer(String gameId) throws RemoteException {
     ArrayList<Task> taskList = server.getTaskList(gameId);
     if(taskList != null) {
       System.out.println("Client_RMI: Received taskList from server.");
@@ -246,6 +236,18 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     }
   }
 
+  @Override public void skipTasks(ArrayList<Task> skippedTasksList, String gameId) {
+    try {
+      this.broadcastSkipTasksOnServer(skippedTasksList, gameId);
+    } catch (RemoteException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override public void updateSkippedTaskList(ArrayList<Task> skippedTasksList) throws RemoteException {
+    propertyChangeSupport.firePropertyChange("receivedListOfTasksToSkip", null, skippedTasksList);
+  }
+
   @Override
   public void sendUser() {
       try {
@@ -273,7 +275,6 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
       }
   }
 
-
   @Override public void addTaskToServer(Task task, String gameId) throws RemoteException {
       server.addTask(task, gameId);
     }
@@ -284,6 +285,11 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
 
   @Override public boolean editTaskOnServer(Task oldTask, Task newTask, String gameId) throws RemoteException {
     return server.editTask(oldTask, newTask, gameId);
+  }
+
+  @Override public void broadcastSkipTasksOnServer(ArrayList<Task> skippedTasksList, String gameId) throws RemoteException
+  {
+    server.broadcastSkipTasks(skippedTasksList, gameId);
   }
 
   @Override

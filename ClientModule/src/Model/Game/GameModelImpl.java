@@ -12,7 +12,7 @@ import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-public class GameModelImpl extends PlanningPokerModelImpl implements GameModel, PropertyChangeSubject
+public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
 {
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
   private Client clientConnection;
@@ -36,8 +36,6 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel, 
 
   @Override public void init()
   {
-    //TODO Initialize relevant data that might affect the javaFx thread here.
-
     //Assign all PropertyChangeListeners:
     this.assignListeners();
   }
@@ -72,6 +70,9 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel, 
       if (taskFromList.getFinalEffort() != null && !skippedTaskList.contains(task)) {
         // Add the skipped task to a list of skipped tasks:
         skippedTaskList.add(task);
+
+        // Transfer the skipped taskList to connected clients, so all clients have the same experience.
+        clientConnection.skipTasks(skippedTaskList, super.getActivePlanningPokerGame().getPlanningPokerID());
         return;
       }
     }
@@ -79,6 +80,9 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel, 
     // If we reach here, we know all tasks have either been estimated on, or skipped. Clear the skippedTaskList, so can be re-populated:
     skippedTaskList.clear();
     skippedTaskList.add(task);
+
+    // Transfer the skipped taskList to connected clients, so all clients have the same experience.
+    clientConnection.skipTasks(skippedTaskList, super.getActivePlanningPokerGame().getPlanningPokerID());
   }
 
 
@@ -90,7 +94,12 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel, 
   /** Assigns all the required listeners to the clientConnection allowing for Observable behavior between these classes. */
   private void assignListeners()
   {
-    //TODO define the listeners that should be added to the Client here.
+    clientConnection.addPropertyChangeListener("receivedListOfTasksToSkip", evt -> {
+      if(evt.getNewValue() != null) {
+        skippedTaskList = ((ArrayList<Task>) evt.getNewValue());
+      }
+      propertyChangeSupport.firePropertyChange("receivedListOfTasksToSkip", null, null);
+    });
   }
 
   @Override public void addPropertyChangeListener(PropertyChangeListener listener) {

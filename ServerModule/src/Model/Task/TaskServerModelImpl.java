@@ -124,6 +124,7 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable{
       for (int i = 0; i < receivingClients.size(); i++) {
         if(receivingClients.get(i) == null) {
           receivingClients.remove(i);
+          i--;
         }
       }
 

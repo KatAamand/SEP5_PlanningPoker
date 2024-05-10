@@ -17,7 +17,6 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Server_RMI implements ServerConnection_RMI {
@@ -253,6 +252,12 @@ public class Server_RMI implements ServerConnection_RMI {
             mainServerModel.getPlanningPokerGame(gameId).setTaskList(taskServerModel.getTaskList(gameId));
         }
         return success;
+    }
+
+    @Override public void broadcastSkipTasks(ArrayList<Task> skippedTasksList, String gameId) throws RemoteException
+    {
+        // Attempt to broadcast the list of tasks to skip in the current game's UI to all clients:
+        gameServerModel.broadcastListOfSkippedTasksToClients(clientsInEachGame, skippedTasksList, gameId, this);
     }
 
     // MainView related requests
