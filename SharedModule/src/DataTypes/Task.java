@@ -1,6 +1,7 @@
 package DataTypes;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Task implements Serializable
 {
@@ -72,20 +73,13 @@ public class Task implements Serializable
 
 
   public void setFinalEffort(String effort) throws NullPointerException, IllegalArgumentException {
-    //TODO: Update this method to only allow certain effort values to be saved, otherwise throw an exception.
-    if(effort == null) {
+    if (effort == null) {
       throw new NullPointerException();
     }
 
-    // Below is commented out until we have defined what values are legal values to evaluate against here:
-    /*ArrayList<String> legalEffortValues = new ArrayList<>();
-    //TODO: Add legal effort values here:
-    legalEffortValues.add("Undefined");
-    legalEffortValues.add("THIS_IS_A_LEGAL_EFFORT_VALUE"); // <- Remove/Refactor this line.
-
-    if(!legalEffortValues.contains(effort)) {
-      throw new IllegalArgumentException();
-    }*/
+    if (!Effort.LEGAL_EFFORT_VALUES.contains(effort)) {
+      throw new IllegalArgumentException("Invalid effort value");
+    }
 
     this.finalEffort = effort;
   }
