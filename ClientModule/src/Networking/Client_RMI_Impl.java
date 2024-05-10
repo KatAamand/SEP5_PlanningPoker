@@ -2,11 +2,9 @@ package Networking;
 
 import Application.Session;
 import DataTypes.*;
-
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
-import java.rmi.NoSuchObjectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -275,6 +273,15 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
       }
   }
 
+  @Override
+  public void placeCard(UserCardData userCardData) {
+        try {
+            server.placeCard(userCardData);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+  }
+
   @Override public void addTaskToServer(Task task, String gameId) throws RemoteException {
       server.addTask(task, gameId);
     }
@@ -319,4 +326,8 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
   }
 
 
+  @Override
+  public void receivePlacedCard(UserCardData userCardData) throws RemoteException {
+    propertyChangeSupport.firePropertyChange("placedCardReceived", null, userCardData);
+  }
 }

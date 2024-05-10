@@ -25,4 +25,5 @@ public interface Client extends PropertyChangeSubject {
     void sendUser();
     void removeUserFromSession();
     ArrayList<Effort> getEffortList();
+    void placeCard(UserCardData userCardData);
 }

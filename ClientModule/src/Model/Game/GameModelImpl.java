@@ -3,10 +3,11 @@ package Model.Game;
 import Application.ClientFactory;
 import DataTypes.Effort;
 import DataTypes.Task;
+import DataTypes.UserCardData;
 import Model.PlanningPoker.PlanningPokerModelImpl;
 import Networking.Client;
-import Util.PropertyChangeSubject;
 import javafx.application.Platform;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
@@ -87,6 +88,11 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
 
 
   @Override
+  public void requestPlacedCard(UserCardData userCardData) {
+    clientConnection.placeCard(userCardData);
+  }
+
+  @Override
   public ArrayList<Effort> getEffortList() {
       return clientConnection.getEffortList();
   }
@@ -100,6 +106,12 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
       }
       propertyChangeSupport.firePropertyChange("receivedListOfTasksToSkip", null, null);
     });
+    propertyChangeSupport.addPropertyChangeListener("placedCardReceived", this::updatePlacedCardMap);
+  }
+
+  @Override
+  public void updatePlacedCardMap(PropertyChangeEvent propertyChangeEvent) {
+    propertyChangeSupport.firePropertyChange("placedCardReceived", null, propertyChangeEvent.getNewValue());
   }
 
   @Override public void addPropertyChangeListener(PropertyChangeListener listener) {

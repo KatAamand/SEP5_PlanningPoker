@@ -19,6 +19,5 @@ public class RunServer {
         }
 
         System.out.println("Server is started");
-
     }
 }

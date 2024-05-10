@@ -59,5 +59,6 @@ public class GameViewController
   public void onClearCardsButtonPressed()
   {
     placedCardsWrapper.getChildren().clear();
+    gameViewModel.clearClientCartMap();
   }
 }

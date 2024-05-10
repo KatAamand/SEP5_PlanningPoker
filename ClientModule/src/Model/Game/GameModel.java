@@ -3,7 +3,8 @@ package Model.Game;
 import DataTypes.Effort;
 import DataTypes.Task;
 import Util.PropertyChangeSubject;
-
+import DataTypes.UserCardData;
+import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 
 public interface GameModel extends PropertyChangeSubject
@@ -14,4 +15,6 @@ public interface GameModel extends PropertyChangeSubject
   Task nextTaskToEvaluate();
   ArrayList<Effort> getEffortList();
   void skipTask(Task task);
+  void requestPlacedCard(UserCardData userCardData);
+  void updatePlacedCardMap(PropertyChangeEvent propertyChangeEvent);
 }
