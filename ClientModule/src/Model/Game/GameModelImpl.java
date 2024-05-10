@@ -45,7 +45,7 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel, 
   @Override public Task nextTaskToEvaluate() {
     ArrayList<Task> taskList = (ArrayList<Task>) super.getActivePlanningPokerGame().getTaskList();
 
-    // First check the list of tasks that haven't been estimated on yet:
+    // First check if there are tasks that haven't been estimated on, and that haven't already been skipped:
     for (Task task : taskList) {
       // If the tasks do not already have a final effort assigned, and the task has not been skipped, we display it.
       if (task.getFinalEffort() != null && !skippedTaskList.contains(task)) {
@@ -54,31 +54,33 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel, 
     }
 
     // If we reach here, all tasks have either been estimated on - or have been skipped. Check the skipped list now:
-    for (Task task : taskList) {
-      // Remove the skipped task from the skipped list, so it is possible to skip this task again:
-      skippedTaskList.remove(task);
-
+    for (Task task : skippedTaskList) {
       // If the tasks do not already have a final effort assigned.
-      if (task.getFinalEffort() != null && !skippedTaskList.contains(task)) {
+      if (task.getFinalEffort() != null) {
         return task;
       }
     }
     return null;
   }
 
+
   @Override public void skipTask(Task task) {
-    // Check if task is already skipped:
-    for (Task alreadySkippedTask : skippedTaskList) {
-      if(alreadySkippedTask.equals(task))
-      {
-        // Do nothing. We already skipped this task once.
+    ArrayList<Task> taskList = (ArrayList<Task>) super.getActivePlanningPokerGame().getTaskList();
+    // First check if there are tasks that haven't been estimated on, and that haven't already been skipped:
+    for (Task taskFromList : taskList) {
+      // If the tasks do not already have a final effort assigned, and the task has not been skipped, we display it.
+      if (taskFromList.getFinalEffort() != null && !skippedTaskList.contains(task)) {
+        // Add the skipped task to a list of skipped tasks:
+        skippedTaskList.add(task);
         return;
       }
     }
 
-    // Add the skipped task to a list of skipped tasks:
+    // If we reach here, we know all tasks have either been estimated on, or skipped. Clear the skippedTaskList, so can be re-populated:
+    skippedTaskList.clear();
     skippedTaskList.add(task);
   }
+
 
   @Override
   public ArrayList<Effort> getEffortList() {
