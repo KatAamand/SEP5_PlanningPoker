@@ -68,7 +68,11 @@ public class ChatModelImpl implements ChatModel
   {
     //TODO define the listeners that should be added to the Client here.
     clientConnection.addPropertyChangeListener("messageReceived", evt -> {
-        propertyChangeSupport.firePropertyChange("messageReceived", null, evt.getNewValue());
+      //Sends empty message before every real message, to "clear" the message property in the viewmodel so that the same message can be sent twice in a row.
+      propertyChangeSupport.firePropertyChange("messageReceived", null, new Message(""));
+
+      //Here the actual messsage gets sent
+      propertyChangeSupport.firePropertyChange("messageReceived", null, evt.getNewValue());
       });
 
     clientConnection.addPropertyChangeListener("userReceived", evt -> {

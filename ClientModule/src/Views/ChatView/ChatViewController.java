@@ -47,9 +47,12 @@ public class ChatViewController {
 
     public void onMessageRecieved(String message)
     {
-        Platform.runLater(() -> {
-            chatTextArea.appendText(message + "\n");
-        });
+        //Handle the empty message, so empty messages doesnt get added to the chat, also fixes bug where the same message couldn't be sent twice in a row
+        if (!message.equals("")) {
+            Platform.runLater(() -> {
+                chatTextArea.appendText(message + "\n");
+            });
+        }
     }
 
     public void onUserReceived(ObservableList<User> users)

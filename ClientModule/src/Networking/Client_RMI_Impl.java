@@ -298,6 +298,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
   @Override public void receiveMessage(Message message)
   {
     propertyChangeSupport.firePropertyChange("messageReceived", null, message);
+    System.out.println("Client_RMI: " + message.getMessage());
   }
 
     @Override
