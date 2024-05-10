@@ -72,14 +72,7 @@ public class Task implements Serializable
   }
 
 
-  public void setFinalEffort(String effort) throws NullPointerException, IllegalArgumentException {
-    if (effort == null) {
-      throw new NullPointerException();
-    }
-
-    if (!Effort.LEGAL_EFFORT_VALUES.contains(effort)) {
-      throw new IllegalArgumentException("Invalid effort value");
-    }
+  public void setFinalEffort(String effort) {
 
     this.finalEffort = effort;
   }
