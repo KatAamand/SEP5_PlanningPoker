@@ -18,6 +18,7 @@ public interface Client extends PropertyChangeSubject {
     boolean validatePlanningPokerID(String planningPokerID);
     PlanningPoker createPlanningPoker();
     PlanningPoker loadPlanningPoker(String planningPokerId);
+    void loadTaskList(String gameId);
     void addTask(Task task, String gameId);
     boolean removeTask(Task task, String gameId);
     boolean editTask(Task oldTask, Task newTask, String gameId);

@@ -45,15 +45,18 @@ public class GameViewModel
 
   public void refresh()
   {
-      // Get the next task to display:
-      displayedTask = gameModel.nextTaskToEvaluate();
-      if (displayedTask != null) {
-          taskHeaderPropertyProperty().setValue(displayedTask.getTaskHeader());
-          taskDescPropertyProperty().setValue(displayedTask.getDescription());
-      } else {
-          taskHeaderPropertyProperty().setValue("No more tasks");
-          taskDescPropertyProperty().setValue("No more tasks");
-      }
+    // Get the next task to display:
+    displayedTask = gameModel.nextTaskToEvaluate();
+    if (displayedTask != null) {
+        taskHeaderPropertyProperty().setValue(displayedTask.getTaskHeader());
+        taskDescPropertyProperty().setValue(displayedTask.getDescription());
+    } else {
+        taskHeaderPropertyProperty().setValue("No more tasks");
+        taskDescPropertyProperty().setValue("No more tasks");
+    }
+
+    // Query for a refreshed taskList:
+    gameModel.refreshTaskList();
   }
 
 

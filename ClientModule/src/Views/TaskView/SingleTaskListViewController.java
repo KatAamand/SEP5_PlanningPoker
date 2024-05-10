@@ -8,10 +8,10 @@ import javafx.scene.layout.VBox;
 
 public class SingleTaskListViewController
 {
+  @FXML private Label isBeingEstimatedLabel; // Value is set in the TaskViewModel after this controller is created.
   @FXML private Label taskHeaderLabel;
   @FXML private Label taskDescLabel;
   @FXML private VBox sourceVBox;
-  private int rowId;
   private SingleTaskListViewModel viewModel;
 
 
@@ -20,8 +20,7 @@ public class SingleTaskListViewController
   }
 
 
-  public void initialize(int rowId, SingleTaskListViewModel viewModel) {
-    setRowId(rowId);
+  public void initialize(SingleTaskListViewModel viewModel) {
     this.viewModel = viewModel;
     Platform.runLater(() -> this.viewModel.setCurrentSource(sourceVBox));
 
@@ -33,6 +32,7 @@ public class SingleTaskListViewController
   private void assignBindings() {
     this.getTaskHeaderLabel().textProperty().bindBidirectional(viewModel.getTaskHeaderLabelProperty());
     this.getTaskDescLabel().textProperty().bindBidirectional(viewModel.getTaskDescProperty());
+    this.getIsBeingEstimatedLabel().textProperty().bindBidirectional(viewModel.getEstimationLabel());
   }
 
 
@@ -54,26 +54,16 @@ public class SingleTaskListViewController
   }
 
 
-  public int getRowId()
-  {
-    return this.rowId;
-  }
-
-
-  public void setRowId(int rowId)
-  {
-    this.rowId = rowId;
-  }
-
-
-  public Label getTaskHeaderLabel()
-  {
+  public Label getTaskHeaderLabel() {
     return this.taskHeaderLabel;
   }
 
 
-  public Label getTaskDescLabel()
-  {
+  public Label getTaskDescLabel() {
     return this.taskDescLabel;
+  }
+
+  public Label getIsBeingEstimatedLabel() {
+    return this.isBeingEstimatedLabel;
   }
 }

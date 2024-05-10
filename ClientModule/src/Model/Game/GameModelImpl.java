@@ -1,6 +1,7 @@
 package Model.Game;
 
 import Application.ClientFactory;
+import Application.Session;
 import DataTypes.Effort;
 import DataTypes.Task;
 import Model.PlanningPoker.PlanningPokerModelImpl;
@@ -85,6 +86,9 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
     clientConnection.skipTasks(skippedTaskList, super.getActivePlanningPokerGame().getPlanningPokerID());
   }
 
+  @Override public void refreshTaskList() {
+    clientConnection.loadTaskList(Session.getConnectedGameId());
+  }
 
   @Override
   public ArrayList<Effort> getEffortList() {
