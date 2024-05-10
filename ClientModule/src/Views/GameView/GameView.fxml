@@ -48,7 +48,7 @@
                                     </Label>
                                     <VBox alignment="TOP_CENTER" prefHeight="102.0" prefWidth="105.0" spacing="15.0">
                                        <children>
-                                          <Button fx:id="setEffortButton1" layoutX="13.0" layoutY="51.0" mnemonicParsing="false" onAction="#onsetEffortButtonPressed" prefWidth="100.0" style="-fx-background-color: #fff; -fx-border-color: #ccc;" text="SKIP" />
+                                          <Button layoutX="13.0" layoutY="51.0" mnemonicParsing="false" onAction="#onSkipEffortButtonPressed" prefWidth="100.0" style="-fx-background-color: #fff; -fx-border-color: #ccc;" text="SKIP" />
                                           <TextField fx:id="insertEffortField" promptText="insert effort">
                                              <opaqueInsets>
                                                 <Insets top="100.0" />
