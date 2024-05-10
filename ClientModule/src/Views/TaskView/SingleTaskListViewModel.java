@@ -8,6 +8,7 @@ public class SingleTaskListViewModel
 {
   private Property<String> taskHeaderLabel;
   private Property<String> taskDescLabel;
+  private Property<String> isBeingEstimatedLabel; // Value is set in the TaskViewModel after this controller is created.
   private TaskViewModel parentViewModel; //This field variable will become useful when task selection (clicking on tasks) becomes relevant!
   private VBox currentSource;
 
@@ -15,6 +16,7 @@ public class SingleTaskListViewModel
   public SingleTaskListViewModel(TaskViewModel parentViewModel) {
     taskHeaderLabel = new SimpleStringProperty("UNDEFINED");
     taskDescLabel = new SimpleStringProperty("UNDEFINED");
+    isBeingEstimatedLabel = new SimpleStringProperty("");
     this.parentViewModel = parentViewModel;
     this.currentSource = null;
   }
@@ -35,6 +37,16 @@ public class SingleTaskListViewModel
   public void setTaskDesc(String taskDesc)
   {
     this.taskDescLabel.setValue(taskDesc);
+  }
+
+
+  public Property<String> getEstimationLabel() {
+    return isBeingEstimatedLabel;
+  }
+
+
+  public void setEstimationLabel(String estimationLabel) {
+    this.isBeingEstimatedLabel.setValue(estimationLabel);
   }
 
 

@@ -17,4 +17,5 @@ public interface GameModel extends PropertyChangeSubject
   void skipTask(Task task);
   void requestPlacedCard(UserCardData userCardData);
   void updatePlacedCardMap(PropertyChangeEvent propertyChangeEvent);
+  void refreshTaskList();
 }

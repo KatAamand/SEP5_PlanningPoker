@@ -107,13 +107,13 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
 
   @Override public void userCreatedSuccessfully()
   {
-    System.out.println("Opdatering fra server: user is created succesfully");
+    System.out.println("Opdatering fra server: user is created successfully");
     propertyChangeSupport.firePropertyChange("userCreatedSuccess", null, null);
   }
 
   @Override public void updateUser(User user)
   {
-    System.out.println("Opdatering fra server: user is logged in succesfully");
+    System.out.println("Opdatering fra server: user is logged in successfully");
     propertyChangeSupport.firePropertyChange("userLoginSuccess", null, user);
   }
 
@@ -146,7 +146,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
 
       if(serverAnswer != null) {
         //PlanningPoker created successfully
-        System.out.println("Opdatering fra server: planningPokerID is created succesfully");
+        System.out.println("Opdatering fra server: planningPokerID is created successfully");
         propertyChangeSupport.firePropertyChange("planningPokerCreatedSuccess", null, serverAnswer);
         return serverAnswer;
       }
@@ -172,6 +172,14 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
         throw new RuntimeException();
       }
       return null;
+  }
+
+  @Override public void loadTaskList(String gameId) {
+    try {
+      this.loadTaskListFromServer(gameId);
+    } catch (RemoteException e) {
+      throw new RuntimeException();
+    }
   }
 
   @Override public void addPropertyChangeListener(
@@ -201,7 +209,6 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
   @Override public void loadTaskListFromServer(String gameId) throws RemoteException {
     ArrayList<Task> taskList = server.getTaskList(gameId);
     if(taskList != null) {
-      System.out.println("Client_RMI: Received taskList from server.");
       // Fires a PropertyChange event with a Null value to absorb any similarities to the contents inside any of the already loaded taskList:
       propertyChangeSupport.firePropertyChange("receivedUpdatedTaskList", null, null);
 

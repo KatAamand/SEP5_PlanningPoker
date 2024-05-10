@@ -69,7 +69,6 @@ public class GameViewModel {
         }
     }
 
-
     public void skipTask() {
         if (displayedTask != null) {
             gameModel.skipTask(displayedTask);
