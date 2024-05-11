@@ -283,7 +283,17 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
   @Override
   public void placeCard(UserCardData userCardData) {
         try {
+          System.out.println("Client_RMI: Requesting placed card");
             server.placeCard(userCardData);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+  }
+
+  @Override
+  public void requestClearPlacedCards() {
+    try {
+            server.requestClearPlacedCards();
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -335,6 +345,12 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
 
   @Override
   public void receivePlacedCard(UserCardData userCardData) throws RemoteException {
+    System.out.println("Client_RMI: Received placed card " + userCardData.getUsername() + " " + userCardData.getPlacedCard());
     propertyChangeSupport.firePropertyChange("placedCardReceived", null, userCardData);
+  }
+
+  @Override
+  public void clearPlacedCards() throws RemoteException {
+    propertyChangeSupport.firePropertyChange("clearPlacedCards", null, null);
   }
 }

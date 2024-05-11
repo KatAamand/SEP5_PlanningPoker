@@ -29,4 +29,5 @@ public interface ServerConnection_RMI extends Remote {
     ArrayList<Effort> getEffortList() throws RemoteException;
     void removeUserFromSession(User user) throws RemoteException;
     void placeCard(UserCardData userCardData) throws RemoteException;
+    void requestClearPlacedCards() throws RemoteException;
 }

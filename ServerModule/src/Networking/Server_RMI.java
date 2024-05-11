@@ -302,7 +302,13 @@ public class Server_RMI implements ServerConnection_RMI {
 
     @Override
     public void placeCard(UserCardData userCardData) throws RemoteException {
+        System.out.println("Server_RMI: Requesting placed card");
         gameServerModel.placeCard(userCardData, connectedClients, this);
+    }
+
+    @Override
+    public void requestClearPlacedCards() throws RemoteException {
+        gameServerModel.clearPlacedCards(connectedClients, this);
     }
 
     @Override

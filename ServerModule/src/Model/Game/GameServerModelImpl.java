@@ -7,6 +7,8 @@ import Database.Effort.EffortDAO;
 import Database.Effort.EffortDAOImpl;
 import Networking.ClientConnection_RMI;
 import Networking.ServerConnection_RMI;
+import Networking.Server_RMI;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
@@ -125,17 +127,43 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
 
     @Override
     public void placeCard(UserCardData userCardData, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) {
+        System.out.println("ServerModel: Placing card");
         clientCardMap.remove(userCardData.getUsername());
         clientCardMap.put(userCardData.getUsername(), userCardData.getPlacedCard());
 
         broadcastNewCard(userCardData, connectedClients, server);
     }
 
+    @Override
+    public void clearPlacedCards(ArrayList<ClientConnection_RMI> connectedClients, Server_RMI serverRmi) {
+        System.out.println("ServerModel: Clearing placed cards");
+        clientCardMap.clear();
+        for (ClientConnection_RMI client : connectedClients) {
+            Thread clearCardsThread = new Thread(() -> {
+                try {
+                    client.clearPlacedCards();
+                } catch (Exception e) {
+                    if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
+                        //Unregisters clients from the Server, who have lost connection in order to avoid further server errors.
+                        serverRmi.unRegisterClient(client);
+                    } else {
+                        //Error is something else:
+                        throw new RuntimeException();
+                    }
+                }
+            });
+            clearCardsThread.setDaemon(true);
+            clearCardsThread.start();
+        }
+    }
+
     public void broadcastNewCard(UserCardData userCardData, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) {
+        System.out.println("ServerModel: Broadcasting new card");
         for (ClientConnection_RMI client : connectedClients) {
             Thread sendCardsThread = new Thread(() -> {
                 try {
                     client.receivePlacedCard(userCardData);
+                    System.out.println("ServerModel: Sent card to client");
                 } catch (Exception e) {
                     if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
                         //Unregisters clients from the Server, who have lost connection in order to avoid further server errors.

@@ -92,7 +92,13 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
   }
 
   @Override
+  public void requestClearPlacedCards() {
+    clientConnection.requestClearPlacedCards();
+  }
+
+  @Override
   public void requestPlacedCard(UserCardData userCardData) {
+    System.out.println("Model: Requesting placed card");
     clientConnection.placeCard(userCardData);
   }
 
@@ -104,17 +110,20 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
   /** Assigns all the required listeners to the clientConnection allowing for Observable behavior between these classes. */
   private void assignListeners()
   {
+    clientConnection.addPropertyChangeListener("placedCardReceived", this::updatePlacedCardMap);
+    clientConnection.addPropertyChangeListener("clearPlacedCards", evt -> propertyChangeSupport.firePropertyChange("clearPlacedCards", null, null));
+
     clientConnection.addPropertyChangeListener("receivedListOfTasksToSkip", evt -> {
       if(evt.getNewValue() != null) {
         skippedTaskList = ((ArrayList<Task>) evt.getNewValue());
       }
       propertyChangeSupport.firePropertyChange("receivedListOfTasksToSkip", null, null);
     });
-    propertyChangeSupport.addPropertyChangeListener("placedCardReceived", this::updatePlacedCardMap);
   }
 
   @Override
   public void updatePlacedCardMap(PropertyChangeEvent propertyChangeEvent) {
+    System.out.println("Model: Updating placed card map");
     propertyChangeSupport.firePropertyChange("placedCardReceived", null, propertyChangeEvent.getNewValue());
   }
 

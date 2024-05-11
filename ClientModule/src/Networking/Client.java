@@ -3,6 +3,7 @@ package Networking;
 import DataTypes.*;
 import Util.PropertyChangeSubject;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public interface Client extends PropertyChangeSubject {
@@ -27,4 +28,6 @@ public interface Client extends PropertyChangeSubject {
     void removeUserFromSession();
     ArrayList<Effort> getEffortList();
     void placeCard(UserCardData userCardData);
+    void requestClearPlacedCards();
+    void clearPlacedCards() throws RemoteException;
 }
