@@ -106,27 +106,31 @@ public class TaskViewModel {
             taskControllerList.clear();
 
             for (int i = 0; i < numberOfTasks; i++) {
-                // Initialize a separate nested view and controller for each task:
-                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("SingleTaskListView.fxml"));
-                VBox newTask = fxmlLoader.load();
-                ((SingleTaskListViewController) fxmlLoader.getController()).initialize(this.getSingleTaskViewModelList().get(i));
-                taskControllerList.add(fxmlLoader.getController());
+                if(i < this.getSingleTaskViewModelList().size())
+                {
+                    // Initialize a separate nested view and controller for each task:
+                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("SingleTaskListView.fxml"));
+                    VBox newTask = fxmlLoader.load();
+                    ((SingleTaskListViewController) fxmlLoader.getController()).initialize(this.getSingleTaskViewModelList().get(i));
+                    taskControllerList.add(fxmlLoader.getController());
 
-                // Assign the created controller to this class list of nested controllers:
-                taskWrapper.getChildren().add(newTask);
+                    // Assign the created controller to this class list of nested controllers:
+                    taskWrapper.getChildren().add(newTask);
 
-                // Assign the necessary property bindings:
-                taskControllerList.get(i).getTaskHeaderLabel().textProperty().bindBidirectional(this.getSingleTaskViewModelList().get(i).getTaskHeaderLabelProperty());
-                taskControllerList.get(i).getTaskDescLabel().textProperty().bindBidirectional(this.getSingleTaskViewModelList().get(i).getTaskDescProperty());
-                taskControllerList.get(i).getIsBeingEstimatedLabel().textProperty().bindBidirectional(this.getSingleTaskViewModelList().get(i).getEstimationLabel());
+                    // Assign the necessary property bindings:
+                    taskControllerList.get(i).getTaskHeaderLabel().textProperty().bindBidirectional(this.getSingleTaskViewModelList().get(i).getTaskHeaderLabelProperty());
+                    taskControllerList.get(i).getTaskDescLabel().textProperty().bindBidirectional(this.getSingleTaskViewModelList().get(i).getTaskDescProperty());
+                    taskControllerList.get(i).getIsBeingEstimatedLabel().textProperty().bindBidirectional(this.getSingleTaskViewModelList().get(i).getEstimationLabel());
 
-                // Apply any previous formatting, in the case where we are refreshing a previously loaded list:
-                this.getSingleTaskViewModelList().get(i).reApplyApplicableStyle();
+                    // Apply any previous formatting, in the case where we are refreshing a previously loaded list:
+                    this.getSingleTaskViewModelList().get(i).reApplyApplicableStyle();
 
-                // If this task is currently being estimated on, apply a marker, so it is visually identified that this task is being estimated on:
-                if(ViewModelFactory.getInstance().getGameViewModel().taskHeaderPropertyProperty().getValue().equals(taskModel.getTaskList().get(i).getTaskHeader())
-                    && ViewModelFactory.getInstance().getGameViewModel().taskDescPropertyProperty().getValue().equals(taskModel.getTaskList().get(i).getDescription())) {
-                    this.getSingleTaskViewModelList().get(i).getEstimationLabel().setValue("-> ");
+                    // If this task is currently being estimated on, apply a marker, so it is visually identified that this task is being estimated on:
+                    if (ViewModelFactory.getInstance().getGameViewModel().taskHeaderPropertyProperty().getValue().equals(taskModel.getTaskList().get(i).getTaskHeader())
+                        && ViewModelFactory.getInstance().getGameViewModel().taskDescPropertyProperty().getValue().equals(taskModel.getTaskList().get(i).getDescription()))
+                    {
+                        this.getSingleTaskViewModelList().get(i).getEstimationLabel().setValue("-> ");
+                    }
                 }
             }
         }

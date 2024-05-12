@@ -52,7 +52,7 @@ class TaskTest {
 
     /** Tests Task setTask() && getTask() method:
      * Zombies: Zero/Null & Exception test */
-    @Test public void setTaskNameUpdatesTaskNameWhenReceivingNullArgument() {
+    @Test public void setTaskHeaderThrowsNullPointerExceptionWhenReceivingNullArgument() {
         // Arrange:
         String header = null;
 
@@ -63,8 +63,20 @@ class TaskTest {
 
 
     /** Tests Task setTask() && getTask() method:
+     * Zombies: Zero & Exception test */
+    @Test public void setTaskHeaderThrowsNullPointerExceptionWhenReceivingBlankArgument() {
+        // Arrange:
+        String header = " ";
+
+        // Act & Assert:
+        Task task = new Task("", "");
+        assertThrows(NullPointerException.class, () -> task.setTaskHeader(header));
+    }
+
+
+    /** Tests Task setTask() && getTask() method:
      * Zombies: One test */
-    @Test public void setTaskNameUpdatesTaskNameWhenReceivingStringArgument() {
+    @Test public void setTaskHeaderUpdatesTaskNameWhenReceivingStringArgument() {
         // Arrange:
         String header = "testHeaderName";
 
