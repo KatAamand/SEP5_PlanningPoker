@@ -53,40 +53,141 @@ public class GameViewModel {
         gameModel.addPropertyChangeListener("clearPlacedCards", evt -> Platform.runLater(this::clearPlacedCards));
     }
 
-    private void clearPlacedCards() {
-        placedCardsWrapper.getChildren().clear();
-        placedCards.clear();
+
+    public void refresh() {
+        Task nextTask = gameModel.nextTaskToEvaluate();
+
+        displayedTask = gameModel.nextTaskToEvaluate();
+        System.out.println("showing: " + displayedTask);
+
+        if (nextTask != null) {
+            taskHeaderPropertyProperty().setValue(nextTask.getTaskHeader());
+            taskDescPropertyProperty().setValue(nextTask.getDescription());
+        } else {
+            taskHeaderPropertyProperty().setValue("No more tasks");
+            taskDescPropertyProperty().setValue("No more tasks");
+        }
+
+        clearPlacedCards();
     }
 
-    private void updatePlacedCard(UserCardData newValue) {
-        System.out.println("ViewModel: Received placed card: " + newValue.getUsername() + " " + newValue.getPlacedCard());
-        boolean found = false;
-        for (UserCardData card : placedCards) {
-            if (card.getUsername().equals(newValue.getUsername())) {
-                int i = placedCards.indexOf(card);
-                placedCards.set(i, newValue);
-                found = true;
-                break;
+
+    // Tasks methods
+    public void skipTask() {
+        if (displayedTask != null) {
+            gameModel.skipTask(displayedTask);
+        }
+        this.refresh();
+    }
+
+    public Property<String> taskHeaderPropertyProperty() {
+        return taskHeaderProperty;
+    }
+
+    public Property<String> taskDescPropertyProperty() {
+        return taskDescProperty;
+    }
+
+
+    // Efforts and card methods
+    public void getEffortList() {
+        this.effortList = gameModel.getEffortList();
+    }
+
+    public void getPossiblePlayingCards(StackPane effortWrapper) {
+        Platform.runLater(() -> {
+            int counter = 0;
+            for (Effort effort : effortList) {
+                Image image = new Image(getClass().getResourceAsStream(effort.getImgPath()));
+                CustomImageView imageView = new CustomImageView(image, effort.getEffortValue());
+                imageView.setFitHeight(125);
+                imageView.setFitWidth(90);
+
+                imageView.setTranslateX(counter);
+                counter += 60;
+
+                // adding hover effects for cards
+                imageView.setOnMouseEntered(
+                        e -> imageView.getStyleClass().add("card-hover"));
+                imageView.setOnMouseExited(
+                        e -> imageView.getStyleClass().remove("card-hover"));
+
+                imageView.setOnMouseClicked(event -> handleCardSelection(imageView, effortWrapper));
+                effortWrapper.getChildren().add(imageView);
             }
+        });
+    }
+
+    public void handleCardSelection(CustomImageView selectedCard, StackPane effortWrapper) {
+        String currentUser = Session.getCurrentUser().getUsername();
+
+        effortWrapper.getChildren().forEach(node -> node.getStyleClass().remove("card-selected"));
+        selectedCard.getStyleClass().add("card-selected");
+
+        handleCardPlacement(selectedCard, currentUser);
+    }
+
+    public void setPlacedCardsWrapper(HBox placedCardsWrapper) {
+        this.placedCardsWrapper = placedCardsWrapper;
+    }
+
+    // Request methods
+    public void requestPlacedCard(String username, String placedCard) {
+        UserCardData placedCardData = new UserCardData(username, placedCard);
+        gameModel.requestPlacedCard(placedCardData);
+    }
+
+    public void requestClearPlacedCards() {
+        gameModel.requestClearPlacedCards();
+    }
+
+    public void showPlacedCards() {
+        Platform.runLater(() -> {
+            flipAllCards();
+            ifAllPlacedCardsAreAlike();
+        });
+    }
+
+
+    // helper functions
+    private void ifAllPlacedCardsAreAlike() {
+        if (placedCards.size() > 1) {
+            String firstCard = placedCards.get(0).getPlacedCard();
+            for (UserCardData card : placedCards) {
+                System.out.println("card: " + card.getPlacedCard() + " firstCard: " + firstCard);
+                if (!firstCard.equals(card.getPlacedCard())) {
+                    System.out.println("cards are not the same");
+                    return;
+                }
+            }
+            setFinalEffort(firstCard);
+            activateHulaDancers();
         }
-        if (!found) {
-            placedCards.add(newValue);
-        }
-        System.out.println("Placed cards list size: " + placedCards.size());
-        updatePlacedCardsWrapper();
+    }
+
+    private void handleCardPlacement(CustomImageView selectedCard, String currentUser) {
+        String cardValue = selectedCard.getEffortValue();
+        requestPlacedCard(currentUser, cardValue);
+    }
+
+    private Node getBackImageView() {
+        Image back = new Image(getClass().getResourceAsStream("/Images/back.jpg"));
+        ImageView backImageView = new ImageView(back);
+        backImageView.setFitHeight(140);
+        backImageView.setFitWidth(105);
+        return backImageView;
     }
 
     private void updatePlacedCardsWrapper() {
         Platform.runLater(() -> {
             placedCardsWrapper.getChildren().clear();  // Clear previous views to avoid stacking
+            placedCardsWrapper.setSpacing(5);
             for (UserCardData card : placedCards) {
-                System.out.println("Updating placed cards wrapper: " + card.getUsername() + " " + card.getPlacedCard());
                 VBox cardWrapper = createCardWrapper(card);
                 placedCardsWrapper.getChildren().add(cardWrapper);
             }
         });
     }
-
 
     private VBox createCardWrapper(UserCardData card) {
         VBox newCardWrapper = new VBox();
@@ -155,102 +256,42 @@ public class GameViewModel {
         return null;
     }
 
-    public void refresh() {
-        Task nextTask = gameModel.nextTaskToEvaluate();
-
-        displayedTask = gameModel.nextTaskToEvaluate();
-        System.out.println("showing: " + displayedTask);
-
-        if (nextTask != null) {
-            taskHeaderPropertyProperty().setValue(nextTask.getTaskHeader());
-            taskDescPropertyProperty().setValue(nextTask.getDescription());
-        } else {
-            taskHeaderPropertyProperty().setValue("No more tasks");
-            taskDescPropertyProperty().setValue("No more tasks");
-        }
-
-        clearPlacedCards();
+    private void clearPlacedCards() {
+        placedCardsWrapper.getChildren().clear();
+        placedCards.clear();
     }
 
-    public void skipTask() {
-        if (displayedTask != null) {
-            gameModel.skipTask(displayedTask);
-        }
-        this.refresh();
-    }
-
-    public Property<String> taskHeaderPropertyProperty() {
-        return taskHeaderProperty;
-    }
-
-    public Property<String> taskDescPropertyProperty() {
-        return taskDescProperty;
-    }
-
-    public void getEffortList() {
-        this.effortList = gameModel.getEffortList();
-    }
-
-    public void getPossiblePlayingCards(StackPane effortWrapper) {
-        Platform.runLater(() -> {
-            int counter = 0;
-            for (Effort effort : effortList) {
-                Image image = new Image(getClass().getResourceAsStream(effort.getImgPath()));
-                CustomImageView imageView = new CustomImageView(image, effort.getEffortValue());
-                imageView.setFitHeight(125);
-                imageView.setFitWidth(90);
-
-                imageView.setTranslateX(counter);
-                counter += 60;
-
-                // adding hover effects for cards
-                imageView.setOnMouseEntered(
-                        e -> imageView.getStyleClass().add("card-hover"));
-                imageView.setOnMouseExited(
-                        e -> imageView.getStyleClass().remove("card-hover"));
-
-                imageView.setOnMouseClicked(event -> handleCardSelection(imageView, effortWrapper));
-                effortWrapper.getChildren().add(imageView);
+    private void updatePlacedCard(UserCardData newValue) {
+        boolean found = false;
+        for (UserCardData card : placedCards) {
+            if (card.getUsername().equals(newValue.getUsername())) {
+                int i = placedCards.indexOf(card);
+                placedCards.set(i, newValue);
+                found = true;
+                break;
             }
-        });
+        }
+        if (!found) {
+            placedCards.add(newValue);
+        }
+        updatePlacedCardsWrapper();
     }
 
-    public void handleCardSelection(CustomImageView selectedCard, StackPane effortWrapper) {
-        String currentUser = Session.getCurrentUser().getUsername();
+    private void activateHulaDancers() {
+        System.out.println("Hula dancers activated");
+        HBox hulaContainer = new HBox();
 
-        effortWrapper.getChildren().forEach(node -> node.getStyleClass().remove("card-selected"));
-        selectedCard.getStyleClass().add("card-selected");
+        Image hulaGIF = new Image(getClass().getResourceAsStream("/Images/hula_girls.gif"));
+        ImageView hulaView = new ImageView(hulaGIF);
+        hulaView.setFitHeight(300);
+        hulaView.setFitWidth(300);
 
-        handleCardPlacement(selectedCard, currentUser);
+        hulaContainer.getChildren().add(hulaView);
+        placedCardsWrapper.getChildren().add(hulaContainer);
     }
 
-    private void handleCardPlacement(CustomImageView selectedCard, String currentUser) {
-        String cardValue = selectedCard.getEffortValue();
-        requestPlacedCard(currentUser, cardValue);
+    private void setFinalEffort(String effortValue) {
+        displayedTask.setFinalEffort(effortValue);
     }
 
-    private Node getBackImageView() {
-        Image back = new Image(getClass().getResourceAsStream("/Images/back.jpg"));
-        ImageView backImageView = new ImageView(back);
-        backImageView.setFitHeight(140);
-        backImageView.setFitWidth(105);
-        return backImageView;
-    }
-
-    public void setPlacedCardsWrapper(HBox placedCardsWrapper) {
-        this.placedCardsWrapper = placedCardsWrapper;
-    }
-
-    public void requestPlacedCard(String username, String placedCard) {
-        UserCardData placedCardData = new UserCardData(username, placedCard);
-        gameModel.requestPlacedCard(placedCardData);
-    }
-
-    public void requestClearPlacedCards() {
-        gameModel.requestClearPlacedCards();
-    }
-
-    public void showPlacedCards() {
-        Platform.runLater(this::flipAllCards);
-    }
 }
