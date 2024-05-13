@@ -231,18 +231,37 @@ public class GameViewModel {
     }
 
     private void flipCard(ImageView front, ImageView back) {
-        ScaleTransition scaleTransition = new ScaleTransition(Duration.seconds(0.3), front);
-        scaleTransition.setFromX(1);
-        scaleTransition.setToX(0);
-        scaleTransition.setOnFinished(e -> {
-            front.setVisible(!front.isVisible());
-            back.setVisible(!back.isVisible());
-            ScaleTransition scaleTransitionBack = new ScaleTransition(Duration.seconds(0.3), back);
-            scaleTransitionBack.setFromX(0);
-            scaleTransitionBack.setToX(1);
-            scaleTransitionBack.play();
-        });
-        scaleTransition.play();
+        if (front.isVisible()) {
+            // If the front is currently visible, hide it and show the back
+            ScaleTransition hideFront = new ScaleTransition(Duration.seconds(0.3), front);
+            hideFront.setFromX(1);
+            hideFront.setToX(0);
+            hideFront.setOnFinished(e -> {
+                front.setVisible(false);
+                back.setVisible(true);
+                ScaleTransition showBack = new ScaleTransition(Duration.seconds(0.3), back);
+                showBack.setFromX(0);
+                showBack.setToX(1);
+                showBack.play();
+            });
+            hideFront.play();
+        } else {
+            // If the back is currently visible, hide it and show the front
+            ScaleTransition hideBack = new ScaleTransition(Duration.seconds(0.3), back);
+            hideBack.setFromX(1);
+            hideBack.setToX(0);
+            hideBack.setOnFinished(e -> {
+                back.setVisible(false);
+                front.setVisible(true);
+                ScaleTransition showFront = new ScaleTransition(Duration.seconds(0.3), front);
+                showFront.setFromX(0);
+                showFront.setToX(1);
+                showFront.play();
+            });
+            hideBack.play();
+        }
+
+
     }
 
     private String getEffortImagePath(String value) {
