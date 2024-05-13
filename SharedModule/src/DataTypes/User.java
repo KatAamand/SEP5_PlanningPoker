@@ -1,5 +1,7 @@
 package DataTypes;
 
+import DataTypes.UserRoles.Role;
+
 import java.io.Serializable;
 
 public class User implements Serializable
@@ -7,6 +9,7 @@ public class User implements Serializable
   private String username;
   private String password;
   private PlanningPoker planningPoker;
+  private Role role;
 
   public User(String username, String password)
   {
