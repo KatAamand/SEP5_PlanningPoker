@@ -1,18 +1,12 @@
 package Model.Task;
 
-import DataTypes.PlanningPoker;
 import DataTypes.Task;
-import Database.PlanningPoker.PlanningPokerDAO;
-import Database.PlanningPoker.PlanningPokerDAOImpl;
-import Database.Task.TaskDAO;
-import Database.Task.TaskDAOImpl;
 import Networking.ClientConnection_RMI;
 import Networking.ServerConnection_RMI;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,58 +20,28 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable{
   private volatile static TaskServerModel instance;
   private static final Lock lock = new ReentrantLock();
   private Map<String, List<Task>> tasklistMap;
-  private TaskDAO taskDAO;
-  private PlanningPokerDAO planningPokerDAO;
 
 
   private TaskServerModelImpl() {
     //TODO: Refactor so that it in the future loads the list from a database.
     this.tasklistMap = new HashMap<>();
-      try {
-          this.taskDAO = TaskDAOImpl.getInstance();
-          this.planningPokerDAO = PlanningPokerDAOImpl.getInstance();
-      } catch (SQLException e) {
-          throw new RuntimeException("Failed to initialize DAO", e);
-      }
-      
-      getAllTasksFromDB();
-  }
-
-  private void getAllTasksFromDB() {
-    ArrayList<PlanningPoker> allPlanningPokers;
-
-    try {
-      allPlanningPokers = planningPokerDAO.getAllPlanningPoker();
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
-    }
-
-    for (PlanningPoker planningPoker : allPlanningPokers) {
-        List<Task> tasks;
-        try {
-            tasks = taskDAO.readByPlanningPokerId(Integer.parseInt(planningPoker.getPlanningPokerID()));
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        tasklistMap.put(String.valueOf(planningPoker.getPlanningPokerID()), tasks);
-    }
 
   }
 
-  private void fireTaskListDataUpdatedEvent(String planningPokerId) {
+  private void fireTaskListDataUpdatedEvent(String gameId) {
     // Fires a PropertyChange event with a Null value to absorb any similarities to the contents of the value in the previously fired PropertyChange event:
     propertyChangeSupport.firePropertyChange("TaskDataChanged", null, null);
 
     // Fires the proper PropertyChange event, with the taskList attached as the newValue():
-    propertyChangeSupport.firePropertyChange("TaskDataChanged", null, planningPokerId);
+    propertyChangeSupport.firePropertyChange("TaskDataChanged", null, gameId);
   }
 
 
-  @Override public void addTask(Task task, String planningPokerId) {
+  @Override public void addTask(Task task, String gameId) {
     List<Task> taskList;
 
-    if(tasklistMap.get(planningPokerId) != null) {
-      taskList = tasklistMap.get(planningPokerId);
+    if(tasklistMap.get(gameId) != null) {
+      taskList = tasklistMap.get(gameId);
     } else {
       taskList = new ArrayList<>();
     }
@@ -89,32 +53,21 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable{
       taskList.add(task);
     }
 
-    tasklistMap.put(planningPokerId, taskList);
-
-    createTaskInDB(task, planningPokerId);
+    tasklistMap.put(gameId, taskList);
 
     System.out.println("Server: Added a task.");
-    fireTaskListDataUpdatedEvent(planningPokerId);
-  }
-
-  private void createTaskInDB(Task task, String planningPokerId) {
-      try {
-          taskDAO.create(task.getTaskHeader(), task.getDescription(), Integer.parseInt(planningPokerId));
-          System.out.println("TaskServerModelImpl: Task created in DB.");
-      } catch (SQLException e) {
-          throw new RuntimeException(e);
-      }
+    fireTaskListDataUpdatedEvent(gameId);
   }
 
 
-  @Override public boolean removeTask(Task task, String planningPokerId) {
+  @Override public boolean removeTask(Task task, String gameId) {
     List<Task> taskList;
 
-    if (tasklistMap.get(planningPokerId) != null) {
-      taskList = tasklistMap.get(planningPokerId);
+    if (tasklistMap.get(gameId) != null) {
+      taskList = tasklistMap.get(gameId);
       if (taskList.remove(task)) {
         System.out.println("TaskServerModelImpl: Removed a task.");
-        fireTaskListDataUpdatedEvent(planningPokerId);
+        fireTaskListDataUpdatedEvent(gameId);
         return true;
       }
     }
@@ -123,14 +76,14 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable{
   }
 
 
-  @Override public boolean editTask(Task oldTask, Task newTask, String planningPokerId)
+  @Override public boolean editTask(Task oldTask, Task newTask, String gameId)
   {
     // Find appropriate taskList assigned to this game:
     List<Task> taskList;
-    if (tasklistMap.get(planningPokerId) != null)
+    if (tasklistMap.get(gameId) != null)
     {
       // Set the taskList from the found game:
-      taskList = tasklistMap.get(planningPokerId);
+      taskList = tasklistMap.get(gameId);
       // Check if the oldTask even exists in the list:
       if(taskList.contains(oldTask))
       {
@@ -140,9 +93,7 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable{
             task.copyAttributesFromTask(newTask);
             System.out.println("TaskServerModelImpl: Edited a task.");
 
-            updateTaskInDB(newTask);
-
-            fireTaskListDataUpdatedEvent(planningPokerId);
+            fireTaskListDataUpdatedEvent(gameId);
             return true;
           }
         }
@@ -153,20 +104,12 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable{
     return false;
   }
 
-  private void updateTaskInDB(Task newTask) {
-      try {
-          taskDAO.update(newTask);
-      } catch (SQLException e) {
-          throw new RuntimeException(e);
-      }
-  }
 
-
-  @Override public ArrayList<Task> getTaskList(String planningPokerId) {
+  @Override public ArrayList<Task> getTaskList(String gameId) {
     ArrayList<Task> taskList;
 
-    if(tasklistMap.get(planningPokerId) != null) {
-      return (ArrayList<Task>) tasklistMap.get(planningPokerId);
+    if(tasklistMap.get(gameId) != null) {
+      return (ArrayList<Task>) tasklistMap.get(gameId);
     } else {
       taskList = new ArrayList<>();
     }
@@ -174,23 +117,9 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable{
     return taskList;
   }
 
-  @Override
-  public ArrayList<Task> getTaskListFromDB(String planningPokerId) {
-    ArrayList<Task> allTasksFromPlanningPoker;
-
-      try {
-          allTasksFromPlanningPoker = taskDAO.readByPlanningPokerId(Integer.parseInt(planningPokerId));
-      } catch (SQLException e) {
-          throw new RuntimeException(e);
-      }
-
-      return allTasksFromPlanningPoker;
-  }
-
-
-  @Override public void broadcastTaskListUpdate(Map<String, ArrayList<ClientConnection_RMI>> clientList, ServerConnection_RMI server, String planningPokerId)
+  @Override public void broadcastTaskListUpdate(Map<String, ArrayList<ClientConnection_RMI>> clientList, ServerConnection_RMI server, String gameId)
   {
-    ArrayList<ClientConnection_RMI> receivingClients = clientList.get(planningPokerId);
+    ArrayList<ClientConnection_RMI> receivingClients = clientList.get(gameId);
     if(receivingClients != null) {
       for (int i = 0; i < receivingClients.size(); i++) {
         if(receivingClients.get(i) == null) {
@@ -199,18 +128,18 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable{
         }
       }
 
-      System.out.println("Server: Broadcasting changes to the task list to clients in game [" + planningPokerId + "]");
+      System.out.println("Server: Broadcasting changes to the task list to clients in game [" + gameId + "]");
       for (ClientConnection_RMI client : receivingClients) {
         //Create a new thread for each connected client, and then call the desired broadcast operation. This minimizes server lag/hanging due to clients who have connection issues.
         Thread transmitThread = new Thread(() -> {
           try {
-            client.loadTaskListFromServer(planningPokerId);
+            client.loadTaskListFromServer(gameId);
           }
           catch (RemoteException e) {
             if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
               //Unregisters clients from the Game Server, who have lost connection in order to avoid further server errors.
               try {
-                server.unRegisterClientFromGame(client, planningPokerId);
+                server.unRegisterClientFromGame(client, gameId);
               } catch (RemoteException ex) {
                 throw new RuntimeException();
               }
