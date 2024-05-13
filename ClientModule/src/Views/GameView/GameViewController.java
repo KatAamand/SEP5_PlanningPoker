@@ -59,4 +59,7 @@ public class GameViewController {
     public void onClearCardsButtonPressed() {
         gameViewModel.requestClearPlacedCards();
     }
+    public void onShowCardsButtonPressed() {
+        gameViewModel.showPlacedCards();
+    }
 }

@@ -6,6 +6,7 @@ import DataTypes.Effort;
 import DataTypes.Task;
 import DataTypes.UserCardData;
 import Model.Game.GameModel;
+import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
@@ -17,11 +18,13 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Stack;
 
 public class GameViewModel {
     PropertyChangeSupport propertyChangeSupport;
@@ -92,21 +95,60 @@ public class GameViewModel {
         StackPane cardWrapper = new StackPane();
 
         String imagePath = getEffortImagePath(card.getPlacedCard());
-        System.out.println("Creating card wrapper: imagePath: " + imagePath);
         Image image = new Image(getClass().getResourceAsStream(imagePath));
-        CustomImageView clone = new CustomImageView(image, card.getPlacedCard());
-        clone.setFitHeight(140);
-        clone.setFitWidth(105);
+        CustomImageView frontImageView = new CustomImageView(image, card.getPlacedCard());
+        frontImageView.setFitHeight(140);
+        frontImageView.setFitWidth(105);
+        frontImageView.setVisible(false);
 
-        cardWrapper.getChildren().addAll(clone, getBackImageView());
+        ImageView backImageView = (ImageView) getBackImageView();
+        backImageView.setVisible(true);
+
+        cardWrapper.getChildren().addAll(frontImageView, backImageView);
         newCardWrapper.getChildren().addAll(cardUsername, cardWrapper);
+
+        cardWrapper.getStyleClass().add("card-flip");
+        frontImageView.getStyleClass().add("card-front");
+        backImageView.getStyleClass().add("card-back");
+
         return newCardWrapper;
+    }
+
+    private void flipAllCards() {
+        for (Node node : placedCardsWrapper.getChildren()) {
+            if (node instanceof VBox) {
+                VBox vbox = (VBox) node;
+                if (!vbox.getChildren().isEmpty() && vbox.getChildren().get(1) instanceof StackPane) {
+                    StackPane stackPane = (StackPane) vbox.getChildren().get(1);
+                    if (stackPane.getChildren().size() == 2) {
+                        ImageView front = (ImageView) stackPane.getChildren().get(1);
+                        ImageView back = (ImageView) stackPane.getChildren().get(0);
+
+                        flipCard(front, back);
+                    }
+                }
+            }
+        }
+    }
+
+    private void flipCard(ImageView front, ImageView back) {
+        ScaleTransition scaleTransition = new ScaleTransition(Duration.seconds(0.3), front);
+        scaleTransition.setFromX(1);
+        scaleTransition.setToX(0);
+        scaleTransition.setOnFinished(e -> {
+            front.setVisible(!front.isVisible());
+            back.setVisible(!back.isVisible());
+            ScaleTransition scaleTransitionBack = new ScaleTransition(Duration.seconds(0.3), back);
+            scaleTransitionBack.setFromX(0);
+            scaleTransitionBack.setToX(1);
+            scaleTransitionBack.play();
+        });
+        scaleTransition.play();
     }
 
     private String getEffortImagePath(String value) {
         for (Effort effort : effortList) {
             if (effort.getEffortValue().equals(value)) {
-                System.out.println("Found effort: " + effort.getEffortValue() + " " + effort.getImgPath());
                 return effort.getImgPath();
             }
         }
@@ -206,5 +248,9 @@ public class GameViewModel {
 
     public void requestClearPlacedCards() {
         gameModel.requestClearPlacedCards();
+    }
+
+    public void showPlacedCards() {
+        Platform.runLater(this::flipAllCards);
     }
 }
