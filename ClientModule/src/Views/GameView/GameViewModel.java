@@ -23,8 +23,6 @@ import javafx.util.Duration;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Stack;
 
 public class GameViewModel {
     PropertyChangeSupport propertyChangeSupport;
@@ -99,7 +97,7 @@ public class GameViewModel {
             int counter = 0;
             for (Effort effort : effortList) {
                 Image image = new Image(getClass().getResourceAsStream(effort.getImgPath()));
-                CustomImageView imageView = new CustomImageView(image, effort.getEffortValue());
+                CustomImageView imageView = new CustomImageViewAdapter(image, effort.getEffortValue());
                 imageView.setFitHeight(125);
                 imageView.setFitWidth(90);
 
@@ -113,7 +111,7 @@ public class GameViewModel {
                         e -> imageView.getStyleClass().remove("card-hover"));
 
                 imageView.setOnMouseClicked(event -> handleCardSelection(imageView, effortWrapper));
-                effortWrapper.getChildren().add(imageView);
+                effortWrapper.getChildren().add((Node) imageView);
             }
         });
     }
@@ -197,7 +195,7 @@ public class GameViewModel {
 
         String imagePath = getEffortImagePath(card.getPlacedCard());
         Image image = new Image(getClass().getResourceAsStream(imagePath));
-        CustomImageView frontImageView = new CustomImageView(image, card.getPlacedCard());
+        CustomImageViewAdapter frontImageView = new CustomImageViewAdapter(image, card.getPlacedCard());
         frontImageView.setFitHeight(140);
         frontImageView.setFitWidth(105);
         frontImageView.setVisible(false);
