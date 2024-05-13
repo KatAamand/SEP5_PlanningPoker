@@ -52,6 +52,7 @@ public class GameViewModel {
 
     private void clearPlacedCards() {
         placedCardsWrapper.getChildren().clear();
+        placedCards.clear();
     }
 
     private void updatePlacedCard(UserCardData newValue) {
@@ -125,6 +126,8 @@ public class GameViewModel {
             taskHeaderPropertyProperty().setValue("No more tasks");
             taskDescPropertyProperty().setValue("No more tasks");
         }
+
+        clearPlacedCards();
     }
 
     public void skipTask() {
