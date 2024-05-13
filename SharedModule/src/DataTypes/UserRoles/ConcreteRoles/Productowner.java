@@ -7,16 +7,20 @@ import DataTypes.UserRoles.UserRole;
 import java.util.ArrayList;
 import java.util.List;
 
-/** A Developer is the basic most low-level role that a user in the application can hold. It contains the bare essential permissions for the general interactions with the application as a user. */
-public class Developer implements Role
+/** A Product Owner also has all the same permissions as a Developer, as well as the specific permissions required for a Product Owner. */
+public class Productowner implements Role
 {
   private List<UserPermission> permissions; // The specific permissions can be found in the UserRoles.UserPermission.java class. These are used when determining whether this user may or may not perform specific actions.
 
-  public Developer() {
+  public Productowner() {
     permissions = new ArrayList<>();
 
-    // Add all the permissions the developer role should have, below:
-    permissions.add(UserPermission.EXPORT_TASKLIST);
+    // Add all the permissions the Product Owner role should have, below:
+    this.copyAndApplyPermissionsFrom(new Developer());
+    permissions.add(UserPermission.CREATE_TASK);
+    permissions.add(UserPermission.EDIT_TASK);
+    permissions.add(UserPermission.DELETE_TASK);
+    permissions.add(UserPermission.IMPORT_TASKLIST);
   }
 
   @Override public List<UserPermission> getPermissions() {
@@ -24,7 +28,7 @@ public class Developer implements Role
   }
 
   @Override public UserRole getRole() {
-    return UserRole.DEVELOPER;
+    return UserRole.PRODUCT_OWNER;
   }
 
   @Override public void copyAndApplyPermissionsFrom(Role role) throws NullPointerException {
@@ -37,12 +41,12 @@ public class Developer implements Role
   }
 
   @Override public boolean equals(Object obj) {
-    if(!(obj instanceof Developer))
+    if(!(obj instanceof Productowner))
     {
       return false;
     }
-    Developer dev = (Developer) obj;
-    return (this.getRole().equals(dev.getRole())
-        && this.getPermissions().equals(dev.getPermissions()));
+    Productowner pOwner = (Productowner) obj;
+    return (this.getRole().equals(pOwner.getRole())
+        && this.getPermissions().equals(pOwner.getPermissions()));
   }
 }

@@ -1,5 +1,6 @@
 package DataTypes;
 
+import DataTypes.UserRoles.ConcreteRoles.Developer;
 import DataTypes.UserRoles.Role;
 
 import java.io.Serializable;
@@ -15,6 +16,7 @@ public class User implements Serializable
   {
     setUsername(username);
     setPassword(password);
+    setRole(new Developer());
   }
 
   public void setUsername(String userName)
@@ -27,13 +29,11 @@ public class User implements Serializable
     return this.username;
   }
 
-  public void setPassword(String pswd)
-  {
+  public void setPassword(String pswd) {
     this.password = pswd;
   }
 
-  public String getPassword()
-  {
+  public String getPassword() {
     return this.password;
   }
 
@@ -46,20 +46,32 @@ public class User implements Serializable
     planningPoker.addUserToSession(this);
   }
 
-  @Override public boolean equals(Object obj)
-  {
+  public Role getRole() {
+    return this.role;
+  }
+
+  public void setRole(Role role) {
+    if(role == null) {
+      throw new NullPointerException();
+    } else {
+      this.role = role;
+    }
+  }
+
+  @Override public boolean equals(Object obj) {
     if(!(obj instanceof User))
     {
       return false;
     }
     User user = (User) obj;
     return (this.getUsername().equals(user.getUsername())
-        && this.getPassword().equals(user.getPassword()));
+        && this.getPassword().equals(user.getPassword())
+        && this.getRole().equals(user.getRole()));
   }
 
-
-  public User copy()
-  {
-    return new User(this.getUsername(), this.getPassword());
+  public User copy() {
+    User newUser = new User(this.getUsername(), this.getPassword());
+    newUser.setRole(this.getRole());
+    return newUser;
   }
 }
