@@ -14,11 +14,11 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
 {
-  private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(
-      this);
+  private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
   private Client clientConnection;
   private ArrayList<Task> skippedTaskList;
 
@@ -78,8 +78,7 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
         skippedTaskList.add(task);
 
         // Transfer the skipped taskList to connected clients, so all clients have the same experience.
-        clientConnection.skipTasks(skippedTaskList,
-            super.getActivePlanningPokerGame().getPlanningPokerID());
+        clientConnection.skipTasks(skippedTaskList, super.getActivePlanningPokerGame().getPlanningPokerID());
         return;
       }
     }
@@ -89,8 +88,10 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
     skippedTaskList.add(task);
 
     // Transfer the skipped taskList to connected clients, so all clients have the same experience.
-    clientConnection.skipTasks(skippedTaskList,super.getActivePlanningPokerGame().getPlanningPokerID());
+    clientConnection.skipTasks(skippedTaskList, super.getActivePlanningPokerGame().getPlanningPokerID());
   }
+
+
 
   @Override public void refreshTaskList()
   {
@@ -116,6 +117,24 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
   @Override public ArrayList<Task> getSkippedTaskList()
   {
     return this.skippedTaskList;
+  }
+
+  @Override public synchronized void removeTaskFromSkippedList(Task task) {
+    // In order to avoid concurrency issues here, since the skippedTaskList is concurrently being sent to other clients while this tasks possibly is running,
+    // we simply create a copy of the skipped task list and use this as a reference to the tasks to remove from the original skippedTaskList.
+    ArrayList<Task> copyOfSkippedTaskList = new ArrayList<>(skippedTaskList);
+    boolean dataRemoved = false;
+    for (Task skippedTask : copyOfSkippedTaskList) {
+      if(skippedTask.equals(task)) {
+        skippedTaskList.remove(skippedTask);
+        dataRemoved = true;
+      }
+    }
+
+    // Advise the server to update the skipped task list for all connected clients to the current game:
+    if(dataRemoved) {
+      clientConnection.skipTasks(copyOfSkippedTaskList, super.getActivePlanningPokerGame().getPlanningPokerID());
+    }
   }
 
   /** Assigns all the required listeners to the clientConnection allowing for Observable behavior between these classes. */

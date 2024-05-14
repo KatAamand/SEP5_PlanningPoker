@@ -2,6 +2,7 @@ package Views.GameView;
 
 import Application.ModelFactory;
 import Application.Session;
+import Application.ViewModelFactory;
 import DataTypes.Effort;
 import DataTypes.Task;
 import DataTypes.UserCardData;
@@ -54,13 +55,19 @@ public class GameViewModel
 
         placedCards = new ArrayList<>();
 
-        //Assign listeners:
-        propertyChangeSupport = new PropertyChangeSupport(this);
-        gameModel.addPropertyChangeListener("placedCardReceived", evt -> updatePlacedCard((UserCardData) evt.getNewValue()));
-        gameModel.addPropertyChangeListener("receivedListOfTasksToSkip", evt -> Platform.runLater(this::refresh));
-        gameModel.addPropertyChangeListener("clearPlacedCards", evt -> Platform.runLater(this::clearPlacedCards));
-        gameModel.addPropertyChangeListener("taskListUpdated", evt -> Platform.runLater(this::refresh));
-    }
+    //Assign listeners:
+    propertyChangeSupport = new PropertyChangeSupport(this);
+    gameModel.addPropertyChangeListener("placedCardReceived",     evt -> updatePlacedCard((UserCardData) evt.getNewValue()));
+    gameModel.addPropertyChangeListener("receivedListOfTasksToSkip", evt -> Platform.runLater( () -> {
+          this.refresh();
+          try {
+            ViewModelFactory.getInstance().getTaskViewModel().refresh();
+          } catch (RemoteException e) {
+            throw new RuntimeException();
+          }}));
+    gameModel.addPropertyChangeListener("clearPlacedCards",     evt -> Platform.runLater(this::clearPlacedCards));
+    gameModel.addPropertyChangeListener("taskListUpdated", evt -> Platform.runLater(this::refresh));
+  }
 
 
   public void refresh() {
@@ -107,43 +114,48 @@ public class GameViewModel
     clearPlacedCards();
   }
 
-    public void skipTask() {
-        if (displayedTask != null) {
-            gameModel.skipTask(displayedTask);
-        }
-        this.refresh();
-        gameModel.refreshTaskList();
+  public void skipTask() {
+    if (displayedTask != null) {
+        gameModel.skipTask(displayedTask);
     }
+    this.refresh();
+    gameModel.refreshTaskList();
+  }
 
-    public Task getDisplayedTask() {
-        return this.displayedTask;
-    }
+  public Task getDisplayedTask() {
+      return this.displayedTask;
+  }
 
-    public Property<String> taskHeaderPropertyProperty() {
-        return taskHeaderProperty;
-    }
+  public Property<String> taskHeaderPropertyProperty()
+  {
+    return taskHeaderProperty;
+  }
 
-    public Property<String> taskDescPropertyProperty() {
-        return taskDescProperty;
-    }
+  public Property<String> taskDescPropertyProperty()
+  {
+    return taskDescProperty;
+  }
 
-    public Property<String> finalEffortLabelProperty() {
-        return finalEffortLabelProperty;
-    }
+  public Property<String> finalEffortLabelProperty()
+  {
+    return finalEffortLabelProperty;
+  }
 
-    public void setFinalEffortLabel(String finalEffortvalue) {
-        Task nonEditedTask = displayedTask.copy();
-        displayedTask.setFinalEffort(finalEffortvalue);
-        try {
-            ModelFactory.getInstance().getTaskModel().editTask(nonEditedTask, displayedTask);
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
+  public void setFinalEffortLabel(String finalEffortvalue) {
+    Task nonEditedTask = displayedTask.copy();
+    displayedTask.setFinalEffort(finalEffortvalue);
+    try {
+      ModelFactory.getInstance().getTaskModel().editTask(nonEditedTask, displayedTask);
+      Platform.runLater(() -> gameModel.removeTaskFromSkippedList(displayedTask));
+    } catch (RemoteException e) {
+      throw new RuntimeException(e);
     }
+  }
 
-    public void getEffortList() {
-        this.effortList = gameModel.getEffortList();
-    }
+  public void getEffortList()
+  {
+    this.effortList = gameModel.getEffortList();
+  }
 
   public void setSkipButtonRef(Button skipButtonRef) {
     this.skipButtonRef = skipButtonRef;
