@@ -10,6 +10,8 @@ import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -23,8 +25,7 @@ import javafx.util.Duration;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Stack;
+import java.util.List;
 
 public class GameViewModel
 {
@@ -112,6 +113,16 @@ public class GameViewModel
   public void getEffortList()
   {
     this.effortList = gameModel.getEffortList();
+  }
+
+  public ObservableList<String> getEffortObserverList()
+  {
+   ObservableList<String> efforts = javafx.collections.FXCollections.observableArrayList();
+   for (Effort effort : effortList)
+   {
+     efforts.add(effort.getEffortValue());
+   }
+   return efforts;
   }
 
     public void getPossiblePlayingCards(StackPane effortWrapper) {
