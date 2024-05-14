@@ -75,7 +75,6 @@ public class UserDAOImpl extends DatabaseConnection implements UserDAO {
 
     @Override
     public Connection getConnection() throws SQLException {
-
         return super.getConnection();
     }
 }

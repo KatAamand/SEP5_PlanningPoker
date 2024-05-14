@@ -75,12 +75,11 @@ public class PlanningPokerDAOImpl extends DatabaseConnection implements Planning
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM planning_poker");
             ResultSet resultSet = statement.executeQuery();
             ArrayList<PlanningPoker> planningPokers = new ArrayList<>();
-            TaskDAO taskDAO = TaskDAOImpl.getInstance();
+
             while(resultSet.next())
             {
                 int planningPokerID = resultSet.getInt("planning_pokerId");
                 PlanningPoker planningPokerToAdd = new PlanningPoker(String.valueOf(planningPokerID));
-                //planningPokerToAdd.setTaskList(taskDAO.readByPlanningPokerId(planningPokerID)); TODO: Figure out why this line makes client crash on startup
                 planningPokers.add(planningPokerToAdd);
             }
             return planningPokers;
