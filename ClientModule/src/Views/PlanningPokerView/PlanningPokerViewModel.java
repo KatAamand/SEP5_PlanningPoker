@@ -51,7 +51,12 @@ public class PlanningPokerViewModel
       event.consume();
 
       // Reset the UI elements:
-      taskViewModel.getSingleTaskViewModelList().clear();
+      try {
+        // This list must be reset upon exiting the shown Planning Poker view in order to avoid tasks from the previous game mistakenly being added when using the skip functionality:
+        ModelFactory.getInstance().getGameModel().getSkippedTaskList().clear();
+      } catch (RemoteException e) {
+        throw new RuntimeException();
+      }
 
       // TODO: Implement the functionality to delete the currently active PlanningPoker game, as described in Use Case #2, ALT0 sequence.
 

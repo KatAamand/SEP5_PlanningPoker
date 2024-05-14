@@ -113,6 +113,11 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
     return clientConnection.getEffortList();
   }
 
+  @Override public ArrayList<Task> getSkippedTaskList()
+  {
+    return this.skippedTaskList;
+  }
+
   /** Assigns all the required listeners to the clientConnection allowing for Observable behavior between these classes. */
   private void assignListeners()
   {

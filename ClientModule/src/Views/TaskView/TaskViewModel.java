@@ -101,7 +101,7 @@ public class TaskViewModel {
     }
 
 
-    private void displayTaskData() throws IOException {
+    private synchronized void displayTaskData() throws IOException {
         if(taskModel.getTaskList() != null) {
             int numberOfTasks = taskModel.getTaskList().size();
             taskControllerList.clear();
