@@ -1,9 +1,9 @@
 package Database.PlanningPoker;
 
 import DataTypes.PlanningPoker;
-import DataTypes.User;
 import Database.Connection.DatabaseConnection;
-import Database.Effort.EffortDAOImpl;
+import Database.Task.TaskDAO;
+import Database.Task.TaskDAOImpl;
 
 import javax.xml.namespace.QName;
 import java.sql.*;
@@ -71,15 +71,17 @@ public class PlanningPokerDAOImpl extends DatabaseConnection implements Planning
 
     @Override
     public ArrayList<PlanningPoker> getAllPlanningPoker() throws SQLException {
-        // TODO: Fix this mess ;) - Rasmus
         try (Connection connection = getConnection()) {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM planning_poker");
             ResultSet resultSet = statement.executeQuery();
             ArrayList<PlanningPoker> planningPokers = new ArrayList<>();
+            TaskDAO taskDAO = TaskDAOImpl.getInstance();
             while(resultSet.next())
             {
                 int planningPokerID = resultSet.getInt("planning_pokerId");
-                planningPokers.add(new PlanningPoker(String.valueOf(planningPokerID)));
+                PlanningPoker planningPokerToAdd = new PlanningPoker(String.valueOf(planningPokerID));
+                //planningPokerToAdd.setTaskList(taskDAO.readByPlanningPokerId(planningPokerID)); TODO: Figure out why this line makes client crash on startup
+                planningPokers.add(planningPokerToAdd);
             }
             return planningPokers;
         } catch (SQLException e) {

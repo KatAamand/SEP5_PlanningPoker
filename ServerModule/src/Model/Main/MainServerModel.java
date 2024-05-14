@@ -10,5 +10,5 @@ public interface MainServerModel extends PropertyChangeSubject
   boolean validatePlanningPoker(String planningPokerID);
   PlanningPoker createPlanningPoker();
   PlanningPoker getPlanningPokerGame(String planningPokerId);
-  ArrayList<PlanningPoker> getAllPlanningPokersFromDb();
+  void getAllPlanningPokersFromDb();
 }

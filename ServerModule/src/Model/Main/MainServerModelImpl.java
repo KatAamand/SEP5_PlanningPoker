@@ -22,6 +22,7 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
         //TODO: Refactor so that it in the future loads the games from a database.
         support = new PropertyChangeSupport(this);
         planningPokerGames = new ArrayList<>();
+        getAllPlanningPokersFromDb();
     }
 
     @Override
@@ -68,10 +69,10 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
     }
 
     @Override
-    public ArrayList<PlanningPoker> getAllPlanningPokersFromDb() {
+    public void getAllPlanningPokersFromDb() {
         try {
             PlanningPokerDAO planningPokerDAO = PlanningPokerDAOImpl.getInstance();
-            return planningPokerDAO.getAllPlanningPoker();
+            planningPokerGames = planningPokerDAO.getAllPlanningPoker();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
