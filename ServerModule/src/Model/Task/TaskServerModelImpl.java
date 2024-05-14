@@ -85,8 +85,6 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable{
       // Set the taskList from the found game:
       taskList = tasklistMap.get(gameId);
       // Check if the oldTask even exists in the list:
-      System.out.println("Oldtask: " + oldTask.getFinalEffort() + " / " + "NewTask: " + newTask.getFinalEffort());
-      System.out.println("Tasklist: " + taskList);
       if(taskList.contains(oldTask))
       {
         // Find the task
@@ -94,7 +92,6 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable{
           if(task.equals(oldTask)) {
             task.copyAttributesFromTask(newTask);
             System.out.println("TaskServerModelImpl: Edited a task.");
-
             fireTaskListDataUpdatedEvent(gameId);
             return true;
           }

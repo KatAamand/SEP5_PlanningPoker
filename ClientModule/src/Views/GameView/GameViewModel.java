@@ -54,26 +54,17 @@ public class GameViewModel
     gameModel.addPropertyChangeListener("placedCardReceived",     evt -> updatePlacedCard((UserCardData) evt.getNewValue()));
     gameModel.addPropertyChangeListener("receivedListOfTasksToSkip", evt -> Platform.runLater(this::refresh));
     gameModel.addPropertyChangeListener("clearPlacedCards",     evt -> Platform.runLater(this::clearPlacedCards));
-    gameModel.addPropertyChangeListener("taskListUpdated", evt -> {Platform.runLater(this::refresh);
-      System.out.println("Fireringsquad");});
+    gameModel.addPropertyChangeListener("taskListUpdated", evt -> Platform.runLater(this::refresh));
   }
 
 
-  public void refresh()
-  {
-    System.out.println("refreshing");
+  public void refresh() {
     displayedTask = gameModel.nextTaskToEvaluate();
-    System.out.println("showing: " + displayedTask);
-    if (displayedTask != null)
-    {
+    if (displayedTask != null) {
       taskHeaderPropertyProperty().setValue(displayedTask.getTaskHeader());
       taskDescPropertyProperty().setValue(displayedTask.getDescription());
       finalEffortLabelProperty().setValue(displayedTask.getFinalEffort());
-      System.out.println(
-          "showing: " + displayedTask + ", " + displayedTask.getFinalEffort());
-    }
-    else
-    {
+    } else {
       taskHeaderPropertyProperty().setValue("No more tasks");
       taskDescPropertyProperty().setValue("No more tasks");
       finalEffortLabelProperty().setValue("");
@@ -81,12 +72,17 @@ public class GameViewModel
     clearPlacedCards();
   }
 
-    public void skipTask() {
-        if (displayedTask != null) {
-            gameModel.skipTask(displayedTask);
-        }
-        this.refresh();
+  public void skipTask() {
+    if (displayedTask != null) {
+        gameModel.skipTask(displayedTask);
     }
+    this.refresh();
+    gameModel.refreshTaskList();
+  }
+
+  public Task getDisplayedTask() {
+      return this.displayedTask;
+  }
 
   public Property<String> taskHeaderPropertyProperty()
   {
@@ -103,17 +99,12 @@ public class GameViewModel
     return finalEffortLabelProperty;
   }
 
-  public void setFinalEffortLabel(String finalEffortvalue)
-  {
+  public void setFinalEffortLabel(String finalEffortvalue) {
     Task nonEditedTask = displayedTask.copy();
     displayedTask.setFinalEffort(finalEffortvalue);
-    try
-    {
-      ModelFactory.getInstance().getTaskModel()
-          .editTask(nonEditedTask, displayedTask);
-    }
-    catch (RemoteException e)
-    {
+    try {
+      ModelFactory.getInstance().getTaskModel().editTask(nonEditedTask, displayedTask);
+    } catch (RemoteException e) {
       throw new RuntimeException(e);
     }
   }

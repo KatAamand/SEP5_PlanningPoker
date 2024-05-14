@@ -10,7 +10,7 @@
    <children>
       <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
          <children>
-            <Label fx:id="isBeingEstimatedLabel1" text="-&gt;  " textFill="RED">
+            <Label fx:id="isBeingEstimatedLabel" text="-&gt;  " textFill="RED">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>

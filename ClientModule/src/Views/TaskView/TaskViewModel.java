@@ -129,9 +129,7 @@ public class TaskViewModel {
                     this.getSingleTaskViewModelList().get(i).reApplyApplicableStyle();
 
                     // If this task is currently being estimated on, apply a marker, so it is visually identified that this task is being estimated on:
-                    if (ViewModelFactory.getInstance().getGameViewModel().taskHeaderPropertyProperty().getValue().equals(taskModel.getTaskList().get(i).getTaskHeader())
-                        && ViewModelFactory.getInstance().getGameViewModel().taskDescPropertyProperty().getValue().equals(taskModel.getTaskList().get(i).getDescription()))
-                    {
+                    if(ViewModelFactory.getInstance().getGameViewModel().getDisplayedTask().getTaskHeader().equals(taskModel.getTaskList().get(i).getTaskHeader())) {
                         this.getSingleTaskViewModelList().get(i).getEstimationLabel().setValue("-> ");
                     }
                 }

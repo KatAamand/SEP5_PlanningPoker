@@ -24,7 +24,6 @@ public class SingleTaskListViewController
   public void initialize(SingleTaskListViewModel viewModel) {
     this.viewModel = viewModel;
     Platform.runLater(() -> this.viewModel.setCurrentSource(sourceVBox));
-    this.isBeingEstimatedLabel = new Label();
 
     //Assign the necessary property bindings:
     assignBindings();
