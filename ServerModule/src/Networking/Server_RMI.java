@@ -316,7 +316,7 @@ public class Server_RMI implements ServerConnection_RMI {
     /** These roles are set from the following client classes:<br>
      - Scrum Master is set on client creation of a Planning Poker game. The call cascades from MainModelImpl and down to the server connection. <br>
      - Product Owner is currently NOT set anywhere. Should be set from within the PlanningPokerViewModel once implemented.<br>
-     - Developer is currently NOT set anywhere (apart from users default being developers). Should be set from within the MainViewModel, so users join as Developers by default, unless being the host.<br>
+     - Developer is currently assigned to each user (other than the game creator) who joins a game.<br>
      */
     @Override public User setRoleInPlanningPokerGame(UserRole roleToApply, User userToReceiveRole, String gameId) throws RemoteException
     {
