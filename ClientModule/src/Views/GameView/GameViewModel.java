@@ -53,20 +53,22 @@ public class GameViewModel {
 
 
     public void refresh() {
-        Task nextTask = gameModel.nextTaskToEvaluate();
-
+        // Get the next task to display:
         displayedTask = gameModel.nextTaskToEvaluate();
         System.out.println("showing: " + displayedTask);
 
-        if (nextTask != null) {
-            taskHeaderPropertyProperty().setValue(nextTask.getTaskHeader());
-            taskDescPropertyProperty().setValue(nextTask.getDescription());
+        if (displayedTask != null) {
+            taskHeaderPropertyProperty().setValue(displayedTask.getTaskHeader());
+            taskDescPropertyProperty().setValue(displayedTask.getDescription());
         } else {
             taskHeaderPropertyProperty().setValue("No more tasks");
             taskDescPropertyProperty().setValue("No more tasks");
         }
 
         clearPlacedCards();
+
+        // Query for a refreshed taskList, so proper formatting can be applied:
+        gameModel.refreshTaskList();
     }
 
 

@@ -3,7 +3,7 @@ package DatatypesTest;
 import DataTypes.PlanningPoker;
 import DataTypes.User;
 import DataTypes.UserRoles.ConcreteRoles.Developer;
-import DataTypes.UserRoles.ConcreteRoles.Scrummaster;
+import DataTypes.UserRoles.ConcreteRoles.ScrumMaster;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -58,8 +58,8 @@ class UserTest {
     }
 
     @Test public void setRoleToBeDeveloperIsPossible() {
-        user.setRole(new Scrummaster());
-        assertInstanceOf(Scrummaster.class, user.getRole());
+        user.setRole(new ScrumMaster());
+        assertInstanceOf(ScrumMaster.class, user.getRole());
     }
 
     @Test public void userIsInitializedAsADeveloper() {

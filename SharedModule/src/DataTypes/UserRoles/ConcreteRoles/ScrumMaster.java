@@ -7,28 +7,29 @@ import DataTypes.UserRoles.UserRole;
 import java.util.ArrayList;
 import java.util.List;
 
-/** A Product Owner also has all the same permissions as a Developer, as well as the specific permissions required for a Product Owner. */
-public class Productowner implements Role
+
+/** A Scrum Master is the game master, and holds the same permissions as a Developer as well as a set of permissions enabling game control functionality and interactions within a game. */
+public class ScrumMaster implements Role
 {
   private List<UserPermission> permissions; // The specific permissions can be found in the UserRoles.UserPermission.java class. These are used when determining whether this user may or may not perform specific actions.
 
-  public Productowner() {
+  public ScrumMaster() {
     permissions = new ArrayList<>();
 
-    // Add all the permissions the Product Owner role should have, below:
+    // Add all the permissions the Scrum Master role should have, below:
     this.copyAndApplyPermissionsFrom(new Developer());
-    permissions.add(UserPermission.CREATE_TASK);
-    permissions.add(UserPermission.EDIT_TASK);
-    permissions.add(UserPermission.DELETE_TASK);
-    permissions.add(UserPermission.IMPORT_TASKLIST);
+    permissions.add(UserPermission.ASSIGN_FINAL_EFFORT);
+    permissions.add(UserPermission.SET_GAME_PASSWORD);
+    permissions.add(UserPermission.SKIP_TASK);
   }
 
-  @Override public List<UserPermission> getPermissions() {
+  @Override public List<UserPermission> getPermissions()
+  {
     return permissions;
   }
 
   @Override public UserRole getRole() {
-    return UserRole.PRODUCT_OWNER;
+    return UserRole.SCRUM_MASTER;
   }
 
   @Override public void copyAndApplyPermissionsFrom(Role role) throws NullPointerException {
@@ -41,12 +42,12 @@ public class Productowner implements Role
   }
 
   @Override public boolean equals(Object obj) {
-    if(!(obj instanceof Productowner))
+    if(!(obj instanceof ScrumMaster))
     {
       return false;
     }
-    Productowner pOwner = (Productowner) obj;
-    return (this.getRole().equals(pOwner.getRole())
-        && this.getPermissions().equals(pOwner.getPermissions()));
+    ScrumMaster scrumMaster = (ScrumMaster) obj;
+    return (this.getRole().equals(scrumMaster.getRole())
+        && this.getPermissions().equals(scrumMaster.getPermissions()));
   }
 }
