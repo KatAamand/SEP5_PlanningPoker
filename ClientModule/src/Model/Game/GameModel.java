@@ -18,6 +18,8 @@ public interface GameModel extends PropertyChangeSubject {
     Task nextTaskToEvaluate();
 
     ArrayList<Effort> getEffortList();
+    ArrayList<Task> getSkippedTaskList();
+    void removeTaskFromSkippedList(Task task);
 
     void skipTask(Task task);
 

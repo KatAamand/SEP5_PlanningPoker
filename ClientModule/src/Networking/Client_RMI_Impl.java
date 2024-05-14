@@ -2,6 +2,8 @@ package Networking;
 
 import Application.Session;
 import DataTypes.*;
+import javafx.application.Platform;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
@@ -255,11 +257,13 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
 
   @Override
   public void sendUser() {
-      try {
+      Platform.runLater(() -> {
+        try {
           server.addConnectedUserToSession(Session.getCurrentUser());
-      } catch (RemoteException e) {
-          throw new RuntimeException(e);
-      }
+        } catch (RemoteException e) {
+          throw new RuntimeException();
+        }
+      });
   }
 
   @Override

@@ -18,7 +18,7 @@ public class Task implements Serializable
 
     setTaskHeader(taskHeader);
     setDescription(description);
-    setFinalEffort("Undefined");
+    setFinalEffort("");
   }
 
   public Task(int id, String taskName, String description) throws NullPointerException {
@@ -29,7 +29,7 @@ public class Task implements Serializable
     setTaskID(id);
     setTaskHeader(taskName);
     setDescription(description);
-    setFinalEffort("Undefined");
+    setFinalEffort("");
   }
 
   public Task(int id, String header, String description, String finalEffort) {
@@ -92,8 +92,6 @@ public class Task implements Serializable
 
 
   public void copyAttributesFromTask(Task otherTask){
-    System.out.println("old header: " + this.getTaskHeader());
-    System.out.println("new header: " + otherTask.getTaskHeader());
     this.setTaskHeader(otherTask.getTaskHeader());
     this.setDescription(otherTask.getDescription());
     this.setFinalEffort(otherTask.getFinalEffort());

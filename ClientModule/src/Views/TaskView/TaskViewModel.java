@@ -86,6 +86,7 @@ public class TaskViewModel {
                 getSingleTaskViewModelList().get(i).setTaskHeaderLabel(i+1 + ": " + taskModel.getTaskList().get(i).getTaskHeader());
                 getSingleTaskViewModelList().get(i).setTaskDesc(taskModel.getTaskList().get(i).getDescription());
                 getSingleTaskViewModelList().get(i).setEstimationLabel("");
+                getSingleTaskViewModelList().get(i).setFinalEffortLabel(taskModel.getTaskList().get(i).getFinalEffort());
             }
         }
 
@@ -100,7 +101,7 @@ public class TaskViewModel {
     }
 
 
-    private void displayTaskData() throws IOException {
+    private synchronized void displayTaskData() throws IOException {
         if(taskModel.getTaskList() != null) {
             int numberOfTasks = taskModel.getTaskList().size();
             taskControllerList.clear();
@@ -121,15 +122,17 @@ public class TaskViewModel {
                     taskControllerList.get(i).getTaskHeaderLabel().textProperty().bindBidirectional(this.getSingleTaskViewModelList().get(i).getTaskHeaderLabelProperty());
                     taskControllerList.get(i).getTaskDescLabel().textProperty().bindBidirectional(this.getSingleTaskViewModelList().get(i).getTaskDescProperty());
                     taskControllerList.get(i).getIsBeingEstimatedLabel().textProperty().bindBidirectional(this.getSingleTaskViewModelList().get(i).getEstimationLabel());
+                    taskControllerList.get(i).getFinalEffortLabel().textProperty().bindBidirectional(this.getSingleTaskViewModelList().get(i).getFinalEffortLabelProperty());
+
 
                     // Apply any previous formatting, in the case where we are refreshing a previously loaded list:
                     this.getSingleTaskViewModelList().get(i).reApplyApplicableStyle();
 
                     // If this task is currently being estimated on, apply a marker, so it is visually identified that this task is being estimated on:
-                    if (ViewModelFactory.getInstance().getGameViewModel().taskHeaderPropertyProperty().getValue().equals(taskModel.getTaskList().get(i).getTaskHeader())
-                        && ViewModelFactory.getInstance().getGameViewModel().taskDescPropertyProperty().getValue().equals(taskModel.getTaskList().get(i).getDescription()))
-                    {
-                        this.getSingleTaskViewModelList().get(i).getEstimationLabel().setValue("-> ");
+                    if((ViewModelFactory.getInstance().getGameViewModel().getDisplayedTask() != null)) {
+                        if(ViewModelFactory.getInstance().getGameViewModel().getDisplayedTask().getTaskHeader().equals(taskModel.getTaskList().get(i).getTaskHeader())) {
+                            this.getSingleTaskViewModelList().get(i).getEstimationLabel().setValue("-> ");
+                        }
                     }
                 }
             }

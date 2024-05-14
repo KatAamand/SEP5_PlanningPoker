@@ -1,10 +1,11 @@
 package DataTypes.UserRoles;
 
+import java.io.Serializable;
 import java.util.List;
 
-public interface Role
+public interface Role extends Serializable
 {
   List<UserPermission> getPermissions();
   UserRole getRole();
-  List<UserPermission> copyPermissionsFrom(UserRole userRole);
+  void copyAndApplyPermissionsFrom(Role role);
 }

@@ -1,17 +1,19 @@
 package Views.GameView;
 
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
+import javafx.scene.input.MouseEvent;
 
-public class CustomImageView extends ImageView {
-    private String effortValue;
+import java.util.List;
 
-    public CustomImageView(Image image, String effortValue) {
-        super(image);
-        this.effortValue = effortValue;
-    }
+public interface CustomImageView {
 
-    public String getEffortValue() {
-        return effortValue;
-    }
+        String getEffortValue();
+        void setFitHeight(double height);
+        void setFitWidth(double width);
+        void setTranslateX(double x);
+        void setOnMouseEntered(EventHandler<? super MouseEvent> handler);
+        void setOnMouseExited(EventHandler<? super MouseEvent> handler);
+        void setOnMouseClicked(EventHandler<? super MouseEvent> handler);
+        ObservableList<String> getStyleClass();
 }

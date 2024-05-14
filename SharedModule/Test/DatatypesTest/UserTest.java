@@ -2,6 +2,8 @@ package DatatypesTest;
 
 import DataTypes.PlanningPoker;
 import DataTypes.User;
+import DataTypes.UserRoles.ConcreteRoles.Developer;
+import DataTypes.UserRoles.ConcreteRoles.ScrumMaster;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,6 +51,19 @@ class UserTest {
     {
         User user2 = new User("Test", "test");
         assertTrue(user2.equals(user));
+    }
+
+    @Test public void setRoleToBeNullThrowsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> user.setRole(null));
+    }
+
+    @Test public void setRoleToBeDeveloperIsPossible() {
+        user.setRole(new ScrumMaster());
+        assertInstanceOf(ScrumMaster.class, user.getRole());
+    }
+
+    @Test public void userIsInitializedAsADeveloper() {
+      assertInstanceOf(Developer.class, user.getRole());
     }
 
     @Test

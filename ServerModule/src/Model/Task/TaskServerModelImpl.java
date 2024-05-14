@@ -92,7 +92,6 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable{
           if(task.equals(oldTask)) {
             task.copyAttributesFromTask(newTask);
             System.out.println("TaskServerModelImpl: Edited a task.");
-
             fireTaskListDataUpdatedEvent(gameId);
             return true;
           }
