@@ -92,8 +92,6 @@ public class Task implements Serializable
 
 
   public void copyAttributesFromTask(Task otherTask){
-    System.out.println("old header: " + this.getTaskHeader());
-    System.out.println("new header: " + otherTask.getTaskHeader());
     this.setTaskHeader(otherTask.getTaskHeader());
     this.setDescription(otherTask.getDescription());
     this.setFinalEffort(otherTask.getFinalEffort());
