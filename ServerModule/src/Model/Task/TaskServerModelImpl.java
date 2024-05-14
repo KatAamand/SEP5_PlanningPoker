@@ -39,7 +39,7 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable{
       } catch (SQLException e) {
           throw new RuntimeException("Failed to initialize DAO", e);
       }
-
+      
       getAllTasksFromDB();
   }
 
