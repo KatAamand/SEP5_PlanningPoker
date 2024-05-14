@@ -16,7 +16,7 @@ public interface MainServerModel extends PropertyChangeSubject
   boolean validatePlanningPoker(String planningPokerID);
   PlanningPoker createPlanningPoker();
   PlanningPoker getPlanningPokerGame(String planningPokerId);
-  ArrayList<PlanningPoker> getAllPlanningPokersFromDb();
+  void getAllPlanningPokersFromDb();
   User applyPlanningPokerRole(UserRole role, User user, String gameId);
   void broadcastPlanningPokerObjUpdate(Map<String, ArrayList<ClientConnection_RMI>> clientList, ServerConnection_RMI server, String gameId);
 }
