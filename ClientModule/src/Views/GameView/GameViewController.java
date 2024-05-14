@@ -4,6 +4,7 @@ import Application.ViewModelFactory;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -15,10 +16,10 @@ public class GameViewController
 {
   @FXML public StackPane effortWrapper;
   @FXML public HBox placedCardsWrapper;
+  @FXML private Button skipButton;
   @FXML private Label taskHeaderLabel;
   @FXML private Label taskDescLabel;
-  @FXML private Button setEffortButton;
-  @FXML private TextField insertEffortField;
+  @FXML private ChoiceBox finalEffortDropdown;
   @FXML private Label finalEffortLabel;
   private GameViewModel gameViewModel;
 
@@ -32,23 +33,27 @@ public class GameViewController
   {
     applyBindings();
     gameViewModel.setPlacedCardsWrapper(placedCardsWrapper);
-   gameViewModel.refresh();
+    gameViewModel.setSkipButtonRef(skipButton);
+    gameViewModel.setGameStarted(false);
+    gameViewModel.refresh();
     showPlayingCards();
+    finalEffortDropdown();
   }
 
   private void applyBindings()
   {
-    taskHeaderLabel.textProperty()
-        .bindBidirectional(gameViewModel.taskHeaderPropertyProperty());
-    taskDescLabel.textProperty()
-        .bindBidirectional(gameViewModel.taskDescPropertyProperty());
-    finalEffortLabel.textProperty().bindBidirectional(
-        gameViewModel.finalEffortLabelProperty());
+    taskHeaderLabel.textProperty().bindBidirectional(gameViewModel.taskHeaderPropertyProperty());
+    taskDescLabel.textProperty().bindBidirectional(gameViewModel.taskDescPropertyProperty());
+    finalEffortLabel.textProperty().bindBidirectional(gameViewModel.finalEffortLabelProperty());
+  }
+
+  public void onGameStart() {
+    gameViewModel.setGameStarted(true);
   }
 
   public void onsetEffortButtonPressed()
   {
-    String effortValue = insertEffortField.getText().trim();
+    String effortValue = (String) finalEffortDropdown.getValue();
     gameViewModel.setFinalEffortLabel(effortValue);
   }
 
@@ -71,4 +76,11 @@ public class GameViewController
   {
     gameViewModel.showPlacedCards();
   }
+
+  public void finalEffortDropdown()
+  {
+    finalEffortDropdown.setItems(gameViewModel.getEffortObserverList());
+  }
+
+
 }

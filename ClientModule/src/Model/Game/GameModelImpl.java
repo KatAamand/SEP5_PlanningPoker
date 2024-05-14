@@ -47,25 +47,20 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
 
   @Override public Task nextTaskToEvaluate()
   {
-    ArrayList<Task> taskList = (ArrayList<Task>) super.getActivePlanningPokerGame()
-        .getTaskList();
+    ArrayList<Task> taskList = (ArrayList<Task>) super.getActivePlanningPokerGame().getTaskList();
 
     // First check if there are tasks that haven't been estimated on, and that haven't already been skipped:
-    for (Task task : taskList)
-    {
+    for (Task task : taskList) {
       // If the tasks do not already have a final effort assigned, and the task has not been skipped, we display it.
-      if (task.getFinalEffort() != null && !skippedTaskList.contains(task))
-      {
+      if (task.getFinalEffort() != null && task.getFinalEffort().isEmpty() && !skippedTaskList.contains(task)) {
         return task;
       }
     }
 
     // If we reach here, all tasks have either been estimated on - or have been skipped. Check the skipped list now:
-    for (Task task : skippedTaskList)
-    {
+    for (Task task : skippedTaskList) {
       // If the tasks do not already have a final effort assigned.
-      if (task.getFinalEffort() != null)
-      {
+      if (task.getFinalEffort() != null && task.getFinalEffort().isEmpty()) {
         return task;
       }
     }
@@ -74,15 +69,11 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
 
   @Override public void skipTask(Task task)
   {
-    ArrayList<Task> taskList = (ArrayList<Task>) super.getActivePlanningPokerGame()
-        .getTaskList();
+    ArrayList<Task> taskList = (ArrayList<Task>) super.getActivePlanningPokerGame().getTaskList();
     // First check if there are tasks that haven't been estimated on, and that haven't already been skipped:
-    for (Task taskFromList : taskList)
-    {
+    for (Task taskFromList : taskList) {
       // If the tasks do not already have a final effort assigned, and the task has not been skipped, we display it.
-      if (taskFromList.getFinalEffort() != null && !skippedTaskList.contains(
-          task))
-      {
+      if (taskFromList.getFinalEffort() != null && !skippedTaskList.contains(task)) {
         // Add the skipped task to a list of skipped tasks:
         skippedTaskList.add(task);
 
@@ -98,8 +89,7 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
     skippedTaskList.add(task);
 
     // Transfer the skipped taskList to connected clients, so all clients have the same experience.
-    clientConnection.skipTasks(skippedTaskList,
-        super.getActivePlanningPokerGame().getPlanningPokerID());
+    clientConnection.skipTasks(skippedTaskList,super.getActivePlanningPokerGame().getPlanningPokerID());
   }
 
   @Override public void refreshTaskList()
@@ -121,6 +111,11 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
   @Override public ArrayList<Effort> getEffortList()
   {
     return clientConnection.getEffortList();
+  }
+
+  @Override public ArrayList<Task> getSkippedTaskList()
+  {
+    return this.skippedTaskList;
   }
 
   /** Assigns all the required listeners to the clientConnection allowing for Observable behavior between these classes. */

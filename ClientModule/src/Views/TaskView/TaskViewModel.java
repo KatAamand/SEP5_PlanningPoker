@@ -101,7 +101,7 @@ public class TaskViewModel {
     }
 
 
-    private void displayTaskData() throws IOException {
+    private synchronized void displayTaskData() throws IOException {
         if(taskModel.getTaskList() != null) {
             int numberOfTasks = taskModel.getTaskList().size();
             taskControllerList.clear();
@@ -129,8 +129,10 @@ public class TaskViewModel {
                     this.getSingleTaskViewModelList().get(i).reApplyApplicableStyle();
 
                     // If this task is currently being estimated on, apply a marker, so it is visually identified that this task is being estimated on:
-                    if(ViewModelFactory.getInstance().getGameViewModel().getDisplayedTask().getTaskHeader().equals(taskModel.getTaskList().get(i).getTaskHeader())) {
-                        this.getSingleTaskViewModelList().get(i).getEstimationLabel().setValue("-> ");
+                    if((ViewModelFactory.getInstance().getGameViewModel().getDisplayedTask() != null)) {
+                        if(ViewModelFactory.getInstance().getGameViewModel().getDisplayedTask().getTaskHeader().equals(taskModel.getTaskList().get(i).getTaskHeader())) {
+                            this.getSingleTaskViewModelList().get(i).getEstimationLabel().setValue("-> ");
+                        }
                     }
                 }
             }
