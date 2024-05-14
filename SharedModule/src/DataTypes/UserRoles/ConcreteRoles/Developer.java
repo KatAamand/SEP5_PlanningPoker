@@ -10,6 +10,8 @@ import java.util.List;
 /** A Developer is the basic most low-level role that a user in the application can hold. It contains the bare essential permissions for the general interactions with the application as a user. */
 public class Developer implements Role
 {
+  private final UserRole role = UserRole.DEVELOPER;
+  private final String roleAsString = "Developer";
   private List<UserPermission> permissions; // The specific permissions can be found in the UserRoles.UserPermission.java class. These are used when determining whether this user may or may not perform specific actions.
 
   public Developer() {
@@ -24,7 +26,7 @@ public class Developer implements Role
   }
 
   @Override public UserRole getRole() {
-    return UserRole.DEVELOPER;
+    return role;
   }
 
   @Override public void copyAndApplyPermissionsFrom(Role role) throws NullPointerException {
@@ -34,6 +36,11 @@ public class Developer implements Role
       List<UserPermission> permissionList = role.getPermissions();
       permissions.addAll(permissionList);
     }
+  }
+
+  @Override public String getRoleAsString()
+  {
+    return roleAsString;
   }
 
   @Override public boolean equals(Object obj) {

@@ -20,10 +20,20 @@ public class PlanningPokerViewModel
   public PlanningPokerViewModel() throws RemoteException {
     taskViewModel = ViewModelFactory.getInstance().getTaskViewModel();
     planningPokerModel = ModelFactory.getInstance().getPlanningPokerModel();
+
+    // Assign listener:
+    planningPokerModel.addPropertyChangeListener("PlanningPokerObjUpdated", (evt) -> {
+      refresh();
+    });
+
+    planningPokerModel.addPropertyChangeListener("UpdatedLocalUser", (evt) -> {
+      // Only update the username, role and session ID section when receiving this event.
+      setTaskViewData();
+    });
   }
 
   public void init() {
-    setTaskViewData();
+    Platform.runLater(this::refresh);
   }
 
   /** Initializes the initial data that is shown inside the TaskView pane upon first loading the PlanningPokerView*/
@@ -31,10 +41,12 @@ public class PlanningPokerViewModel
   {
     //Set the user label in the TaskView:
     String user = "ERROR";
+    String role = "Unknown";
     if(Session.getCurrentUser() != null) {
       user = Session.getCurrentUser().getUsername();
+      role = Session.getCurrentUser().getRole().getRoleAsString();
     }
-    taskViewModel.labelUserIdProperty().setValue(user);
+    taskViewModel.labelUserIdProperty().setValue(user + " [" + role + "]");
 
     //Set the GameId in the TaskView:
     String gameId = "ERROR";
@@ -42,6 +54,11 @@ public class PlanningPokerViewModel
       gameId = planningPokerModel.getActivePlanningPokerGame().getPlanningPokerID();
     }
     taskViewModel.sessionIdProperty().setValue(gameId);
+  }
+
+  public void refresh() {
+    // Refreshes the username, game id and user role shown on the Planning Poker Game UI:
+    setTaskViewData();
   }
 
   public void closePlanningPoker(Stage currentStage)

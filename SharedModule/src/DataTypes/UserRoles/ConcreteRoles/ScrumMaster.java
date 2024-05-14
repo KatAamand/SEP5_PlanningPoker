@@ -11,6 +11,8 @@ import java.util.List;
 /** A Scrum Master is the game master, and holds the same permissions as a Developer as well as a set of permissions enabling game control functionality and interactions within a game. */
 public class ScrumMaster implements Role
 {
+  private final UserRole role = UserRole.SCRUM_MASTER;
+  private final String roleAsString = "Scrum Master";
   private List<UserPermission> permissions; // The specific permissions can be found in the UserRoles.UserPermission.java class. These are used when determining whether this user may or may not perform specific actions.
 
   public ScrumMaster() {
@@ -30,7 +32,7 @@ public class ScrumMaster implements Role
   }
 
   @Override public UserRole getRole() {
-    return UserRole.SCRUM_MASTER;
+    return role;
   }
 
   @Override public void copyAndApplyPermissionsFrom(Role role) throws NullPointerException {
@@ -40,6 +42,11 @@ public class ScrumMaster implements Role
       List<UserPermission> permissionList = role.getPermissions();
       permissions.addAll(permissionList);
     }
+  }
+
+  @Override public String getRoleAsString()
+  {
+    return roleAsString;
   }
 
   @Override public boolean equals(Object obj) {

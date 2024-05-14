@@ -8,4 +8,5 @@ public interface Role extends Serializable
   List<UserPermission> getPermissions();
   UserRole getRole();
   void copyAndApplyPermissionsFrom(Role role);
+  String getRoleAsString();
 }

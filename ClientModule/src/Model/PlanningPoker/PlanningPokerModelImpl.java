@@ -7,20 +7,24 @@ import DataTypes.PlanningPoker;
 import DataTypes.User;
 import Networking.Client;
 import javafx.application.Platform;
+
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
 
 public class PlanningPokerModelImpl implements PlanningPokerModel
 {
+  private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
   private PlanningPoker activePlanningPokerGame;
 
 
-  public PlanningPokerModelImpl()
-  {
+
+  public PlanningPokerModelImpl() {
     activePlanningPokerGame = null;
 
     Platform.runLater(() -> {
       try {
-        init();
+        initialize();
       } catch (RemoteException e) {
         throw new RuntimeException(e);
       }
@@ -54,7 +58,7 @@ public class PlanningPokerModelImpl implements PlanningPokerModel
     Session.setConnectedGameId(activePlanningPokerGame.getPlanningPokerID());
   }
 
-  @Override public void init() throws RemoteException
+  @Override public void initialize() throws RemoteException
   {
     //Assign all PropertyChangeListeners:
     assignListeners();
@@ -71,7 +75,38 @@ public class PlanningPokerModelImpl implements PlanningPokerModel
       //Does nothing at the moment.
     });
 
-    ((Client) ClientFactory.getInstance().getClient()).addPropertyChangeListener("planningPokerCreatedSuccess", evt ->
-      activePlanningPokerGame = (PlanningPoker) evt.getNewValue());
+    ((Client) ClientFactory.getInstance().getClient()).addPropertyChangeListener("planningPokerCreatedSuccess", evt -> {
+      setActivePlanningPokerGame((PlanningPoker) evt.getNewValue());
+      propertyChangeSupport.firePropertyChange("PlanningPokerObjUpdated", null, null);
+    });
+
+    ((Client) ClientFactory.getInstance().getClient()).addPropertyChangeListener("PlanningPokerObjUpdated", evt -> {
+      setActivePlanningPokerGame((PlanningPoker) evt.getNewValue());
+      propertyChangeSupport.firePropertyChange("PlanningPokerObjUpdated", null, null);
+    });
+
+    ((Client) ClientFactory.getInstance().getClient()).addPropertyChangeListener("UpdatedLocalUser", evt -> {
+      propertyChangeSupport.firePropertyChange("UpdatedLocalUser", null, null);
+    });
+  }
+
+  @Override public void addPropertyChangeListener(PropertyChangeListener listener) {
+    propertyChangeSupport.addPropertyChangeListener(listener);
+  }
+
+
+  @Override public void addPropertyChangeListener(String name, PropertyChangeListener listener) {
+    propertyChangeSupport.addPropertyChangeListener(name, listener);
+  }
+
+
+  @Override public void removePropertyChangeListener(PropertyChangeListener listener) {
+    propertyChangeSupport.removePropertyChangeListener(listener);
+  }
+
+
+  @Override public void removePropertyChangeListener(String name, PropertyChangeListener listener)
+  {
+    propertyChangeSupport.removePropertyChangeListener(name, listener);
   }
 }

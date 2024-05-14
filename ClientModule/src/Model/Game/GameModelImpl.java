@@ -29,7 +29,7 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
   public GameModelImpl() throws RemoteException
   {
     super();
-    super.init();
+    super.initialize();
     skippedTaskList = new ArrayList<>();
 
     //Assign the network connection:
@@ -39,7 +39,7 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
     Platform.runLater(this::init);
   }
 
-  @Override public void init()
+  public void init()
   {
     //Assign all PropertyChangeListeners:
     this.assignListeners();

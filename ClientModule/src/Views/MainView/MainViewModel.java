@@ -26,9 +26,7 @@ public class MainViewModel  {
 
 
     private void planningPokerIDValidated(PropertyChangeEvent event) {
-        Platform.runLater(() -> {
-            onPlanningPokerIDValidated.accept(true);
-        });
+        Platform.runLater(() -> {onPlanningPokerIDValidated.accept(true);});
     }
 
     private void planningPokerIDCreated(PropertyChangeEvent event) {

@@ -1,6 +1,8 @@
 package Networking;
 
 import DataTypes.*;
+import DataTypes.UserRoles.Role;
+import DataTypes.UserRoles.UserRole;
 import Model.Chat.ChatServerModel;
 import Model.Chat.ChatServerModelImpl;
 import Model.Game.GameServerModel;
@@ -309,6 +311,26 @@ public class Server_RMI implements ServerConnection_RMI {
     @Override
     public void requestClearPlacedCards() throws RemoteException {
         gameServerModel.clearPlacedCards(connectedClients, this);
+    }
+
+    /** These roles are set from the following client classes:<br>
+     - Scrum Master is set on client creation of a Planning Poker game. The call cascades from MainModelImpl and down to the server connection. <br>
+     - Product Owner is currently NOT set anywhere. Should be set from within the PlanningPokerViewModel once implemented.<br>
+     - Developer is currently NOT set anywhere (apart from users default being developers). Should be set from within the MainViewModel, so users join as Developers by default, unless being the host.<br>
+     */
+    @Override public User setRoleInPlanningPokerGame(UserRole roleToApply, User userToReceiveRole, String gameId) throws RemoteException
+    {
+        // Apply the role to the specified user in the specified game:
+        User returnedUser = mainServerModel.applyPlanningPokerRole(roleToApply, userToReceiveRole, gameId);
+        if(returnedUser != null) {
+            // Broadcast the updated PlanningPoker Object to all connected clients in the specified game
+            mainServerModel.broadcastPlanningPokerObjUpdate(clientsInEachGame, this, gameId);
+            return returnedUser;
+        } else {
+            // Failed to set the role. Do nothing further.
+            System.out.println("Server_RMI: Failed to set the Role [" + roleToApply + "] to user [" + userToReceiveRole.getUsername() + "]");
+            return null;
+        }
     }
 
     @Override

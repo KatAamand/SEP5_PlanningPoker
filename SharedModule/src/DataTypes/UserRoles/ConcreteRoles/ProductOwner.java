@@ -10,6 +10,8 @@ import java.util.List;
 /** A Product Owner also has all the same permissions as a Developer, as well as the specific permissions required for a Product Owner. */
 public class ProductOwner implements Role
 {
+  private final UserRole role = UserRole.PRODUCT_OWNER;
+  private final String roleAsString = "Product Owner";
   private List<UserPermission> permissions; // The specific permissions can be found in the UserRoles.UserPermission.java class. These are used when determining whether this user may or may not perform specific actions.
 
   public ProductOwner() {
@@ -21,6 +23,7 @@ public class ProductOwner implements Role
     permissions.add(UserPermission.EDIT_TASK);
     permissions.add(UserPermission.DELETE_TASK);
     permissions.add(UserPermission.IMPORT_TASKLIST);
+    permissions.add(UserPermission.SKIP_TASK);
   }
 
   @Override public List<UserPermission> getPermissions() {
@@ -28,7 +31,7 @@ public class ProductOwner implements Role
   }
 
   @Override public UserRole getRole() {
-    return UserRole.PRODUCT_OWNER;
+    return role;
   }
 
   @Override public void copyAndApplyPermissionsFrom(Role role) throws NullPointerException {
@@ -38,6 +41,11 @@ public class ProductOwner implements Role
       List<UserPermission> permissionList = role.getPermissions();
       permissions.addAll(permissionList);
     }
+  }
+
+  @Override public String getRoleAsString()
+  {
+    return roleAsString;
   }
 
   @Override public boolean equals(Object obj) {

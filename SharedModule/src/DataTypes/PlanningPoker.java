@@ -17,6 +17,8 @@ public class PlanningPoker implements Serializable
   private Chat chat;
   private static final Random random = new Random();
   private List<Task> taskList;
+  private User scrumMaster;
+  private User productOwner;
 
   public PlanningPoker()
   {
@@ -25,6 +27,8 @@ public class PlanningPoker implements Serializable
     taskList = new ArrayList<>();
     generatePlanningPokerID();
     setPlanningPokerID(planningPokerID);
+    setScrumMaster(null);
+    setProductOwner(null);
   }
 
   public PlanningPoker(String planningPokerId)
@@ -34,6 +38,8 @@ public class PlanningPoker implements Serializable
     taskList = new ArrayList<>();
     generatePlanningPokerID();
     setPlanningPokerID(planningPokerID);
+    setScrumMaster(null);
+    setProductOwner(null);
   }
 
   public Chat getChat()
@@ -57,6 +63,26 @@ public class PlanningPoker implements Serializable
     {
       connectedUsers.add(user);
     }
+  }
+
+  public User getScrumMaster()
+  {
+    return scrumMaster;
+  }
+
+  public void setScrumMaster(User scrumMaster)
+  {
+    this.scrumMaster = scrumMaster;
+  }
+
+  public User getProductOwner()
+  {
+    return productOwner;
+  }
+
+  public void setProductOwner(User productOwner)
+  {
+    this.productOwner = productOwner;
   }
 
   //TODO: Do we need a removeUser method here?
