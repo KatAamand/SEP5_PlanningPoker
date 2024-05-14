@@ -18,7 +18,7 @@ public class Task implements Serializable
 
     setTaskHeader(taskHeader);
     setDescription(description);
-    setFinalEffort("Undefined");
+    setFinalEffort("");
   }
 
   public Task(int id, String taskName, String description) throws NullPointerException {
@@ -29,7 +29,7 @@ public class Task implements Serializable
     setTaskID(id);
     setTaskHeader(taskName);
     setDescription(description);
-    setFinalEffort("Undefined");
+    setFinalEffort("");
   }
 
   public Task(int id, String header, String description, String finalEffort) {

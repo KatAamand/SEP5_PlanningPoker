@@ -23,56 +23,64 @@ import javafx.util.Duration;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Objects;
+import java.util.Stack;
 
-public class GameViewModel {
-    PropertyChangeSupport propertyChangeSupport;
-    private final GameModel gameModel;
-    private Property<String> taskHeaderProperty;
-    private Property<String> taskDescProperty;
-    private ArrayList<Effort> effortList;
-    private Task displayedTask;
-    @FXML
-    public HBox placedCardsWrapper;
-    public ArrayList<UserCardData> placedCards;
+public class GameViewModel
+{
+  PropertyChangeSupport propertyChangeSupport;
+  private final GameModel gameModel;
+  private Property<String> taskHeaderProperty;
+  private Property<String> taskDescProperty;
+  private Property<String> finalEffortLabelProperty;
+  private ArrayList<Effort> effortList;
+  private Task displayedTask;
+  @FXML public HBox placedCardsWrapper;
+  public ArrayList<UserCardData> placedCards;
 
-    public GameViewModel() throws RemoteException {
-        this.gameModel = ModelFactory.getInstance().getGameModel();
-        taskHeaderProperty = new SimpleStringProperty();
-        taskDescProperty = new SimpleStringProperty();
-        effortList = new ArrayList<>();
-        getEffortList();
+  public GameViewModel() throws RemoteException
+  {
+    this.gameModel = ModelFactory.getInstance().getGameModel();
+    taskHeaderProperty = new SimpleStringProperty();
+    taskDescProperty = new SimpleStringProperty();
+    finalEffortLabelProperty = new SimpleStringProperty();
+    effortList = new ArrayList<>();
+    getEffortList();
 
-        placedCards = new ArrayList<>();
+    placedCards = new ArrayList<>();
 
-        //Assign listeners:
-        propertyChangeSupport = new PropertyChangeSupport(this);
-        gameModel.addPropertyChangeListener("placedCardReceived", evt -> updatePlacedCard((UserCardData) evt.getNewValue()));
-        gameModel.addPropertyChangeListener("receivedListOfTasksToSkip", evt -> Platform.runLater(this::refresh));
-        gameModel.addPropertyChangeListener("clearPlacedCards", evt -> Platform.runLater(this::clearPlacedCards));
+    //Assign listeners:
+    propertyChangeSupport = new PropertyChangeSupport(this);
+    gameModel.addPropertyChangeListener("placedCardReceived",     evt -> updatePlacedCard((UserCardData) evt.getNewValue()));
+    gameModel.addPropertyChangeListener("receivedListOfTasksToSkip", evt -> Platform.runLater(this::refresh));
+    gameModel.addPropertyChangeListener("clearPlacedCards",     evt -> Platform.runLater(this::clearPlacedCards));
+    gameModel.addPropertyChangeListener("taskListUpdated", evt -> {Platform.runLater(this::refresh);
+      System.out.println("Fireringsquad");});
+  }
+
+
+  public void refresh()
+  {
+    System.out.println("refreshing");
+    displayedTask = gameModel.nextTaskToEvaluate();
+    System.out.println("showing: " + displayedTask);
+    if (displayedTask != null)
+    {
+      taskHeaderPropertyProperty().setValue(displayedTask.getTaskHeader());
+      taskDescPropertyProperty().setValue(displayedTask.getDescription());
+      finalEffortLabelProperty().setValue(displayedTask.getFinalEffort());
+      System.out.println(
+          "showing: " + displayedTask + ", " + displayedTask.getFinalEffort());
     }
-
-
-    public void refresh() {
-        // Get the next task to display:
-        displayedTask = gameModel.nextTaskToEvaluate();
-        System.out.println("showing: " + displayedTask);
-
-        if (displayedTask != null) {
-            taskHeaderPropertyProperty().setValue(displayedTask.getTaskHeader());
-            taskDescPropertyProperty().setValue(displayedTask.getDescription());
-        } else {
-            taskHeaderPropertyProperty().setValue("No more tasks");
-            taskDescPropertyProperty().setValue("No more tasks");
-        }
-
-        clearPlacedCards();
-
-        // Query for a refreshed taskList, so proper formatting can be applied:
-        gameModel.refreshTaskList();
+    else
+    {
+      taskHeaderPropertyProperty().setValue("No more tasks");
+      taskDescPropertyProperty().setValue("No more tasks");
+      finalEffortLabelProperty().setValue("");
     }
+    clearPlacedCards();
+  }
 
-
-    // Tasks methods
     public void skipTask() {
         if (displayedTask != null) {
             gameModel.skipTask(displayedTask);
@@ -80,19 +88,40 @@ public class GameViewModel {
         this.refresh();
     }
 
-    public Property<String> taskHeaderPropertyProperty() {
-        return taskHeaderProperty;
-    }
+  public Property<String> taskHeaderPropertyProperty()
+  {
+    return taskHeaderProperty;
+  }
 
-    public Property<String> taskDescPropertyProperty() {
-        return taskDescProperty;
-    }
+  public Property<String> taskDescPropertyProperty()
+  {
+    return taskDescProperty;
+  }
 
+  public Property<String> finalEffortLabelProperty()
+  {
+    return finalEffortLabelProperty;
+  }
 
-    // Efforts and card methods
-    public void getEffortList() {
-        this.effortList = gameModel.getEffortList();
+  public void setFinalEffortLabel(String finalEffortvalue)
+  {
+    Task nonEditedTask = displayedTask.copy();
+    displayedTask.setFinalEffort(finalEffortvalue);
+    try
+    {
+      ModelFactory.getInstance().getTaskModel()
+          .editTask(nonEditedTask, displayedTask);
     }
+    catch (RemoteException e)
+    {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public void getEffortList()
+  {
+    this.effortList = gameModel.getEffortList();
+  }
 
     public void getPossiblePlayingCards(StackPane effortWrapper) {
         Platform.runLater(() -> {

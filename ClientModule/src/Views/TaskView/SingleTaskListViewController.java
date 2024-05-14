@@ -11,6 +11,7 @@ public class SingleTaskListViewController
   @FXML private Label isBeingEstimatedLabel; // Value is set in the TaskViewModel after this controller is created.
   @FXML private Label taskHeaderLabel;
   @FXML private Label taskDescLabel;
+  @FXML private Label finalEffortLabel;
   @FXML private VBox sourceVBox;
   private SingleTaskListViewModel viewModel;
 
@@ -23,6 +24,7 @@ public class SingleTaskListViewController
   public void initialize(SingleTaskListViewModel viewModel) {
     this.viewModel = viewModel;
     Platform.runLater(() -> this.viewModel.setCurrentSource(sourceVBox));
+    this.isBeingEstimatedLabel = new Label();
 
     //Assign the necessary property bindings:
     assignBindings();
@@ -33,6 +35,7 @@ public class SingleTaskListViewController
     this.getTaskHeaderLabel().textProperty().bindBidirectional(viewModel.getTaskHeaderLabelProperty());
     this.getTaskDescLabel().textProperty().bindBidirectional(viewModel.getTaskDescProperty());
     this.getIsBeingEstimatedLabel().textProperty().bindBidirectional(viewModel.getEstimationLabel());
+    this.getFinalEffortLabel().textProperty().bindBidirectional(viewModel.getFinalEffortLabelProperty());
   }
 
 
@@ -66,4 +69,11 @@ public class SingleTaskListViewController
   public Label getIsBeingEstimatedLabel() {
     return this.isBeingEstimatedLabel;
   }
+
+  public Label getFinalEffortLabel()
+  {
+    return finalEffortLabel;
+  }
+
+
 }
