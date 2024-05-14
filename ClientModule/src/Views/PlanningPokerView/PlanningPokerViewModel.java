@@ -5,17 +5,10 @@ import Application.Session;
 import Application.ViewFactory;
 import Application.ViewModelFactory;
 import Model.PlanningPoker.PlanningPokerModel;
-import Views.MainView.MainViewController;
 import Views.TaskView.TaskViewModel;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
-import javax.swing.text.View;
-import java.io.IOException;
 import java.rmi.RemoteException;
 
 public class PlanningPokerViewModel
@@ -56,6 +49,9 @@ public class PlanningPokerViewModel
     currentStage.setOnCloseRequest(event -> {
       // Consume the event to prevent the default close behavior:
       event.consume();
+
+      // Reset the UI elements:
+      taskViewModel.getSingleTaskViewModelList().clear();
 
       // TODO: Implement the functionality to delete the currently active PlanningPoker game, as described in Use Case #2, ALT0 sequence.
 

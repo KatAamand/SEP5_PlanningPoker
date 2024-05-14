@@ -16,6 +16,7 @@ public class GameViewController
 {
   @FXML public StackPane effortWrapper;
   @FXML public HBox placedCardsWrapper;
+  @FXML private Button skipButton;
   @FXML private Label taskHeaderLabel;
   @FXML private Label taskDescLabel;
   @FXML private ChoiceBox finalEffortDropdown;
@@ -32,6 +33,8 @@ public class GameViewController
   {
     applyBindings();
     gameViewModel.setPlacedCardsWrapper(placedCardsWrapper);
+    gameViewModel.setSkipButtonRef(skipButton);
+    gameViewModel.setGameStarted(false);
     gameViewModel.refresh();
     showPlayingCards();
     finalEffortDropdown();
@@ -39,12 +42,13 @@ public class GameViewController
 
   private void applyBindings()
   {
-    taskHeaderLabel.textProperty()
-        .bindBidirectional(gameViewModel.taskHeaderPropertyProperty());
-    taskDescLabel.textProperty()
-        .bindBidirectional(gameViewModel.taskDescPropertyProperty());
-    finalEffortLabel.textProperty()
-        .bindBidirectional(gameViewModel.finalEffortLabelProperty());
+    taskHeaderLabel.textProperty().bindBidirectional(gameViewModel.taskHeaderPropertyProperty());
+    taskDescLabel.textProperty().bindBidirectional(gameViewModel.taskDescPropertyProperty());
+    finalEffortLabel.textProperty().bindBidirectional(gameViewModel.finalEffortLabelProperty());
+  }
+
+  public void onGameStart() {
+    gameViewModel.setGameStarted(true);
   }
 
   public void onsetEffortButtonPressed()

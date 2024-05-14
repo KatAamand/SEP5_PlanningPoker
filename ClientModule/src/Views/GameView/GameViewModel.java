@@ -14,6 +14,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -38,6 +39,8 @@ public class GameViewModel
   private Task displayedTask;
   @FXML public HBox placedCardsWrapper;
   public ArrayList<UserCardData> placedCards;
+  private Button skipButtonRef;
+  private boolean isGameStarted;
 
   public GameViewModel() throws RemoteException
   {
@@ -46,6 +49,7 @@ public class GameViewModel
     taskDescProperty = new SimpleStringProperty();
     finalEffortLabelProperty = new SimpleStringProperty();
     effortList = new ArrayList<>();
+    isGameStarted = false;
     getEffortList();
 
     placedCards = new ArrayList<>();
@@ -62,13 +66,43 @@ public class GameViewModel
   public void refresh() {
     displayedTask = gameModel.nextTaskToEvaluate();
     if (displayedTask != null) {
-      taskHeaderPropertyProperty().setValue(displayedTask.getTaskHeader());
-      taskDescPropertyProperty().setValue(displayedTask.getDescription());
-      finalEffortLabelProperty().setValue(displayedTask.getFinalEffort());
+        // Show the next non-skipped and non-estimated task in the game UI:
+        taskHeaderPropertyProperty().setValue(displayedTask.getTaskHeader());
+        taskDescPropertyProperty().setValue(displayedTask.getDescription());
+        finalEffortLabelProperty().setValue(displayedTask.getFinalEffort());
+
+        // Disable the skip button, if this is the last non-estimated task in the list:
+        List<Task> taskList;
+        try {
+            taskList = ModelFactory.getInstance().getTaskModel().getTaskList();
+        } catch (RemoteException e) {
+            throw new RuntimeException();
+        }
+
+        // Count how many non-estimated tasks are still in the list:
+        int numberOfNonEstimatedTasks = 0;
+        if (taskList != null) {
+            for (Task task : taskList) {
+                if(task.getFinalEffort() != null && task.getFinalEffort().isEmpty()) {
+                    numberOfNonEstimatedTasks++;
+                }
+            }
+        }
+        // Disable the skip button if there is only 1 non-estimated task left:
+        if(numberOfNonEstimatedTasks == 1) {
+            disableSkipButton();
+        } else {
+            // Enable the skip button, if this is not the last non-estimated task in the list:
+            enableAndShowSkipButton();
+        }
     } else {
-      taskHeaderPropertyProperty().setValue("No more tasks");
-      taskDescPropertyProperty().setValue("No more tasks");
-      finalEffortLabelProperty().setValue("");
+        // Shows if there are no more valid tasks left for estimation:
+        taskHeaderPropertyProperty().setValue("No more tasks");
+        taskDescPropertyProperty().setValue("No more tasks");
+        finalEffortLabelProperty().setValue("");
+
+        // Disables the skip button when no further tasks are left for estimation:
+        disableSkipButton();
     }
     clearPlacedCards();
   }
@@ -115,6 +149,36 @@ public class GameViewModel
     this.effortList = gameModel.getEffortList();
   }
 
+  public void setSkipButtonRef(Button skipButtonRef) {
+    this.skipButtonRef = skipButtonRef;
+  }
+
+  public void disableAndHideSkipButton() {
+    this.disableSkipButton();
+    this.skipButtonRef.setVisible(false);
+  }
+
+  public void enableAndShowSkipButton() {
+    this.enableSkipButton();
+    this.skipButtonRef.setVisible(true);
+  }
+
+  public void enableSkipButton() {
+    this.skipButtonRef.setDisable(false);
+  }
+
+  public void disableSkipButton() {
+    this.skipButtonRef.setDisable(true);
+  }
+
+  public void setGameStarted(boolean bool) {
+    this.isGameStarted = bool;
+  }
+
+  public boolean getGameStartStatus() {
+    return this.isGameStarted;
+  }
+
   public ObservableList<String> getEffortObserverList()
   {
    ObservableList<String> efforts = javafx.collections.FXCollections.observableArrayList();
@@ -125,38 +189,38 @@ public class GameViewModel
    return efforts;
   }
 
-    public void getPossiblePlayingCards(StackPane effortWrapper) {
-        Platform.runLater(() -> {
-            int counter = 0;
-            for (Effort effort : effortList) {
-                Image image = new Image(getClass().getResourceAsStream(effort.getImgPath()));
-                CustomImageView imageView = new CustomImageViewAdapter(image, effort.getEffortValue());
-                imageView.setFitHeight(125);
-                imageView.setFitWidth(90);
+  public void getPossiblePlayingCards(StackPane effortWrapper) {
+      Platform.runLater(() -> {
+          int counter = 0;
+          for (Effort effort : effortList) {
+              Image image = new Image(getClass().getResourceAsStream(effort.getImgPath()));
+              CustomImageView imageView = new CustomImageViewAdapter(image, effort.getEffortValue());
+              imageView.setFitHeight(125);
+              imageView.setFitWidth(90);
 
-                imageView.setTranslateX(counter);
-                counter += 60;
+            imageView.setTranslateX(counter);
+            counter += 60;
 
-                // adding hover effects for cards
-                imageView.setOnMouseEntered(
-                        e -> imageView.getStyleClass().add("card-hover"));
-                imageView.setOnMouseExited(
-                        e -> imageView.getStyleClass().remove("card-hover"));
+            // adding hover effects for cards
+            imageView.setOnMouseEntered(
+                    e -> imageView.getStyleClass().add("card-hover"));
+            imageView.setOnMouseExited(
+                    e -> imageView.getStyleClass().remove("card-hover"));
 
-                imageView.setOnMouseClicked(event -> handleCardSelection(imageView, effortWrapper));
-                effortWrapper.getChildren().add((Node) imageView);
-            }
-        });
-    }
+            imageView.setOnMouseClicked(event -> handleCardSelection(imageView, effortWrapper));
+            effortWrapper.getChildren().add((Node) imageView);
+        }
+    });
+  }
 
-    public void handleCardSelection(CustomImageView selectedCard, StackPane effortWrapper) {
-        String currentUser = Session.getCurrentUser().getUsername();
+  public void handleCardSelection(CustomImageView selectedCard, StackPane effortWrapper) {
+    String currentUser = Session.getCurrentUser().getUsername();
 
-        effortWrapper.getChildren().forEach(node -> node.getStyleClass().remove("card-selected"));
-        selectedCard.getStyleClass().add("card-selected");
+    effortWrapper.getChildren().forEach(node -> node.getStyleClass().remove("card-selected"));
+    selectedCard.getStyleClass().add("card-selected");
 
-        handleCardPlacement(selectedCard, currentUser);
-    }
+    handleCardPlacement(selectedCard, currentUser);
+  }
 
     public void setPlacedCardsWrapper(HBox placedCardsWrapper) {
         this.placedCardsWrapper = placedCardsWrapper;
@@ -341,7 +405,7 @@ public class GameViewModel
     }
 
     private void setFinalEffort(String effortValue) {
-        displayedTask.setFinalEffort(effortValue);
-    }
+    displayedTask.setFinalEffort(effortValue);
+  }
 
 }
