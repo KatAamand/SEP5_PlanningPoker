@@ -30,6 +30,7 @@ public class LoginViewModel extends ViewModel {
         loginModel.addPropertyChangeListener("userLoginSuccess", this::loginUser);
         loginModel.addPropertyChangeListener("userCreatedSuccess", this::userCreated);
         loginModel.addPropertyChangeListener("userValidationFailed", this::loginAttemptFailed);
+        loginModel.addPropertyChangeListener("userAlreadyExists", this::userAlreadyExists);
 
         username.addListener(((observable, oldValue, newValue) -> validateUsername(newValue)));
         password.addListener((((observable, oldValue, newValue) -> validatePassword(newValue))));
@@ -129,8 +130,14 @@ public class LoginViewModel extends ViewModel {
         });
     }
 
-    public void requestLogin(String username, String password) {
+    private void userAlreadyExists(PropertyChangeEvent event) {
+        Platform.runLater(() -> {
+            onUserCreatedResult.accept(false);
+            showAlertBox("Brugeroprettelse fejlet", "Brugernavnet eksisterer allerede");
+        });
+    }
 
+    public void requestLogin(String username, String password) {
         loginModel.requestLogin(username, password);
     }
 

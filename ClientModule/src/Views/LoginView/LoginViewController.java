@@ -65,9 +65,6 @@ public class LoginViewController {
             if (success) {
                 // Create alert that lets the user know that the user has been created
                 loginViewModel.showDialogBox("Bruger oprettet", "Din bruger er nu oprettet og du kan logge ind");
-            } else {
-                // Create alert that lets the user know that there was an error creating the user
-                loginViewModel.showAlertBox("Brugeroprettelse fejlet", "Din bruger kan ikke oprettes, vent og prøv igen senere");
             }
         });
     }
