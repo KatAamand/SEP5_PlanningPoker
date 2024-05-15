@@ -168,6 +168,17 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     }
 
     @Override
+    public void sendUser() {
+        Platform.runLater(() -> {
+            try {
+                server.addConnectedUserToSession(Session.getCurrentUser());
+            } catch (RemoteException e) {
+                throw new RuntimeException();
+            }
+        });
+    }
+
+    @Override
     public void logoutUser(String username, String password) {
         //Check that the requested user is the local user before logging out (prevent local user from logging out other remote users):
         if (Session.getCurrentUser() != null
