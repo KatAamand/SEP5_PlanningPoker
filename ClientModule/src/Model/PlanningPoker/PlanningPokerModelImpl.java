@@ -5,6 +5,7 @@ import Application.ModelFactory;
 import Application.Session;
 import DataTypes.PlanningPoker;
 import DataTypes.User;
+import DataTypes.UserRoles.UserRole;
 import Networking.Client;
 import javafx.application.Platform;
 
@@ -16,11 +17,15 @@ public class PlanningPokerModelImpl implements PlanningPokerModel
 {
   private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
   private PlanningPoker activePlanningPokerGame;
+  private Client clientConnection;
 
 
 
-  public PlanningPokerModelImpl() {
+  public PlanningPokerModelImpl() throws RemoteException{
     activePlanningPokerGame = null;
+
+    //Assign the network connection:
+    clientConnection = (Client) ClientFactory.getInstance().getClient();
 
     Platform.runLater(() -> {
       try {
@@ -51,6 +56,11 @@ public class PlanningPokerModelImpl implements PlanningPokerModel
       } catch (RemoteException e) {
           throw new RuntimeException(e);
       }
+  }
+
+  /** Resets the local User to the base level developer permission set, when leaving a planning poker game */
+  @Override public void resetUserPermissionUponLeavingGame() {
+    clientConnection.setRoleInGame(UserRole.DEVELOPER, Session.getConnectedGameId(), Session.getCurrentUser());
   }
 
   public void setActivePlanningPokerGame(PlanningPoker activeGame) {

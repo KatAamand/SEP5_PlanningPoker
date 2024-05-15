@@ -1,6 +1,7 @@
 package Views.TaskView;
 
 import Application.ModelFactory;
+import Application.Session;
 import Application.ViewModelFactory;
 import DataTypes.Task;
 import DataTypes.User;
@@ -59,22 +60,25 @@ public class TaskViewModel {
             Platform.runLater(this::updateTaskListEmptyProperty);});
     }
 
+    public void disableAllPermissionBasedUIInteractionElements() {
+        // Disable all Interaction based UI elements, in order to later re-enable them for each specific role:
+        this.disableAndHideCreateButton();
+    }
+
     /** Used for enabling specific UI elements and interactions based on the users permissions */
     private void enableSpecificUIPermissionBasedElements(User user)
     {
         // Enable permission to CREATE tasks, if proper user permission exists:
         if(user.getRole().getPermissions().contains(UserPermission.CREATE_TASK)) {
-            // TODO: Not implemented yet.
+            this.enableAndShowCreateButton();
         }
 
         // Enable permission to EDIT tasks, if proper user permission exists:
         if(user.getRole().getPermissions().contains(UserPermission.EDIT_TASK)) {
-            // TODO: Not implemented yet.
-        }
-
-        // Enable permission to DELETE tasks, if proper user permission exists:
-        if(user.getRole().getPermissions().contains(UserPermission.DELETE_TASK)) {
-            // TODO: Not implemented yet.
+            this.btnEditTask.setText("Edit Task");
+        } else {
+            //Change the EDIT button into a SHOW DETAILS button, so that connected users can read project descriptions, etc. for tasks.
+            this.btnEditTask.setText("Show Details");
         }
     }
 
@@ -96,6 +100,12 @@ public class TaskViewModel {
 
 
     public void refresh() {
+        // Disable UI elements that are not available to the user, based on the users role / permissions:
+        this.disableAllPermissionBasedUIInteractionElements();
+
+        // Enable specific UI elements based on user role:
+        this.enableSpecificUIPermissionBasedElements(Session.getCurrentUser());
+
         //Refresh the ViewModels inside the singleTaskListViewModelList
         setSingleTaskViewModelList(new ArrayList<>());
 
@@ -193,7 +203,22 @@ public class TaskViewModel {
 
 
     private void enableEditButton() {
-        btnEditTask.setDisable(false);
+        this.btnEditTask.setDisable(false);
+    }
+
+    private void disableCreateButton() {
+        btnCreateTask.setDisable(true);
+    }
+
+    private void disableAndHideCreateButton() {
+        this.disableCreateButton();
+        this.btnCreateTask.setVisible(false);
+
+    }
+
+    private void enableAndShowCreateButton() {
+        this.btnCreateTask.setDisable(false);
+        this.btnCreateTask.setVisible(true);
     }
 
 

@@ -5,7 +5,6 @@ import Application.ViewModelFactory;
 import Model.Lobby.LobbyModel;
 import Views.TaskView.TaskViewModel;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 import java.rmi.RemoteException;

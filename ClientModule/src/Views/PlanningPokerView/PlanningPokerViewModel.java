@@ -82,6 +82,10 @@ public class PlanningPokerViewModel
       // TODO: Implement user leaving connected list User story #11
       planningPokerModel.removeUserFromSession();
 
+      // Reset the users permission level to simply be a developer, outside the game that is being closed:
+      planningPokerModel.resetUserPermissionUponLeavingGame();
+
+
       // Redirect the local user to the main view:
       Platform.runLater(() -> {
           ViewFactory.getInstance().getMainViewStage().show();

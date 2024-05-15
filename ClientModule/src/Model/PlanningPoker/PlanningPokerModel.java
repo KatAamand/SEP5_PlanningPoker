@@ -14,6 +14,6 @@ public interface PlanningPokerModel extends PropertyChangeSubject
 
   User getLocalUser();
   PlanningPoker getActivePlanningPokerGame();
-
-    void removeUserFromSession();
+  void removeUserFromSession();
+  void resetUserPermissionUponLeavingGame();
 }

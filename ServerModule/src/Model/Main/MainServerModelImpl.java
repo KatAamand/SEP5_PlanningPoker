@@ -175,6 +175,7 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
                         }
                         else {
                             //Error is something else:
+                            e.printStackTrace();
                             throw new RuntimeException();
                         }
                     }

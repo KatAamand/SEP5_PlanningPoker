@@ -1,6 +1,7 @@
 package Networking;
 
 import DataTypes.*;
+import DataTypes.UserRoles.UserRole;
 import Util.PropertyChangeSubject;
 
 import java.rmi.RemoteException;
@@ -30,5 +31,5 @@ public interface Client extends PropertyChangeSubject {
     void placeCard(UserCardData userCardData);
     void requestClearPlacedCards();
     void clearPlacedCards() throws RemoteException;
-    void setRoleInGame(DataTypes.UserRoles.UserRole userRole, java.lang.String s, DataTypes.User user);
+    void setRoleInGame(UserRole userRole, String gameId, User user);
 }

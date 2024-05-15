@@ -52,12 +52,22 @@ public class MainModelImpl implements MainModel
 
   @Override public void requestConnectPlanningPoker(String planningPokerID) throws RemoteException
   {
-    if(clientConnection.validatePlanningPokerID(planningPokerID)) {
+    if(clientConnection.validatePlanningPokerID(planningPokerID))
+    {
       ModelFactory.getInstance().getPlanningPokerModel().setActivePlanningPokerGame(clientConnection.loadPlanningPoker(planningPokerID));
       Session.getCurrentUser().setPlanningPoker(ModelFactory.getInstance().getPlanningPokerModel().getActivePlanningPokerGame());
 
-      // Attempt to set the joining user to initially be a developer in the joined game
-      clientConnection.setRoleInGame(UserRole.DEVELOPER, Session.getConnectedGameId(), Session.getCurrentUser());
+      // Check if there is a Product Owner in the game already:
+      if (ModelFactory.getInstance().getPlanningPokerModel().getActivePlanningPokerGame().getProductOwner() != null)
+      {
+        // There is already a product owner. Set this client to initially be a developer in the joined game.
+        clientConnection.setRoleInGame(UserRole.DEVELOPER, Session.getConnectedGameId(), Session.getCurrentUser());
+      }
+      else
+      {
+        // There is no Product Owner in the game. Set this client as the Product Owner, initially:
+        clientConnection.setRoleInGame(UserRole.PRODUCT_OWNER, Session.getConnectedGameId(), Session.getCurrentUser());
+      }
     }
   }
 

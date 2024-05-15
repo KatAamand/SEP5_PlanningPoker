@@ -16,6 +16,7 @@ import java.util.ResourceBundle;
 
 public class ManageSingleTaskViewController implements Initializable
 {
+  @FXML private Button buttonCancel;
   @FXML private Button buttonSave;
   @FXML private Button buttonDelete;
   @FXML public TextField textFieldTaskHeader;
@@ -64,6 +65,7 @@ public class ManageSingleTaskViewController implements Initializable
   /** Used to control the state of this controller. True, this controller will act as if embedded inside another view. False, this controller will act as if it is its own window. */
   public void isEmbedded(boolean state) {
     this.isEmbedded = state;
+    manageSingleTaskViewModel.setEmbedded(state);
   }
 
 
@@ -83,8 +85,9 @@ public class ManageSingleTaskViewController implements Initializable
 
   @Override public void initialize(URL location, ResourceBundle resources) {
     textAreaTaskDescription.setStyle("-fx-background-color:  #E5FAE4");
+
     try {
-      manageSingleTaskViewModel = new ManageSingleTaskViewModel(buttonSave, buttonDelete, isUserEditing);
+      manageSingleTaskViewModel = new ManageSingleTaskViewModel(buttonSave, buttonDelete, isUserEditing, buttonCancel, textFieldTaskHeader, textAreaTaskDescription);
 
       Platform.runLater(() -> {
         if(this.isEmbedded || !this.isUserEditing) {
@@ -99,6 +102,7 @@ public class ManageSingleTaskViewController implements Initializable
 
       //Refresh view model:
       manageSingleTaskViewModel.validateData(isUserEditing);
+      manageSingleTaskViewModel.refresh();
 
     } catch (RemoteException e) {
       System.out.println("ERROR: Occurred in ManageSingleTaskViewController.java while attempting to initialize its assigned ViewModel");
