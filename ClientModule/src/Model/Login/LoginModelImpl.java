@@ -39,15 +39,15 @@ public class LoginModelImpl implements LoginModel {
         this.userList = userList;
     }
 
-  @Override
-  public ArrayList<User> getUserList() {
-    return userList;
-  }
+    @Override
+    public ArrayList<User> getUserList() {
+        return userList;
+    }
 
 
-  @Override
+    @Override
     public void requestLogin(String username, String password) {
-      System.out.println("Model: Validating user");
+        System.out.println("Model: Validating user");
         clientConnection.validateUser(username, password);
     }
 
@@ -67,8 +67,8 @@ public class LoginModelImpl implements LoginModel {
         clientConnection.logoutUser(username, password);
     }
 
-  @Override
-  public boolean usernameAlreadyExists(String username) {
+    @Override
+    public boolean usernameAlreadyExists(String username) {
         if (userList != null) {
             for (User user : userList) {
                 if (user.getUsername().equals(username)) {
@@ -76,10 +76,10 @@ public class LoginModelImpl implements LoginModel {
                 }
             }
         }
-    return false;
-  }
+        return false;
+    }
 
-  @Override
+    @Override
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         support.addPropertyChangeListener(listener);
     }
@@ -106,7 +106,7 @@ public class LoginModelImpl implements LoginModel {
     private void assignListeners() {
         clientConnection.addPropertyChangeListener("userListRecieved", evt -> {
             Platform.runLater(() -> {
-              setUserList((ArrayList<User>) evt.getNewValue());
+                setUserList((ArrayList<User>) evt.getNewValue());
             });
         });
 
