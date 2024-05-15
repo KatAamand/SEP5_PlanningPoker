@@ -5,6 +5,7 @@ import DataTypes.Message;
 import DataTypes.User;
 import Model.Chat.ChatModel;
 import Views.ViewModel;
+import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 public class ChatViewModel extends ViewModel {
     private final ChatModel chatModel;
     private StringProperty message = new SimpleStringProperty();
-    private ListProperty users = new SimpleListProperty();
+    private ListProperty<User> users = new SimpleListProperty<>();
     private final Session session;
 
     public ChatViewModel(ChatModel chatModel, Session session) {
@@ -43,7 +44,7 @@ public class ChatViewModel extends ViewModel {
     {
         return message;
     }
-    public ListProperty userProperty()
+    public ListProperty<User> userProperty()
     {
         return users;
     }

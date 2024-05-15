@@ -101,9 +101,22 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
     for (ClientConnection_RMI client : connectedClients) {
       if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == user.getPlanningPoker().getPlanningPokerID())
       {
-        if (!user.getPlanningPoker().getConnectedUsers().contains(client.getCurrentUser())) {
+        // Added to only check users against their unique usernames, instead of the entire user object.
+        boolean userNotFound = true;
+        for (User existingUser : user.getPlanningPoker().getConnectedUsers()) {
+          if(existingUser.getUsername().equals(client.getCurrentUser().getUsername())) {
+            userNotFound = false;
+          }
+        }
+
+        if(userNotFound) {
           user.getPlanningPoker().getConnectedUsers().add(client.getCurrentUser());
         }
+
+        // Commented out below, and added above since the below would return different users despite the only difference being the role applied to the specific user.
+        /*if (!user.getPlanningPoker().getConnectedUsers().contains(client.getCurrentUser())) {
+          user.getPlanningPoker().getConnectedUsers().add(client.getCurrentUser());
+        }*/
       }
     }
     broadcastUsers(user, connectedClients, server, user.getPlanningPoker());
@@ -114,9 +127,9 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
     planningPoker.getConnectedUsers().clear();
     for (ClientConnection_RMI client : connectedClients)
     {
-        if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == planningPoker.getPlanningPokerID()) {
-          planningPoker.getConnectedUsers().add(client.getCurrentUser());
-        }
+      if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == planningPoker.getPlanningPokerID()) {
+        planningPoker.getConnectedUsers().add(client.getCurrentUser());
+      }
     }
     for (ClientConnection_RMI client : connectedClients) {
       Thread sendUserThread = new Thread(() -> {
@@ -146,13 +159,35 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
 
   @Override
   public void removeUserFromSession(User user, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) throws RemoteException {
-    if (user.getPlanningPoker().getConnectedUsers().contains(user))
-    {
+
+    // Added to only check users against their unique usernames, instead of the entire user object.
+    boolean userFound = false;
+    for (User existingUser : user.getPlanningPoker().getConnectedUsers()) {
+      if(existingUser.getUsername().equals(user.getUsername())) {
+        userFound = true;
+      }
+    }
+
+    if(userFound) {
+      System.out.println("Removing user from session");
+      PlanningPoker temp = user.getPlanningPoker();
+      temp.getConnectedUsers().remove(user);
+      for (int i = 0; i < temp.getConnectedUsers().size(); i++) {
+        if(temp.getConnectedUsers().get(i).getUsername().equals(user.getUsername())) {
+          temp.getConnectedUsers().remove(i);
+          i--;
+        }
+      }
+      broadcastUsers(user, connectedClients, server, temp);
+    }
+
+    // Commented out below, and added above since the below would return different users despite the only difference being the role applied to the specific user.
+    /*if (user.getPlanningPoker().getConnectedUsers().contains(user)) {
       System.out.println("Removing user from session");
       PlanningPoker temp = user.getPlanningPoker();
       temp.getConnectedUsers().remove(user);
       broadcastUsers(user, connectedClients, server, temp);
-    }
+    }*/
 
   }
 

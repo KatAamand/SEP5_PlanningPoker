@@ -56,16 +56,19 @@ public class MainModelImpl implements MainModel
       ModelFactory.getInstance().getPlanningPokerModel().setActivePlanningPokerGame(clientConnection.loadPlanningPoker(planningPokerID));
       Session.getCurrentUser().setPlanningPoker(ModelFactory.getInstance().getPlanningPokerModel().getActivePlanningPokerGame());
 
-      // Check if there is a Product Owner in the game already:
-      if (ModelFactory.getInstance().getPlanningPokerModel().getActivePlanningPokerGame().getProductOwner() != null)
-      {
-        // There is already a product owner. Set this client to initially be a developer in the joined game.
-        clientConnection.setRoleInGame(UserRole.DEVELOPER, Session.getConnectedGameId(), Session.getCurrentUser());
+      // Check if there is already a Scrum Master in the game:
+      if (ModelFactory.getInstance().getPlanningPokerModel().getActivePlanningPokerGame().getScrumMaster() == null) {
+        // There is no Scrum Master. Set this client/User as the Scrum Master:
+        clientConnection.setRoleInGame(UserRole.SCRUM_MASTER, Session.getConnectedGameId(), Session.getCurrentUser());
       }
-      else
-      {
-        // There is no Product Owner in the game. Set this client as the Product Owner, initially:
+      // Check if there is a Product Owner in the game already:
+      else if (ModelFactory.getInstance().getPlanningPokerModel().getActivePlanningPokerGame().getProductOwner() == null) {
+        // There is already no product owner. Set this client to initially be the Product Owner.
         clientConnection.setRoleInGame(UserRole.PRODUCT_OWNER, Session.getConnectedGameId(), Session.getCurrentUser());
+      }
+      else {
+        // Both Scrum Master and Product Owner is already assigned. Set this client as a Developer, initially, and let the Scrum Master manually assign further roles inside the game:
+        clientConnection.setRoleInGame(UserRole.DEVELOPER, Session.getConnectedGameId(), Session.getCurrentUser());
       }
     }
   }

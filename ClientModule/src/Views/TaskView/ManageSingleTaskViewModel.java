@@ -73,12 +73,13 @@ public class ManageSingleTaskViewModel
       this.showCancelButton();
       this.enableCancelButton();
       this.enableHeaderInputField();
+      this.textFieldTaskHeaderProperty().setValue("");
       this.enableDescriptionInputArea();
+      this.textAreaTaskDescriptionProperty().setValue("");
     }
     else if (user.getRole().getPermissions().contains(UserPermission.EDIT_TASK) && this.isEmbedded())
     {
       // If the user only has edit permission, we ensure to disable the ability to add new tasks in the embedded mode:
-      System.out.println("TESTING");
       this.disableSaveButton();
       this.disableCancelButton();
       this.hideCancelButton();
@@ -86,8 +87,7 @@ public class ManageSingleTaskViewModel
 
       // Also change the text to reflect that the current user cannot and should not be adding tasks in the lobby view:
       this.textFieldTaskHeaderProperty().setValue("Please stand by while the Product Owner adds Tasks to this game");
-      this.textAreaTaskDescriptionProperty()
-          .setValue("Please stand by\n\nDid you know that TYPEWRITER is the longest word you can type using only the letters on one row of the keyboard. (And no … QWERTYUIOP is not a word!)");
+      this.textAreaTaskDescriptionProperty().setValue("Please stand by\n\nDid you know that TYPEWRITER is the longest word you can type using only the letters on one row of the keyboard. (And no … QWERTYUIOP is not a word!)");
 
     }
     else if (user.getRole().getPermissions().contains(UserPermission.EDIT_TASK))
@@ -112,8 +112,7 @@ public class ManageSingleTaskViewModel
     {
       // Also change the text to reflect that the current user cannot and should not be adding tasks in the lobby view:
       this.textFieldTaskHeaderProperty().setValue("Please stand by while the Product Owner adds Tasks to this game");
-      this.textAreaTaskDescriptionProperty()
-          .setValue("Please stand by\n\nDid you know that TYPEWRITER is the longest word you can type using only the letters on one row of the keyboard. (And no … QWERTYUIOP is not a word!)");
+      this.textAreaTaskDescriptionProperty().setValue("Please stand by\n\nDid you know that TYPEWRITER is the longest word you can type using only the letters on one row of the keyboard. (And no … QWERTYUIOP is not a word!)");
     }
 
 

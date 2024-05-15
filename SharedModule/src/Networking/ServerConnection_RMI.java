@@ -30,6 +30,7 @@ public interface ServerConnection_RMI extends Remote {
     void addConnectedUserToSession(User user) throws RemoteException;
     ArrayList<Effort> getEffortList() throws RemoteException;
     void removeUserFromSession(User user) throws RemoteException;
+    void removeUserFromGame(User user, int planningPokerId) throws RemoteException;
     void placeCard(UserCardData userCardData) throws RemoteException;
     void requestClearPlacedCards() throws RemoteException;
     User setRoleInPlanningPokerGame(UserRole roleToApply, User userToReceiveRole, int planningPokerId) throws RemoteException;

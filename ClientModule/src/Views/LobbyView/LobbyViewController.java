@@ -3,6 +3,7 @@ package Views.LobbyView;
 import Application.ViewModelFactory;
 import Views.PlanningPokerView.PlanningPokerViewController;
 import Views.TaskView.ManageSingleTaskViewController;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -17,8 +18,8 @@ public class LobbyViewController implements Initializable
 {
   @FXML private VBox addTaskWrapper;
   @FXML private Label titleLabel;
-  @FXML private VBox addTask;
-  @FXML private ManageSingleTaskViewController addTaskController;
+  @FXML private VBox manageTask;
+  @FXML private ManageSingleTaskViewController manageTaskController;
   @FXML private Button startGameButton;
 
   private LobbyViewModel lobbyViewModel;
@@ -36,12 +37,14 @@ public class LobbyViewController implements Initializable
 
   @Override public void initialize(URL location, ResourceBundle resources)
   {
-    addTaskController.isEmbedded(true);
+    manageTaskController.isEmbedded(true);
     startGameButton.disableProperty().bind(lobbyViewModel.isTaskListEmptyProperty());
+
+    lobbyViewModel.addPropertyChangeListener("PlanningPokerObjUpdated", evt -> Platform.runLater(() -> manageTaskController.refresh()));
   }
 
-  public ManageSingleTaskViewController getEmbeddedAddTaskViewController() {
-    return this.addTaskController;
+  public ManageSingleTaskViewController getEmbeddedManageTaskViewController() {
+    return this.manageTaskController;
   }
 
   public void onStartGameButtonPressed() {

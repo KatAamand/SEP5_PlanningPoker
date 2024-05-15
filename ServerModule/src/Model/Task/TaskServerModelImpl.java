@@ -56,8 +56,6 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable {
             ArrayList<Task> allTasksFromPlanningPoker = getTaskListFromDB(planningPoker.getPlanningPokerID());
             tasklistMap.put(planningPoker.getPlanningPokerID(), planningPoker.getTaskList());
         }
-
-        System.out.println();
     }
 
     private void fireTaskListDataUpdatedEvent(int planningPokerId) {

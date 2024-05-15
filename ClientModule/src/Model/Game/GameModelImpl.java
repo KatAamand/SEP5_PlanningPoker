@@ -173,6 +173,10 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
     clientConnection.addPropertyChangeListener("showCards", evt ->  {
         propertyChangeSupport.firePropertyChange("showCards", null, null);
     });
+
+    super.addPropertyChangeListener("PlanningPokerObjUpdated", evt -> {
+      propertyChangeSupport.firePropertyChange("PlanningPokerObjUpdated", null, null);
+    });
   }
 
   @Override public void updatePlacedCardMap(

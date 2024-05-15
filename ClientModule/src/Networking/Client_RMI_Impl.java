@@ -2,7 +2,6 @@ package Networking;
 
 import Application.Session;
 import DataTypes.*;
-import DataTypes.UserRoles.ConcreteRoles.ProductOwner;
 import DataTypes.UserRoles.UserRole;
 import javafx.application.Platform;
 
@@ -19,7 +18,7 @@ import java.util.ArrayList;
 public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializable {
 
     private ServerConnection_RMI server;
-    private PropertyChangeSupport propertyChangeSupport;
+    private final PropertyChangeSupport propertyChangeSupport;
 
     public Client_RMI_Impl() {
         propertyChangeSupport = new PropertyChangeSupport(this);
@@ -75,9 +74,9 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
         }
     }
 
-    @Override
-    public void updatePlanningPokerObj(int planningPokerId) throws RemoteException {
+    @Override public void updatePlanningPokerObj(int planningPokerId) throws RemoteException {
         PlanningPoker serverAnswer = server.loadPlanningPokerGame(planningPokerId, this);
+        System.out.println("Client_RMI: Received updated Planning Poker Object from server");
         if (serverAnswer != null) {
             propertyChangeSupport.firePropertyChange("PlanningPokerObjUpdated", null, serverAnswer);
         }
@@ -91,6 +90,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
 
             if (serverAnswer != null) {
                 //PlanningPoker loaded successfully
+                Session.getCurrentUser().setPlanningPoker(serverAnswer);
                 System.out.println("Opdatering fra server: PlanningPoker game has been loaded successfully");
                 return serverAnswer;
             }
@@ -246,6 +246,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
             if (serverAnswer != null) {
                 //PlanningPoker created successfully
                 System.out.println("Opdatering fra server: planningPokerID is created successfully");
+                Session.getCurrentUser().setPlanningPoker(serverAnswer);
                 propertyChangeSupport.firePropertyChange("planningPokerCreatedSuccess", null, serverAnswer);
                 return serverAnswer;
             }
@@ -256,26 +257,16 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     }
 
 
-    @Override
-    public void addPropertyChangeListener(
-            PropertyChangeListener listener) {
-        propertyChangeSupport.addPropertyChangeListener(listener);
+    @Override public void addPropertyChangeListener(PropertyChangeListener listener) {propertyChangeSupport.addPropertyChangeListener(listener);
     }
 
-    @Override
-    public void addPropertyChangeListener(String name,
-                                          PropertyChangeListener listener) {
-        propertyChangeSupport.addPropertyChangeListener(name, listener);
+    @Override public void addPropertyChangeListener(String name, PropertyChangeListener listener) {propertyChangeSupport.addPropertyChangeListener(name, listener);
     }
 
-    @Override
-    public void removePropertyChangeListener(
-            PropertyChangeListener listener) {
-        propertyChangeSupport.removePropertyChangeListener(listener);
+    @Override public void removePropertyChangeListener(PropertyChangeListener listener) {propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
-    @Override
-    public void removePropertyChangeListener(String name, PropertyChangeListener listener) {
+    @Override public void removePropertyChangeListener(String name, PropertyChangeListener listener) {
         propertyChangeSupport.removePropertyChangeListener(name, listener);
     }
 
@@ -293,7 +284,13 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
         }
     }
 
-
+    @Override public void removeUserFromGame(int planningPokerId) {
+        try {
+            server.removeUserFromGame(Session.getCurrentUser(), planningPokerId);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public ArrayList<Effort> getEffortList() {
@@ -387,8 +384,13 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
         propertyChangeSupport.firePropertyChange("showCards", null, null);
     }
 
-    @Override
-    public void setRoleInGame(UserRole role, int planningPokerId, User user) {
+    @Override public void setRoleInGame(UserRole role, int planningPokerId, User user) {
+        // Check if the user already has this role, if yes - do not trouble the server:
+        if(user.getRole().getUserRole() == role) {
+            // User already has this role assigned. Do nothing.
+            return;
+        }
+
         User serverAnswer;
         try {
             serverAnswer = this.setRoleOnServer(role, planningPokerId, user);

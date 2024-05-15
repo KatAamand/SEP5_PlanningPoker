@@ -48,6 +48,10 @@ public class TaskModelImpl extends PlanningPokerModelImpl implements TaskModel
       }
       propertyChangeSupport.firePropertyChange("taskListUpdated", null, null);
       });
+
+    super.addPropertyChangeListener("PlanningPokerObjUpdated", evt -> {
+      propertyChangeSupport.firePropertyChange("PlanningPokerObjUpdated", null, null);
+    });
   }
 
 

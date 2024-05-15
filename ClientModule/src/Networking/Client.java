@@ -27,6 +27,7 @@ public interface Client extends PropertyChangeSubject {
     void skipTasks(ArrayList<Task> skippedTasksList, int planningPokerId);
     void sendUser();
     void removeUserFromSession();
+    void removeUserFromGame(int planningPokerId);
     ArrayList<Effort> getEffortList();
     void placeCard(UserCardData userCardData);
     void requestClearPlacedCards();

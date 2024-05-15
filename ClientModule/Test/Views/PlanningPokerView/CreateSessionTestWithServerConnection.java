@@ -315,9 +315,9 @@ class CreateSessionTestWithServerConnection
     boolean userIdSetInTaskView = !taskViewModel.labelUserIdProperty().getValue().equals("UNDEFINED");
 
     // Create a task:
-    lobbyViewController.getEmbeddedAddTaskViewController().textFieldTaskHeader.setText(header);
-    lobbyViewController.getEmbeddedAddTaskViewController().textAreaTaskDescription.setText(descript);
-    lobbyViewController.getEmbeddedAddTaskViewController().onSavePressed(new ActionEvent());
+    lobbyViewController.getEmbeddedManageTaskViewController().textFieldTaskHeader.setText(header);
+    lobbyViewController.getEmbeddedManageTaskViewController().textAreaTaskDescription.setText(descript);
+    lobbyViewController.getEmbeddedManageTaskViewController().onSavePressed(new ActionEvent());
 
     // Give application and server some time to handle the creation request:
     try {
@@ -429,9 +429,9 @@ class CreateSessionTestWithServerConnection
     String descript = "Testing1";
 
     // Create a task:
-    lobbyViewController.getEmbeddedAddTaskViewController().textFieldTaskHeader.setText(header);
-    lobbyViewController.getEmbeddedAddTaskViewController().textAreaTaskDescription.setText(descript);
-    lobbyViewController.getEmbeddedAddTaskViewController().onSavePressed(new ActionEvent());
+    lobbyViewController.getEmbeddedManageTaskViewController().textFieldTaskHeader.setText(header);
+    lobbyViewController.getEmbeddedManageTaskViewController().textAreaTaskDescription.setText(descript);
+    lobbyViewController.getEmbeddedManageTaskViewController().onSavePressed(new ActionEvent());
 
     // Give application and server some time to handle the creation request:
     try {
@@ -560,9 +560,9 @@ class CreateSessionTestWithServerConnection
     String descript = "Testing1";
 
     // Create a task:
-    lobbyViewController.getEmbeddedAddTaskViewController().textFieldTaskHeader.setText(header);
-    lobbyViewController.getEmbeddedAddTaskViewController().textAreaTaskDescription.setText(descript);
-    lobbyViewController.getEmbeddedAddTaskViewController().onSavePressed(new ActionEvent());
+    lobbyViewController.getEmbeddedManageTaskViewController().textFieldTaskHeader.setText(header);
+    lobbyViewController.getEmbeddedManageTaskViewController().textAreaTaskDescription.setText(descript);
+    lobbyViewController.getEmbeddedManageTaskViewController().onSavePressed(new ActionEvent());
 
     // Give application and server some time to handle the creation request:
     try {
@@ -669,7 +669,7 @@ class CreateSessionTestWithServerConnection
     }
 
     // Check if the game was started by checking if the lobbyView element is hidden or showing. Hidden means the game has started and GameView is showing instead:
-    Node nestedNode = planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().textAreaTaskDescription.getParent().getParent().getParent().getParent().getParent();
+    Node nestedNode = planningPokerViewController.getLobbyViewController().getEmbeddedManageTaskViewController().textAreaTaskDescription.getParent().getParent().getParent().getParent().getParent();
     boolean didGameRefuseToStart = nestedNode.isVisible();
 
     // Evaluate if any of the checks during this run failed:

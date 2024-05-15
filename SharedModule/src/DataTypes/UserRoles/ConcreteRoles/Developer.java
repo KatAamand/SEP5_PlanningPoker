@@ -25,7 +25,7 @@ public class Developer implements Role
     return permissions;
   }
 
-  @Override public UserRole getRole() {
+  @Override public UserRole getUserRole() {
     return role;
   }
 
@@ -49,7 +49,7 @@ public class Developer implements Role
       return false;
     }
     Developer dev = (Developer) obj;
-    return (this.getRole().equals(dev.getRole())
+    return (this.getUserRole().equals(dev.getUserRole())
         && this.getPermissions().equals(dev.getPermissions()));
   }
 }

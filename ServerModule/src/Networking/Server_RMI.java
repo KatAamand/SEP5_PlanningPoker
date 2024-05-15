@@ -1,7 +1,6 @@
 package Networking;
 
 import DataTypes.*;
-import DataTypes.UserRoles.Role;
 import DataTypes.UserRoles.UserRole;
 import Model.Chat.ChatServerModel;
 import Model.Chat.ChatServerModelImpl;
@@ -35,11 +34,17 @@ public class Server_RMI implements ServerConnection_RMI {
         UnicastRemoteObject.exportObject(this, 0);
 
         connectedClients = new ArrayList<>();
+        System.out.print("\nServer_RMI: Initializing Chat data. Please wait!");
         chatServerModel = ChatServerModelImpl.getInstance();
+        System.out.print(" Chat data ready.\nServer_RMI: Initializing Login data. Please wait!");
         loginServerModel = LoginServerModelImpl.getInstance();
+        System.out.print(" Login data ready.\nServer_RMI: Initializing Task data. Please wait!");
         taskServerModel = TaskServerModelImpl.getInstance();
+        System.out.print(" Task data ready.\nServer_RMI: Initializing Game data. Please wait!");
         gameServerModel = GameServerModelImpl.getInstance();
+        System.out.print(" Game data ready.\nServer_RMI: Initializing Other data. Please wait!");
         mainServerModel = MainServerModelImpl.getInstance();
+        System.out.print(" Other data ready.\n");
 
         //Assign server listeners
         assignServerListeners();
@@ -302,6 +307,14 @@ public class Server_RMI implements ServerConnection_RMI {
         chatServerModel.removeUserFromSession(user, connectedClients, this);
     }
 
+    @Override public void removeUserFromGame(User user, int planningPokerId) throws RemoteException {
+        boolean userRemoved = mainServerModel.removeUserFromGame(user, planningPokerId);
+        if(userRemoved) {
+            //Broadcast the changed planning poker object to connected clients:
+            mainServerModel.broadcastPlanningPokerObjUpdate(clientsInEachGame, this, planningPokerId);
+        }
+    }
+
     @Override
     public void placeCard(UserCardData userCardData) throws RemoteException {
         System.out.println("Server_RMI: Requesting placed card");
@@ -315,8 +328,8 @@ public class Server_RMI implements ServerConnection_RMI {
 
     /** These roles are set from the following client classes:<br>
      - Scrum Master is set on game creation of a Planning Poker game. The call cascades from MainModelImpl and down to the server connection. <br>
-     - Product Owner is currently NOT set anywhere. Should be set from within the PlanningPokerViewModel once implemented.<br>
-     - Developer is currently assigned to each user (other than the game creator) who joins a game.<br>
+     - Product Owner is currently assigned to the first user to join a game after the Scrum Master.<br>
+     - Developer is currently assigned to each user (other than the Scrum Master and Product Owner) who joins a game.<br>
      */
     @Override public User setRoleInPlanningPokerGame(UserRole roleToApply, User userToReceiveRole, int planningPokerId) throws RemoteException
     {

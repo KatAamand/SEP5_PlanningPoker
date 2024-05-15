@@ -30,7 +30,7 @@ public class ProductOwner implements Role
     return permissions;
   }
 
-  @Override public UserRole getRole() {
+  @Override public UserRole getUserRole() {
     return role;
   }
 
@@ -54,7 +54,7 @@ public class ProductOwner implements Role
       return false;
     }
     ProductOwner pOwner = (ProductOwner) obj;
-    return (this.getRole().equals(pOwner.getRole())
+    return (this.getUserRole().equals(pOwner.getUserRole())
         && this.getPermissions().equals(pOwner.getPermissions()));
   }
 }

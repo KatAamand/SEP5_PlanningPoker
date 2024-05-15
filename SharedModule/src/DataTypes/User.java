@@ -43,9 +43,22 @@ public class User implements Serializable
 
   public void setPlanningPoker(PlanningPoker planningPoker) {
     this.planningPoker = planningPoker;
-    if (planningPoker != null) {
+
+    // Added to only check users against their unique usernames, instead of the entire user object.
+    boolean userNotFound = true;
+    for (User user : planningPoker.getConnectedUsers()) {
+      if(user.getUsername().equals(this.getUsername())) {
+        userNotFound = false;
+      }
+    }
+
+    if(userNotFound) {
       planningPoker.addUserToSession(this);
     }
+    // Commented out below, and added above since the below would return different users despite the only difference being the role applied to the specific user.
+    /*if (planningPoker != null && !planningPoker.getConnectedUsers().contains(this)) {
+      planningPoker.addUserToSession(this);
+    }*/
   }
 
   public Role getRole() {

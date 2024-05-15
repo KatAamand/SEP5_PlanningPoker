@@ -34,7 +34,7 @@ public class ScrumMaster implements Role
     return permissions;
   }
 
-  @Override public UserRole getRole() {
+  @Override public UserRole getUserRole() {
     return role;
   }
 
@@ -58,7 +58,7 @@ public class ScrumMaster implements Role
       return false;
     }
     ScrumMaster scrumMaster = (ScrumMaster) obj;
-    return (this.getRole().equals(scrumMaster.getRole())
+    return (this.getUserRole().equals(scrumMaster.getUserRole())
         && this.getPermissions().equals(scrumMaster.getPermissions()));
   }
 }

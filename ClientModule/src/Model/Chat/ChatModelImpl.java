@@ -1,8 +1,11 @@
 package Model.Chat;
 
 import Application.ClientFactory;
+import Application.Session;
 import DataTypes.Message;
 import DataTypes.User;
+import DataTypes.UserRoles.UserRole;
+import Model.PlanningPoker.PlanningPokerModelImpl;
 import Networking.Client;
 import javafx.application.Platform;
 
@@ -10,26 +13,24 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
 
-public class ChatModelImpl implements ChatModel
+public class ChatModelImpl extends PlanningPokerModelImpl implements ChatModel
 {
-  private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-
+  private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
   private Client clientConnection;
 
 
 
   /** Primary constructor. Defers most of the declarations and definitions to the init method,
    * which is run inside a Platform.runLater statement for increased thread safety while using javaFx. */
-  public ChatModelImpl() {
+  public ChatModelImpl() throws RemoteException {
+    super();
+    super.initialize();
+
     //Assign the network connection:
-    try
-    {
+    try {
       clientConnection = (Client) ClientFactory.getInstance().getClient();
-    }
-    catch (RemoteException e)
-    {
-      //TODO: Properly handle this error!
-      e.printStackTrace();
+    } catch (RemoteException e) {
+      throw new RuntimeException();
     }
 
     //Initialize remaining data:
@@ -40,9 +41,6 @@ public class ChatModelImpl implements ChatModel
 
   @Override public void init()
   {
-    //TODO Initialize relevant data that might affect the javaFx thread here.
-
-
     //Assign all PropertyChangeListeners:
     this.assignListeners();
   }
@@ -64,14 +62,16 @@ public class ChatModelImpl implements ChatModel
 
   @Override
   public void setProductOwner(User user) {
-    clientConnection.setProductOwner(user);
+    //clientConnection.setProductOwner(user);
+
+    // This method ensures that other connected clients also receive and update about the new product owner, as well as ensuring that the product owner is added to the Planning Poker obj on the server.
+    clientConnection.setRoleInGame(UserRole.PRODUCT_OWNER, Session.getConnectedGameId(), user);
   }
 
 
   /** Assigns all the required listeners to the clientConnection allowing for Observable behavior betweeen these classes. */
   private void assignListeners()
   {
-    //TODO define the listeners that should be added to the Client here.
     clientConnection.addPropertyChangeListener("messageReceived", evt -> {
       //Sends empty message before every real message, to "clear" the message property in the viewmodel so that the same message can be sent twice in a row.
       propertyChangeSupport.firePropertyChange("messageReceived", null, new Message(""));
@@ -83,9 +83,11 @@ public class ChatModelImpl implements ChatModel
     clientConnection.addPropertyChangeListener("userReceived", evt -> {
       propertyChangeSupport.firePropertyChange("userReceived", null, evt.getNewValue());
     });
+
+    super.addPropertyChangeListener("PlanningPokerObjUpdated", evt -> {
+      propertyChangeSupport.firePropertyChange("userReceived", null, super.getActivePlanningPokerGame().getConnectedUsers());
+    });
   }
-
-
 
   @Override public void addPropertyChangeListener(PropertyChangeListener listener) {
     propertyChangeSupport.addPropertyChangeListener(listener);

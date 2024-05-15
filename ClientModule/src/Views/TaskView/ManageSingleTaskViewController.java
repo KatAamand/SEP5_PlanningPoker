@@ -82,6 +82,10 @@ public class ManageSingleTaskViewController implements Initializable
     manageSingleTaskViewModel.setUneditedTask(uneditedTask);
   }
 
+  public void refresh(){
+    manageSingleTaskViewModel.refresh();
+  }
+
 
   @Override public void initialize(URL location, ResourceBundle resources) {
     textAreaTaskDescription.setStyle("-fx-background-color:  #E5FAE4");

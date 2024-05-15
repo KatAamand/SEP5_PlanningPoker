@@ -85,9 +85,9 @@ public class PlanningPokerViewModel
 
       // TODO: Implement user leaving connected list User story #11
       System.out.println("Closing planning poker window");
-      planningPokerModel.removeUserFromSession();
 
       // Reset the users permission level to simply be a developer, outside the game that is being closed:
+      // Also removes the user from the current session, before closing it
       planningPokerModel.resetUserPermissionUponLeavingGame();
 
 

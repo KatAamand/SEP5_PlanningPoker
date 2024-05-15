@@ -21,4 +21,5 @@ public interface MainServerModel extends PropertyChangeSubject
   User applyPlanningPokerRole(UserRole role, User user, int planningPokerId);
   void broadcastPlanningPokerObjUpdate(Map<Integer, ArrayList<ClientConnection_RMI>> clientList, ServerConnection_RMI server, int planningPokerId);
   void setProductOwner(User user, ArrayList<ClientConnection_RMI> connectedClients, Server_RMI serverRmi);
+  boolean removeUserFromGame(User user, int planningPokerId);
 }

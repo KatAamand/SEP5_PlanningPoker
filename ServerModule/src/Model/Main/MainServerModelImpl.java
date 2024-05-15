@@ -89,27 +89,57 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
 
     /** Add new Planning Poker Game roles to this list when they are implemented. */
     @Override public User applyPlanningPokerRole(UserRole role, User user, int planningPokerId) {
+        User returnUser;
+
         switch(role) {
             case DEVELOPER:
-                return this.setDeveloper(user, planningPokerId);
+                returnUser = this.setDeveloper(user, planningPokerId);
+                break;
 
             case PRODUCT_OWNER:
-                return this.setProductOwner(user, planningPokerId);
+                returnUser = this.setProductOwner(user, planningPokerId);
+                break;
 
             case SCRUM_MASTER:
-                return this.setScrumMaster(user, planningPokerId);
+                returnUser = this.setScrumMaster(user, planningPokerId);
+                break;
 
             default:
-                return null;
+                returnUser = null;
+                break;
         }
+
+        if(returnUser != null) {
+            // Ensure that no other instances of this user is still in the planning poker game:
+            // Find the Planning Poker game in the Array:
+            for (int i = 0; i < planningPokerGames.size(); i++) {
+                if(planningPokerGames.get(i).getPlanningPokerID() == (planningPokerId)) {
+                    boolean userReplaced = false;
+                    for (int j = 0; j < planningPokerGames.get(i).getConnectedUsers().size(); j++) {
+                        // replace the first instance of this username, and remove all others
+                        if(!userReplaced && planningPokerGames.get(i).getConnectedUsers().get(j).getUsername().equals(returnUser.getUsername())) {
+                            planningPokerGames.get(i).getConnectedUsers().set(j, returnUser);
+                            userReplaced = true;
+                        } else if (planningPokerGames.get(i).getConnectedUsers().get(j).getUsername().equals(returnUser.getUsername())) {
+                            planningPokerGames.get(i).getConnectedUsers().remove(j);
+                            j--;
+                        }
+                    }
+                }
+            }
+        }
+        return returnUser;
     }
 
     private User setDeveloper(User user, int planningPokerId) {
         // Find the Planning Poker game in the Array:
         for (int i = 0; i < planningPokerGames.size(); i++) {
             if(planningPokerGames.get(i).getPlanningPokerID() == (planningPokerId)) {
-                // TODO: Check if the user is either a ProductOwner or ScrumMaster in the current game, and remove them.
 
+                // Check if user was previously assigned to a key role, such as Scrum Master or Product Owner. If so, unassign them first.
+                checkIfUserAlreadyIsAssignedToKeyRole(user, planningPokerGames.get(i));
+
+                // Assign the new role to the user
                 user.setRole(new Developer());
                 System.out.println("MainServerModelImpl: [" + user.getUsername() + "] is now a Developer in game [" + planningPokerId + "]");
                 return user;
@@ -122,6 +152,11 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
         // Find the Planning Poker game in the Array:
         for (int i = 0; i < planningPokerGames.size(); i++) {
             if(planningPokerGames.get(i).getPlanningPokerID() == (planningPokerId)) {
+
+                // Check if user was previously assigned to a key role, such as Scrum Master or Product Owner. If so, unassign them first.
+                checkIfUserAlreadyIsAssignedToKeyRole(user, planningPokerGames.get(i));
+
+                // Assign the new role to the user
                 planningPokerGames.get(i).setScrumMaster(user);
                 user.setRole(new ScrumMaster());
                 System.out.println("MainServerModelImpl: ScrumMaster is now [" + user.getUsername() + "] in game [" + planningPokerId + "]");
@@ -135,6 +170,11 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
         // Find the Planning Poker game in the Array:
         for (int i = 0; i < planningPokerGames.size(); i++) {
             if(planningPokerGames.get(i).getPlanningPokerID() == (planningPokerId)) {
+
+                // Check if user was previously assigned to a key role, such as Scrum Master or Product Owner. If so, unassign them first.
+                checkIfUserAlreadyIsAssignedToKeyRole(user, planningPokerGames.get(i));
+
+                // Assign the new role to the user
                 planningPokerGames.get(i).setProductOwner(user);
                 user.setRole(new ProductOwner());
                 System.out.println("MainServerModelImpl: ProductOwner is now [" + user.getUsername() + "] in game [" + planningPokerId + "]");
@@ -142,6 +182,18 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
             }
         }
         return null;
+    }
+
+    private void checkIfUserAlreadyIsAssignedToKeyRole(User user, PlanningPoker game) {
+        if(game.getProductOwner() != null && game.getProductOwner().equals(user)) {
+            // User is already assigned as the Product Owner. Unassign them in the Planning Poker Object.
+            game.setProductOwner(null);
+            System.out.println("MainServerModelImpl: [" + user.getUsername() + "] was removed as Product Owner in game [" + game.getPlanningPokerID() + "]");
+        } else if (game.getScrumMaster() != null && game.getScrumMaster().equals(user)) {
+            // User is already assigned as the Scrum Master. Unassign them in the Planning Poker Object.
+            game.setScrumMaster(null);
+            System.out.println("MainServerModelImpl: [" + user.getUsername() + "] was removed as Scrum Master in game [" + game.getPlanningPokerID() + "]");
+        }
     }
 
     @Override public void broadcastPlanningPokerObjUpdate(Map<Integer, ArrayList<ClientConnection_RMI>> clientList, ServerConnection_RMI server, int planningPokerId) {
@@ -185,8 +237,7 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
 
     @Override
     public void setProductOwner(User user, ArrayList<ClientConnection_RMI> connectedClients, Server_RMI serverRmi) {
-        for(ClientConnection_RMI client : connectedClients)
-        {
+        for(ClientConnection_RMI client : connectedClients) {
             try {
                 if (client.getCurrentUser().equals(user))
                 {
@@ -199,6 +250,32 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
         }
     }
 
+    @Override public boolean removeUserFromGame(User user, int planningPokerId) {
+        // Find the Planning Poker game in the Array:
+        for (int i = 0; i < planningPokerGames.size(); i++) {
+            if(planningPokerGames.get(i).getPlanningPokerID() == (planningPokerId)) {
+
+                // Check if user was previously assigned to a key role, such as Scrum Master or Product Owner. If so, unassign them first.
+                checkIfUserAlreadyIsAssignedToKeyRole(user, planningPokerGames.get(i));
+
+                // remove the user from the connectedUsers array
+                boolean userRemoved = false;
+                for (int j = 0; j < planningPokerGames.get(i).getConnectedUsers().size(); j++) {
+                    if(planningPokerGames.get(i).getConnectedUsers().get(j).getUsername().equals(user.getUsername())) {
+                        planningPokerGames.get(i).getConnectedUsers().remove(j);
+                        userRemoved = true;
+                        j--;
+                    }
+                }
+                if(userRemoved) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
 
     public static MainServerModel getInstance() {
         //Here we use the "Double-checked lock" principle to ensure proper synchronization.

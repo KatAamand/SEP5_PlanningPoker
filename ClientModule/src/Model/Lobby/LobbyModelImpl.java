@@ -11,7 +11,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
 
-public class LobbyModelImpl extends PlanningPokerModelImpl implements LobbyModel, PropertyChangeSubject
+public class LobbyModelImpl extends PlanningPokerModelImpl implements LobbyModel
 {
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
   private Client clientConnection;
@@ -36,9 +36,6 @@ public class LobbyModelImpl extends PlanningPokerModelImpl implements LobbyModel
 
   @Override public void init()
   {
-    //TODO Initialize relevant data that might affect the javaFx thread here.
-
-
     //Assign all PropertyChangeListeners:
     this.assignListeners();
   }
@@ -48,8 +45,9 @@ public class LobbyModelImpl extends PlanningPokerModelImpl implements LobbyModel
   /** Assigns all the required listeners to the clientConnection allowing for Observable behavior betweeen these classes. */
   private void assignListeners()
   {
-    //TODO define the listeners that should be added to the Client here.
-
+    super.addPropertyChangeListener("PlanningPokerObjUpdated", evt -> {
+      propertyChangeSupport.firePropertyChange("PlanningPokerObjUpdated", null, null);
+    });
   }
 
 

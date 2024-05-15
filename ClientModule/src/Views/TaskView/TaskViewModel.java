@@ -57,7 +57,15 @@ public class TaskViewModel {
         taskModel.addPropertyChangeListener("taskListUpdated", evt -> {
             Platform.runLater(this::refresh);
             // Add a listener to the taskModel to update the isTaskListEmptyProperty when the taskList is updated
-            Platform.runLater(this::updateTaskListEmptyProperty);});
+            Platform.runLater(this::updateTaskListEmptyProperty);
+        });
+
+        taskModel.addPropertyChangeListener("PlanningPokerObjUpdated", evt -> {
+            Platform.runLater(() -> {
+                this.disableAllPermissionBasedUIInteractionElements();
+                this.enableSpecificUIPermissionBasedElements(Session.getCurrentUser());
+            });
+        });
     }
 
     public void disableAllPermissionBasedUIInteractionElements() {

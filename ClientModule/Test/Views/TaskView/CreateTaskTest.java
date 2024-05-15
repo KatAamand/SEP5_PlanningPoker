@@ -318,13 +318,13 @@ class CreateTaskTest
     boolean wasPlanningPokerGameCreated = testListenerlocalClient.getPropertyName().equals("planningPokerIDValidatedSuccess");
 
     // 1-2. Local enters task header into text field:
-    planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().textFieldTaskHeader.setText(taskHeader);
+    planningPokerViewController.getLobbyViewController().getEmbeddedManageTaskViewController().textFieldTaskHeader.setText(taskHeader);
 
     // 3. Local enters task description into text field:
-    planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().textAreaTaskDescription.setText(taskDescription);
+    planningPokerViewController.getLobbyViewController().getEmbeddedManageTaskViewController().textAreaTaskDescription.setText(taskDescription);
 
     // 4. Local user clicks 'save'
-    planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().onSavePressed(new ActionEvent());
+    planningPokerViewController.getLobbyViewController().getEmbeddedManageTaskViewController().onSavePressed(new ActionEvent());
 
     // Allow server and client time to update UI with received task list:
     try {
@@ -467,13 +467,13 @@ class CreateTaskTest
     boolean wasPlanningPokerGameCreated = testListenerlocalClient.getPropertyName().equals("planningPokerIDValidatedSuccess");
 
     // 1-2. Local enters task header into text field:
-    planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().textFieldTaskHeader.setText(taskHeader);
+    planningPokerViewController.getLobbyViewController().getEmbeddedManageTaskViewController().textFieldTaskHeader.setText(taskHeader);
 
     // 3. Local enters task description into text field:
-    planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().textAreaTaskDescription.setText(taskDescription);
+    planningPokerViewController.getLobbyViewController().getEmbeddedManageTaskViewController().textAreaTaskDescription.setText(taskDescription);
 
     // 4. Local user clicks 'cancel'
-    planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().onCancelPressed(new ActionEvent());
+    planningPokerViewController.getLobbyViewController().getEmbeddedManageTaskViewController().onCancelPressed(new ActionEvent());
 
     // Allow server and client time to update UI with received task list:
     try {
@@ -616,16 +616,16 @@ class CreateTaskTest
     boolean wasPlanningPokerGameCreated = testListenerlocalClient.getPropertyName().equals("planningPokerIDValidatedSuccess");
 
     // 1-2. Local enters leaves header field as blank:
-    planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().textFieldTaskHeader.setText(taskHeader);
+    planningPokerViewController.getLobbyViewController().getEmbeddedManageTaskViewController().textFieldTaskHeader.setText(taskHeader);
 
     // 3. Local enters task description into text field:
-    planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().textAreaTaskDescription.setText(taskDescription);
+    planningPokerViewController.getLobbyViewController().getEmbeddedManageTaskViewController().textAreaTaskDescription.setText(taskDescription);
 
     // 4. System refuses to let the local user access the save option:
-    boolean taskIsNotValid = !planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().validateData();
+    boolean taskIsNotValid = !planningPokerViewController.getLobbyViewController().getEmbeddedManageTaskViewController().validateData();
 
     // 5. Local user clicks 'cancel'
-    planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().onCancelPressed(new ActionEvent());
+    planningPokerViewController.getLobbyViewController().getEmbeddedManageTaskViewController().onCancelPressed(new ActionEvent());
 
     // Allow server and client time to update UI with received task list:
     try {
@@ -771,16 +771,16 @@ class CreateTaskTest
     boolean wasPlanningPokerGameCreated = testListenerlocalClient.getPropertyName().equals("planningPokerIDValidatedSuccess");
 
     // 1-2. Local user enters into header field:
-    planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().textFieldTaskHeader.setText(taskHeader);
+    planningPokerViewController.getLobbyViewController().getEmbeddedManageTaskViewController().textFieldTaskHeader.setText(taskHeader);
 
     // 3. Local user enters task description into text field:
-    planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().textAreaTaskDescription.setText(taskDescription);
+    planningPokerViewController.getLobbyViewController().getEmbeddedManageTaskViewController().textAreaTaskDescription.setText(taskDescription);
 
     // 4. System refuses to let the local user access the save option, because header is a duplicate of an already existing task header:
-    boolean taskIsNotValid = !planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().validateData();
+    boolean taskIsNotValid = !planningPokerViewController.getLobbyViewController().getEmbeddedManageTaskViewController().validateData();
 
     // 5. Local user clicks 'cancel'
-    planningPokerViewController.getLobbyViewController().getEmbeddedAddTaskViewController().onCancelPressed(new ActionEvent());
+    planningPokerViewController.getLobbyViewController().getEmbeddedManageTaskViewController().onCancelPressed(new ActionEvent());
 
     // Allow server and client time to update UI with received task list:
     try {

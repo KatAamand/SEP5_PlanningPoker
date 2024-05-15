@@ -6,7 +6,7 @@ import java.util.List;
 public interface Role extends Serializable
 {
   List<UserPermission> getPermissions();
-  UserRole getRole();
+  UserRole getUserRole();
   void copyAndApplyPermissionsFrom(Role role);
   String getRoleAsString();
 }

@@ -14,7 +14,6 @@ import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -72,10 +71,12 @@ public class GameViewModel
             ViewModelFactory.getInstance().getTaskViewModel().refresh();
           } catch (RemoteException e) {
             throw new RuntimeException();
-          }}));
+          }
+    }));
     gameModel.addPropertyChangeListener("clearPlacedCards",     evt -> Platform.runLater(this::clearPlacedCards));
     gameModel.addPropertyChangeListener("taskListUpdated", evt -> Platform.runLater(this::refresh));
     gameModel.addPropertyChangeListener("showCards", evt -> Platform.runLater(this::showPlacedCards));
+    gameModel.addPropertyChangeListener("PlanningPokerObjUpdated", evt -> Platform.runLater(this::refresh));
   }
 
 
@@ -220,7 +221,7 @@ public class GameViewModel
   }
 
   public void setFinalEffortLabel(String finalEffortvalue) {
-    if(Session.getCurrentUser().getRole().getRole() == UserRole.SCRUM_MASTER) {
+    if(Session.getCurrentUser().getRole().getUserRole() == UserRole.SCRUM_MASTER) {
       Task nonEditedTask = displayedTask.copy();
       displayedTask.setFinalEffort(finalEffortvalue);
       try {
