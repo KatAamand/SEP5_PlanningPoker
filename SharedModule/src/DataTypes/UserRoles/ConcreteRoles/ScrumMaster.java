@@ -26,6 +26,7 @@ public class ScrumMaster implements Role
     permissions.add(UserPermission.EDIT_TASK); // Required, in order to properly be able to set the final effort on a task - which is basically editing an existing task.
     permissions.add(UserPermission.ASSIGN_TEAM_ROLES);
     permissions.add(UserPermission.REVEAL_USER_EFFORTS);
+    permissions.add(UserPermission.CLEAR_USER_EFFORTS);
   }
 
   @Override public List<UserPermission> getPermissions()
