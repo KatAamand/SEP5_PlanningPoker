@@ -100,6 +100,10 @@ public class TaskDAOImpl extends DatabaseConnection implements TaskDAO {
     @Override
     public void delete(Task task) throws SQLException {
         try (Connection connection = getConnection()) {
+            PreparedStatement taskListStatement = connection.prepareStatement("DELETE FROM task_list WHERE taskid = ?");
+            taskListStatement.setInt(1, task.getTaskID());
+            taskListStatement.executeUpdate();
+
             PreparedStatement statement = connection.prepareStatement("DELETE FROM task WHERE taskid = ?");
             statement.setInt(1, task.getTaskID());
             statement.executeUpdate();
