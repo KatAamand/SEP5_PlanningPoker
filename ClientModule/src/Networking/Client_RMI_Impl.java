@@ -372,18 +372,18 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
 
 
     @Override
-    public void receivePlacedCard(UserCardData userCardData) throws RemoteException {
+    public void receivePlacedCard(UserCardData userCardData) {
         System.out.println("Client_RMI: Received placed card " + userCardData.getUsername() + " " + userCardData.getPlacedCard());
         propertyChangeSupport.firePropertyChange("placedCardReceived", null, userCardData);
     }
 
     @Override
-    public void clearPlacedCards() throws RemoteException {
+    public void clearPlacedCards() {
         propertyChangeSupport.firePropertyChange("clearPlacedCards", null, null);
     }
 
     @Override
-    public void showCards() throws RemoteException {
+    public void showCards() {
         propertyChangeSupport.firePropertyChange("showCards", null, null);
     }
 
@@ -423,5 +423,20 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public void requestUserList() {
+        ArrayList<User> userList = null;
+        try {
+            userList = server.requestUserList();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+        if (userList != null) {
+            // Fires the proper PropertyChange event, with the taskList attached as the newValue():
+            propertyChangeSupport.firePropertyChange("userListRecieved", null, userList);
+        }
+    }
+
 }
 
