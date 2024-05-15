@@ -27,7 +27,6 @@ public class LoginModelImpl implements LoginModel {
         try {
             clientConnection = (Client) ClientFactory.getInstance().getClient();
         } catch (RemoteException e) {
-            //TODO: Properly handle this error!
             e.printStackTrace();
         }
 
@@ -48,12 +47,19 @@ public class LoginModelImpl implements LoginModel {
 
   @Override
     public void requestLogin(String username, String password) {
+      System.out.println("Model: Validating user");
         clientConnection.validateUser(username, password);
     }
 
     @Override
     public void requestCreateUser(String username, String password) {
-        clientConnection.createUser(username, password);
+        if (usernameAlreadyExists(username)) {
+            System.out.println("Model: User already exists");
+            support.firePropertyChange("userAlreadyExists", null, true);
+        } else {
+            System.out.println("Model: Creating user");
+            clientConnection.createUser(username, password);
+        }
     }
 
     @Override
@@ -63,11 +69,13 @@ public class LoginModelImpl implements LoginModel {
 
   @Override
   public boolean usernameAlreadyExists(String username) {
-    for (User user : userList) {
-      if (user.getUsername().equals(username)) {
-        return true;
-      }
-    }
+        if (userList != null) {
+            for (User user : userList) {
+                if (user.getUsername().equals(username)) {
+                    return true;
+                }
+            }
+        }
     return false;
   }
 
@@ -102,8 +110,16 @@ public class LoginModelImpl implements LoginModel {
             });
         });
 
+        clientConnection.addPropertyChangeListener("userLoginSuccess", evt -> {
+            Platform.runLater(() -> {
+                System.out.println("Model: User logged ind successfully");
+                support.firePropertyChange("userLoginSuccess", null, evt.getNewValue());
+            });
+        });
+
         clientConnection.addPropertyChangeListener("userCreatedSuccess", evt -> {
             Platform.runLater(() -> {
+                System.out.println("Model: User created successfully");
                 support.firePropertyChange("userCreatedSuccess", null, null);
             });
         });
