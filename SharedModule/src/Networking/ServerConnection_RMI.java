@@ -33,4 +33,7 @@ public interface ServerConnection_RMI extends Remote {
     void placeCard(UserCardData userCardData) throws RemoteException;
     void requestClearPlacedCards() throws RemoteException;
     User setRoleInPlanningPokerGame(UserRole roleToApply, User userToReceiveRole, int planningPokerId) throws RemoteException;
+    void broadcastUserInSession(User user) throws RemoteException;
+
+    void setProductOwner(User user) throws RemoteException;
 }

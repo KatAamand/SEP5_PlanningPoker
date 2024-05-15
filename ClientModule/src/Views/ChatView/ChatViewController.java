@@ -19,7 +19,7 @@ public class ChatViewController {
     @FXML public Label userIdLabel;
     @FXML TableView<User> userTableView;
     @FXML TableColumn<User, String> userColumn;
-    @FXML TableColumn<User, String> connectionColumn;
+    @FXML TableColumn<User, String> roleColumn;
 
     public ChatViewController() {
         try {
@@ -35,6 +35,7 @@ public class ChatViewController {
         });
 
         userColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
+        roleColumn.setCellValueFactory(new PropertyValueFactory<>("roleAsString"));
 
         viewModel.userProperty().addListener((obs, oldMessage, newMessage) -> {
             onUserReceived((ObservableList<User>) newMessage);
@@ -57,6 +58,10 @@ public class ChatViewController {
 
     public void onUserReceived(ObservableList<User> users)
     {
+        for (User user : users)
+        {
+            System.out.println(user.getRoleAsString());
+        }
         Platform.runLater(() -> {
             userTableView.getItems().clear();
             userTableView.getItems().addAll(users);
@@ -72,5 +77,11 @@ public class ChatViewController {
             messageInputTextField.clear();
         }
 
+    }
+
+    public void onSetProductOwnerButtonPressed()
+    {
+        System.out.println(userTableView.getSelectionModel().getSelectedItem().getUsername());
+        viewModel.setProductOwner(userTableView.getSelectionModel().getSelectedItem());
     }
 }

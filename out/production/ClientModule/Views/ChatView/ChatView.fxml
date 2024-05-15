@@ -15,12 +15,21 @@
    <children>
       <HBox prefHeight="150.0" prefWidth="235.0">
          <children>
-            <TableView fx:id="userTableView" prefHeight="150.0" prefWidth="233.0">
-              <columns>
-                <TableColumn fx:id="userColumn" prefWidth="109.0" text="Users in session" />
-                <TableColumn fx:id="connectionColumn" prefWidth="123.0" text="Connection status" />
-              </columns>
-            </TableView>
+            <VBox>
+               <children>
+                  <TableView fx:id="userTableView" prefHeight="150.0" prefWidth="233.0">
+                    <columns>
+                      <TableColumn fx:id="userColumn" prefWidth="109.0" text="Users in session" />
+                      <TableColumn fx:id="roleColumn" prefWidth="123.0" text="Role" />
+                    </columns>
+                  </TableView>
+                  <HBox alignment="CENTER" prefHeight="65.0" prefWidth="233.0">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#onSetProductOwnerButtonPressed" text="Set Product Owner" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
          </children>
       </HBox>
       <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" style="-fx-background-color: #FFE6CC; -fx-border-color: #D79B00;">

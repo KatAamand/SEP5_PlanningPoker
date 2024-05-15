@@ -19,4 +19,5 @@ public interface MainClientInterface extends Remote {
 
   void removePropertyChangeListener(String name, PropertyChangeListener listener) throws RemoteException;
   User setRoleOnServer(UserRole roleToApply, int planningPokerId, User userToReceiveRole) throws RemoteException;
+  void setRoleInGameFromServer(DataTypes.UserRoles.UserRole userRole, java.lang.String s, DataTypes.User user) throws RemoteException;
 }

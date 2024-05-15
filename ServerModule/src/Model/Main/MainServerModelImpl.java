@@ -11,6 +11,7 @@ import Database.PlanningPoker.PlanningPokerDAO;
 import Database.PlanningPoker.PlanningPokerDAOImpl;
 import Networking.ClientConnection_RMI;
 import Networking.ServerConnection_RMI;
+import Networking.Server_RMI;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -22,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static DataTypes.UserRoles.UserRole.DEVELOPER;
+import static DataTypes.UserRoles.UserRole.PRODUCT_OWNER;
 
 public class MainServerModelImpl implements MainServerModel, Runnable {
 
@@ -176,6 +178,22 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
                 });
                 transmitThread.setDaemon(true);
                 transmitThread.start();
+            }
+        }
+    }
+
+    @Override
+    public void setProductOwner(User user, ArrayList<ClientConnection_RMI> connectedClients, Server_RMI serverRmi) {
+        for(ClientConnection_RMI client : connectedClients)
+        {
+            try {
+                if (client.getCurrentUser().equals(user))
+                {
+                    client.setRoleInGameFromServer(PRODUCT_OWNER, user.getPlanningPoker().getPlanningPokerID(), user);
+                    break;
+                }
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
             }
         }
     }

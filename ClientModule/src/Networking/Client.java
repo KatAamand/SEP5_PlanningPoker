@@ -31,4 +31,6 @@ public interface Client extends PropertyChangeSubject {
     void requestClearPlacedCards();
     void clearPlacedCards() throws RemoteException;
     void setRoleInGame(DataTypes.UserRoles.UserRole userRole, int s, DataTypes.User user);
+
+    void setProductOwner(User user);
 }
