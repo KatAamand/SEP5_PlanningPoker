@@ -2,6 +2,7 @@ package Views.TaskView;
 
 import Application.ModelFactory;
 import Application.ViewModelFactory;
+import DataTypes.RuleSet;
 import DataTypes.Task;
 import DataTypes.User;
 import DataTypes.UserRoles.UserPermission;
@@ -10,6 +11,7 @@ import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -22,6 +24,7 @@ public class TaskViewModel {
     private TaskModel taskModel;
     private Button btnEditTask;
     private Button btnCreateTask;
+    private Button btnRuleSet;
     private VBox taskWrapper;
     private Property<String> sessionId;
     private Property<String> labelUserId;
@@ -43,10 +46,11 @@ public class TaskViewModel {
 
         updateTaskListEmptyProperty(); // updates upon creation
     }
-    
 
-    public void initialize(Button btnCreateTask, Button btnEditTask, VBox taskWrapper) {
-        setButtonReferences(btnCreateTask, btnEditTask);
+
+    public void initialize(Button btnCreateTask, Button btnEditTask,
+        Button btnRuleSet, VBox taskWrapper) {
+        setButtonReferences(btnCreateTask, btnEditTask, btnRuleSet);
         assignButtonMethods();
         this.taskWrapper = taskWrapper;
         disableEditButton();
@@ -92,6 +96,7 @@ public class TaskViewModel {
     public void assignButtonMethods() {
         btnEditTask.setOnAction(event -> {this.editTask();});
         btnCreateTask.setOnAction(event -> {this.createTask();});
+        btnRuleSet.setOnAction(event -> this.showRuleSetBox());
     }
 
 
@@ -181,9 +186,11 @@ public class TaskViewModel {
     }
 
 
-    private void setButtonReferences(Button btnCreateTask, Button btnEditTask) {
+    private void setButtonReferences(Button btnCreateTask, Button btnEditTask,
+        Button btnRuleSet) {
         this.btnCreateTask = btnCreateTask;
         this.btnEditTask = btnEditTask;
+        this.btnRuleSet = btnRuleSet;
     }
 
 
@@ -282,4 +289,17 @@ public class TaskViewModel {
             throw new RuntimeException();
         }
     }
+
+    public void showRuleSetBox() {
+        RuleSet rulesSet = new RuleSet();
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(rulesSet.getHeader());
+        alert.setHeaderText(null);
+        alert.setContentText(rulesSet.getBody());
+        alert.showAndWait();
+    }
+
+
+
 }
