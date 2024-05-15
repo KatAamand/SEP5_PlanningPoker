@@ -108,6 +108,11 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
     clientConnection.requestClearPlacedCards();
   }
 
+  @Override
+  public void requestShowCards() {
+    clientConnection.requestShowCards();
+  }
+
   @Override public void requestPlacedCard(UserCardData userCardData)
   {
     System.out.println("Model: Requesting placed card");
@@ -165,6 +170,9 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
           propertyChangeSupport.firePropertyChange("taskListUpdated", null,
               null);
         });
+    clientConnection.addPropertyChangeListener("showCards", evt ->  {
+        propertyChangeSupport.firePropertyChange("showCards", null, null);
+    });
   }
 
   @Override public void updatePlacedCardMap(

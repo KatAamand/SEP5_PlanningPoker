@@ -370,6 +370,11 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     propertyChangeSupport.firePropertyChange("clearPlacedCards", null, null);
   }
 
+  @Override
+  public void showCards() throws RemoteException {
+    propertyChangeSupport.firePropertyChange("showCards", null, null);
+  }
+
   @Override public void setRoleInGame(UserRole role, int planningPokerId, User user) {
     User serverAnswer;
     try {
@@ -383,6 +388,15 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
       Session.setCurrentUser(serverAnswer);
       System.out.println("Local user [" + Session.getCurrentUser().getUsername() + "] has become '" + Session.getCurrentUser().getRole().getRoleAsString() + "' in game [" + planningPokerId + "]");
       propertyChangeSupport.firePropertyChange("UpdatedLocalUser", null, null);
+    }
+  }
+
+  @Override
+  public void requestShowCards() {
+    try {
+      server.requestShowCards();
+    } catch (RemoteException e) {
+      throw new RuntimeException(e);
     }
   }
 }

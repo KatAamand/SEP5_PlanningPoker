@@ -75,6 +75,7 @@ public class GameViewModel
           }}));
     gameModel.addPropertyChangeListener("clearPlacedCards",     evt -> Platform.runLater(this::clearPlacedCards));
     gameModel.addPropertyChangeListener("taskListUpdated", evt -> Platform.runLater(this::refresh));
+    gameModel.addPropertyChangeListener("showCards", evt -> Platform.runLater(this::showPlacedCards));
   }
 
 
@@ -387,11 +388,8 @@ public class GameViewModel
   }
 
     public void showPlacedCards() {
-    if(Session.getCurrentUser().getRole().getPermissions().contains(UserPermission.REVEAL_USER_EFFORTS)) {
-      Platform.runLater(() -> {
         flipAllCards();
         ifAllPlacedCardsAreAlike();
-      });}
     }
 
 
@@ -559,4 +557,7 @@ public class GameViewModel
     displayedTask.setFinalEffort(effortValue);
   }
 
+    public void requestShowCards() {
+      gameModel.requestShowCards();
+    }
 }

@@ -69,7 +69,6 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable {
     }
 
 
-    @Override
     public void addTask(Task task, int planningPokerId) {
         List<Task> taskList;
 

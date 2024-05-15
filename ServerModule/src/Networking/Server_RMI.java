@@ -334,6 +334,11 @@ public class Server_RMI implements ServerConnection_RMI {
     }
 
     @Override
+    public void requestShowCards() throws RemoteException {
+        gameServerModel.showCards(connectedClients, this);
+    }
+
+    @Override
     public ArrayList<Effort> getEffortList() throws RemoteException {
         return gameServerModel.getEffortList();
     }

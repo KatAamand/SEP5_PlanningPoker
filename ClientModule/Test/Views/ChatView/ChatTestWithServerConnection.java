@@ -768,7 +768,7 @@ class ChatTestWithServerConnection
     Platform.runLater(() -> {
       try {
         // Simulate user entering the created gameID to join:
-        mainViewController.planningPokerIdTextField.setText(createdGameID);
+        mainViewController.planningPokerIdTextField.setText(String.valueOf(createdGameID));
 
         // Simulate user pressing the 'Join Planning Poker' button:
         mainViewController.connectToPlanningPokerButton.fire();

@@ -81,7 +81,7 @@ public class GameViewController
 
   public void onShowCardsButtonPressed()
   {
-    gameViewModel.showPlacedCards();
+    gameViewModel.requestShowCards();
   }
 
   public void finalEffortDropdown()
