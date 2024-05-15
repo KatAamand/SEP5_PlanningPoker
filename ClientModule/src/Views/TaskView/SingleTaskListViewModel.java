@@ -15,8 +15,8 @@ public class SingleTaskListViewModel
 
 
   public SingleTaskListViewModel(TaskViewModel parentViewModel) {
-    taskHeaderLabel = new SimpleStringProperty("UNDEFINED");
-    taskDescLabel = new SimpleStringProperty("UNDEFINED");
+    taskHeaderLabel = new SimpleStringProperty("");
+    taskDescLabel = new SimpleStringProperty("");
     isBeingEstimatedLabel = new SimpleStringProperty("");
     finalEffortLabel = new SimpleStringProperty();
     this.parentViewModel = parentViewModel;
@@ -42,7 +42,7 @@ public class SingleTaskListViewModel
 
   public void setFinalEffortLabel(String finalEffortLabel)
   {
-    this.finalEffortLabel.setValue(finalEffortLabel);
+    this.finalEffortLabel.setValue("effort: " + finalEffortLabel);
   }
 
   public void setTaskDesc(String taskDesc)

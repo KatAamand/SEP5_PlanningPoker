@@ -359,6 +359,12 @@ public class Server_RMI implements ServerConnection_RMI {
     @Override
     public void setProductOwner(User user) throws RemoteException {
         mainServerModel.setProductOwner(user, connectedClients, this);
+        broadcastUserInSession(user);
+    }
+
+    @Override
+    public ArrayList<User> requestUserList() throws RemoteException {
+        return loginServerModel.requestUserList();
     }
 
     @Override

@@ -8,6 +8,7 @@ import Networking.ServerConnection_RMI;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.lang.reflect.Array;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
@@ -124,20 +125,63 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
 
   @Override
   public void broadcastUsers(User user, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server, PlanningPoker planningPoker) throws RemoteException {
-    planningPoker.getConnectedUsers().clear();
+    ArrayList<User> userList = new ArrayList<>();
+    //planningPoker.getConnectedUsers().clear();
     for (ClientConnection_RMI client : connectedClients)
     {
-      if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == planningPoker.getPlanningPokerID()) {
-        planningPoker.getConnectedUsers().add(client.getCurrentUser());
-      }
+        if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == planningPoker.getPlanningPokerID()) {
+          userList.add(client.getCurrentUser());
+          //planningPoker.getConnectedUsers().add(client.getCurrentUser());
+        }
     }
     for (ClientConnection_RMI client : connectedClients) {
       Thread sendUserThread = new Thread(() -> {
         try {
             if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == planningPoker.getPlanningPokerID()) {
               System.out.println("Sending user to client");
-              client.receiveUser(planningPoker.getConnectedUsers());
+              client.receiveUser(userList);
+              //client.receiveUser(planningPoker.getConnectedUsers());
             }
+        } catch (RemoteException e) {
+          if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
+            //Unregisters clients from the Server, who have lost connection in order to avoid further server errors.
+            try {
+              server.unRegisterClient(client);
+            } catch (RemoteException ex) {
+              throw new RuntimeException();
+            }
+          } else {
+            //Error is something else:
+            throw new RuntimeException();
+          }
+        }
+      });
+      sendUserThread.setDaemon(true);
+      sendUserThread.start();
+    }
+  }
+
+  @Override
+  public void broadcastUsersWithException(User removedUser, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server, PlanningPoker planningPoker) throws RemoteException {
+    ArrayList<User> userList = new ArrayList<>();
+    //planningPoker.getConnectedUsers().clear();
+    for (ClientConnection_RMI client : connectedClients)
+    {
+      if (!client.getCurrentUser().equals(removedUser)) {
+        if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == planningPoker.getPlanningPokerID()) {
+          userList.add(client.getCurrentUser());
+          //planningPoker.getConnectedUsers().add(client.getCurrentUser());
+        }
+      }
+    }
+    for (ClientConnection_RMI client : connectedClients) {
+      Thread sendUserThread = new Thread(() -> {
+        try {
+          if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == planningPoker.getPlanningPokerID()) {
+            System.out.println("Sending user to client");
+            client.receiveUser(userList);
+            //client.receiveUser(planningPoker.getConnectedUsers());
+          }
         } catch (RemoteException e) {
           if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
             //Unregisters clients from the Server, who have lost connection in order to avoid further server errors.
@@ -178,7 +222,7 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
           i--;
         }
       }
-      broadcastUsers(user, connectedClients, server, temp);
+      broadcastUsersWithException(user, connectedClients, server, temp);
     }
 
     // Commented out below, and added above since the below would return different users despite the only difference being the role applied to the specific user.
@@ -186,6 +230,14 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
       System.out.println("Removing user from session");
       PlanningPoker temp = user.getPlanningPoker();
       temp.getConnectedUsers().remove(user);
+      for (ClientConnection_RMI client : connectedClients)
+      {
+        if (client.getCurrentUser().equals(user))
+        {
+          client.getCurrentUser().setPlanningPoker(null);
+          System.out.println(client.getCurrentUser().getPlanningPoker());
+        }
+      }
       broadcastUsers(user, connectedClients, server, temp);
     }*/
 

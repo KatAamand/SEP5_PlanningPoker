@@ -227,6 +227,7 @@ public class GameViewModel
       try {
         ModelFactory.getInstance().getTaskModel().editTask(nonEditedTask, displayedTask);
         Platform.runLater(() -> gameModel.removeTaskFromSkippedList(displayedTask));
+        finalEffortDropdownRef.setValue(null);
       } catch (RemoteException e) {
         throw new RuntimeException(e);
       }
@@ -405,7 +406,7 @@ public class GameViewModel
                     return;
                 }
             }
-            setFinalEffort(firstCard);
+            finalEffortDropdownRef.setValue(firstCard);
             activateHulaDancers();
         }
     }
@@ -553,10 +554,6 @@ public class GameViewModel
         hulaContainer.getChildren().add(hulaView);
         placedCardsWrapper.getChildren().add(hulaContainer);
     }
-
-    private void setFinalEffort(String effortValue) {
-    displayedTask.setFinalEffort(effortValue);
-  }
 
     public void requestShowCards() {
       gameModel.requestShowCards();

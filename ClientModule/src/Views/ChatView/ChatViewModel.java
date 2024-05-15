@@ -30,7 +30,7 @@ public class ChatViewModel extends ViewModel {
 
         chatModel.addPropertyChangeListener("userReceived", evt -> {
             ArrayList<User> users = (ArrayList<User>) evt.getNewValue();
-            System.out.println(users);
+            System.out.println("Viewmodel" + users);
             ObservableList<User> observableList = FXCollections.observableArrayList(users);
             userProperty().set(observableList);
         });

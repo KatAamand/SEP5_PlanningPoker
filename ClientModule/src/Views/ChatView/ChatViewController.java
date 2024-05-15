@@ -1,8 +1,10 @@
 package Views.ChatView;
 
+import Application.Session;
 import Application.ViewModelFactory;
 import DataTypes.Message;
 import DataTypes.User;
+import DataTypes.UserRoles.UserPermission;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -20,6 +22,7 @@ public class ChatViewController {
     @FXML TableView<User> userTableView;
     @FXML TableColumn<User, String> userColumn;
     @FXML TableColumn<User, String> roleColumn;
+    @FXML Button setPOButton;
 
     public ChatViewController() {
         try {
@@ -44,6 +47,7 @@ public class ChatViewController {
         Platform.runLater(() -> {
         viewModel.loadUsers();
         });
+        enableSpecificUIPermissionBasedElements();
     }
 
     public void onMessageRecieved(String message)
@@ -58,14 +62,15 @@ public class ChatViewController {
 
     public void onUserReceived(ObservableList<User> users)
     {
-        for (User user : users)
-        {
-            System.out.println(user.getRoleAsString());
+        if (!users.isEmpty()) {
+            for (User user : users) {
+                System.out.println(user.getRoleAsString());
+            }
+            Platform.runLater(() -> {
+                userTableView.getItems().clear();
+                userTableView.getItems().addAll(users);
+            });
         }
-        Platform.runLater(() -> {
-            userTableView.getItems().clear();
-            userTableView.getItems().addAll(users);
-        });
     }
 
     public void onMessageSendButtonPressed()
@@ -83,5 +88,15 @@ public class ChatViewController {
     {
         System.out.println(userTableView.getSelectionModel().getSelectedItem().getUsername());
         viewModel.setProductOwner(userTableView.getSelectionModel().getSelectedItem());
+        setPOButton.setVisible(false);
+    }
+
+    private void enableSpecificUIPermissionBasedElements()
+    {
+        setPOButton.setVisible(false);
+        // Enable permission to CREATE tasks, if proper user permission exists:
+        if(Session.getCurrentUser().getRole().getPermissions().contains(UserPermission.ASSIGN_TEAM_ROLES)) {
+            setPOButton.setVisible(true);
+        }
     }
 }

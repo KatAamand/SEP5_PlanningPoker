@@ -25,7 +25,7 @@
                   </TableView>
                   <HBox alignment="CENTER" prefHeight="65.0" prefWidth="233.0">
                      <children>
-                        <Button mnemonicParsing="false" onAction="#onSetProductOwnerButtonPressed" text="Set Product Owner" />
+                        <Button fx:id="setPOButton" mnemonicParsing="false" onAction="#onSetProductOwnerButtonPressed" text="Set Product Owner" />
                      </children>
                   </HBox>
                </children>

@@ -31,8 +31,9 @@ public interface Client extends PropertyChangeSubject {
     ArrayList<Effort> getEffortList();
     void placeCard(UserCardData userCardData);
     void requestClearPlacedCards();
-    void clearPlacedCards() throws RemoteException;
+    void clearPlacedCards();
     void requestShowCards();
     void setProductOwner(User user);
     void setRoleInGame(UserRole userRole, int gameId, User user);
+    void requestUserList();
 }
