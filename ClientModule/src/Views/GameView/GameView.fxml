@@ -33,11 +33,6 @@
                            <children>
                               <HBox>
                                  <children>
-                                    <Label prefHeight="27.0" prefWidth="101.0" text="Final Effort:">
-                                       <font>
-                                          <Font name="System Bold" size="18.0" />
-                                       </font>
-                                    </Label>
                                     <Label fx:id="finalEffortLabel" prefHeight="27.0" prefWidth="101.0">
                                        <font>
                                           <Font name="System Bold" size="18.0" />
