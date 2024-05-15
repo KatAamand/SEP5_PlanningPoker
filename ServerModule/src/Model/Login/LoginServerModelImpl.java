@@ -3,11 +3,10 @@ package Model.Login;
 import DataTypes.User;
 import Database.User.UserDAO;
 import Database.User.UserDAOImpl;
-import Networking.ClientConnection_RMI;
-import Networking.Server_RMI;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
@@ -79,11 +78,6 @@ public class LoginServerModelImpl implements LoginServerModel, Runnable {
     @Override
     public boolean logoutUser(String username, String password) {
         return false;
-    }
-
-    @Override
-    public ArrayList<User> requestUserList() {
-        return users;
     }
 
     @Override

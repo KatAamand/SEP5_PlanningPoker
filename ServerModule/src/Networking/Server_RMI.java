@@ -1,6 +1,7 @@
 package Networking;
 
 import DataTypes.*;
+import DataTypes.UserRoles.Role;
 import DataTypes.UserRoles.UserRole;
 import Model.Chat.ChatServerModel;
 import Model.Chat.ChatServerModelImpl;
@@ -345,11 +346,6 @@ public class Server_RMI implements ServerConnection_RMI {
     @Override
     public void setProductOwner(User user) throws RemoteException {
         mainServerModel.setProductOwner(user, connectedClients, this);
-    }
-
-    @Override
-    public ArrayList<User> requestUserList() throws RemoteException {
-        return loginServerModel.requestUserList();
     }
 
     @Override

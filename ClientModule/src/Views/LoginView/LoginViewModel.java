@@ -72,9 +72,6 @@ public class LoginViewModel extends ViewModel {
         } else if (username.length() < 4) {
             usernameErrorMessage.set("Brugernavn skal være mindst 4 tegn");
             return false;
-        } else if (loginModel.usernameAlreadyExists(username)) {
-            usernameErrorMessage.set("Brugernavnet er allerede i brug");
-            return false;
         } else {
             usernameErrorMessage.set(null); // No errors in input value
             return true;

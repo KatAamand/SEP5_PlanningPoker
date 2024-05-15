@@ -29,12 +29,10 @@ public interface Client extends PropertyChangeSubject {
     ArrayList<Effort> getEffortList();
     void placeCard(UserCardData userCardData);
     void requestClearPlacedCards();
-    void clearPlacedCards();
+    void clearPlacedCards() throws RemoteException;
     void setRoleInGame(DataTypes.UserRoles.UserRole userRole, int s, DataTypes.User user);
 
     void requestShowCards();
 
     void setProductOwner(User user);
-
-    void requestUserList();
 }

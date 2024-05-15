@@ -1,6 +1,7 @@
 package Networking;
 
 import DataTypes.*;
+import DataTypes.UserRoles.Role;
 import DataTypes.UserRoles.UserRole;
 
 import java.rmi.Remote;
@@ -37,6 +38,4 @@ public interface ServerConnection_RMI extends Remote {
     void broadcastUserInSession(User user) throws RemoteException;
 
     void setProductOwner(User user) throws RemoteException;
-
-    ArrayList<User> requestUserList() throws RemoteException;
 }
