@@ -9,6 +9,7 @@ import javafx.application.Platform;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 public class ChatModelImpl implements ChatModel
 {
@@ -81,7 +82,10 @@ public class ChatModelImpl implements ChatModel
       });
 
     clientConnection.addPropertyChangeListener("userReceived", evt -> {
+      //same as above
+      propertyChangeSupport.firePropertyChange("userReceived", null, new ArrayList<User>());
       propertyChangeSupport.firePropertyChange("userReceived", null, evt.getNewValue());
+      System.out.println("Model" + evt.getNewValue());
     });
   }
 
