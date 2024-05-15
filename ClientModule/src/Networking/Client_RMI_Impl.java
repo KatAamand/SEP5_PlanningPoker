@@ -2,6 +2,7 @@ package Networking;
 
 import Application.Session;
 import DataTypes.*;
+import DataTypes.UserRoles.ConcreteRoles.ProductOwner;
 import DataTypes.UserRoles.UserRole;
 import javafx.application.Platform;
 
@@ -54,6 +55,116 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
             throw new RuntimeException(e);
         }
         System.out.println("Client_RMI: user trying to create user");
+        // Requests for Login
+    }
+
+    @Override
+    public boolean validatePlanningPokerID(int planningPokerID) {
+        try {
+            System.out.println("Client_RMI: planningPokerID trying to validate");
+            boolean serverAnswer = server.validatePlanningPokerID(planningPokerID);
+            if (serverAnswer) {
+                System.out.println("Opdatering fra server: planningPokerID is validated");
+                propertyChangeSupport.firePropertyChange("planningPokerIDValidatedSuccess", null, planningPokerID);
+            } else {
+                System.out.println("Client_RMI: planningPokerID validation failed");
+            }
+            return serverAnswer;
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void updatePlanningPokerObj(int planningPokerId) throws RemoteException {
+        PlanningPoker serverAnswer = server.loadPlanningPokerGame(planningPokerId, this);
+        if (serverAnswer != null) {
+            propertyChangeSupport.firePropertyChange("PlanningPokerObjUpdated", null, serverAnswer);
+        }
+    }
+
+    @Override
+    public PlanningPoker loadPlanningPoker(int planningPokerId) {
+        try {
+            System.out.println("Client_RMI: trying to load PlanningPoker Game with ID " + planningPokerId);
+            PlanningPoker serverAnswer = server.loadPlanningPokerGame(planningPokerId, this);
+
+            if (serverAnswer != null) {
+                //PlanningPoker loaded successfully
+                System.out.println("Opdatering fra server: PlanningPoker game has been loaded successfully");
+                return serverAnswer;
+            }
+        } catch (RemoteException e) {
+            throw new RuntimeException();
+        }
+        return null;
+    }
+
+    @Override
+    public void loadTaskList(int planningPokerId) {
+        try {
+            this.loadTaskListFromServer(planningPokerId);
+        } catch (RemoteException e) {
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public User setRoleOnServer(UserRole roleToApply, int s, User userToReceiveRole) throws RemoteException {
+        return server.setRoleInPlanningPokerGame(roleToApply, userToReceiveRole, s);
+    }
+
+    @Override
+    public void setRoleInGameFromServer(UserRole userRole, int s, User user) throws RemoteException {
+        setRoleInGame(userRole, s, user);
+    }
+
+    @Override
+    public void loadTaskListFromServer(int planningPokerId) throws RemoteException {
+        ArrayList<Task> taskList = server.getTaskList(planningPokerId);
+        if (taskList != null) {
+            // Fires a PropertyChange event with a Null value to absorb any similarities to the contents inside any of the already loaded taskList:
+            propertyChangeSupport.firePropertyChange("receivedUpdatedTaskList", null, null);
+
+            // Fires the proper PropertyChange event, with the taskList attached as the newValue():
+            propertyChangeSupport.firePropertyChange("receivedUpdatedTaskList", null, taskList);
+        }
+    }
+
+    @Override
+    public void addTask(Task task, int planningPokerId) {
+        try {
+            this.addTaskToServer(task, planningPokerId);
+        } catch (RemoteException e) {
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public boolean removeTask(Task task, int planningPokerId) {
+        try {
+            return this.removeTaskFromServer(task, planningPokerId);
+        } catch (RemoteException e) {
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public boolean editTask(Task oldTask, Task newTask, int planningPokerId) {
+        try {
+            return this.editTaskOnServer(oldTask, newTask, planningPokerId);
+        } catch (RemoteException e) {
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public void skipTasks(ArrayList<Task> skippedTasksList, int planningPokerId) {
+        try {
+            this.broadcastSkipTasksOnServer(skippedTasksList, planningPokerId);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -116,23 +227,6 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     }
 
     @Override
-    public boolean validatePlanningPokerID(int planningPokerID) {
-        try {
-            System.out.println("Client_RMI: planningPokerID trying to validate");
-            boolean serverAnswer = server.validatePlanningPokerID(planningPokerID);
-            if (serverAnswer) {
-                System.out.println("Opdatering fra server: planningPokerID is validated");
-                propertyChangeSupport.firePropertyChange("planningPokerIDValidatedSuccess", null, planningPokerID);
-            } else {
-                System.out.println("Client_RMI: planningPokerID validation failed");
-            }
-            return serverAnswer;
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
     public PlanningPoker createPlanningPoker() {
         try {
             System.out.println("Client_RMI: user trying to create planningPoker");
@@ -150,39 +244,6 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
         return null;
     }
 
-    @Override
-    public void updatePlanningPokerObj(int planningPokerId) throws RemoteException {
-        PlanningPoker serverAnswer = server.loadPlanningPokerGame(planningPokerId, this);
-        if (serverAnswer != null) {
-            propertyChangeSupport.firePropertyChange("PlanningPokerObjUpdated", null, serverAnswer);
-        }
-    }
-
-    @Override
-    public PlanningPoker loadPlanningPoker(int planningPokerId) {
-        try {
-            System.out.println("Client_RMI: trying to load PlanningPoker Game with ID " + planningPokerId);
-            PlanningPoker serverAnswer = server.loadPlanningPokerGame(planningPokerId, this);
-
-            if (serverAnswer != null) {
-                //PlanningPoker loaded successfully
-                System.out.println("Opdatering fra server: PlanningPoker game has been loaded successfully");
-                return serverAnswer;
-            }
-        } catch (RemoteException e) {
-            throw new RuntimeException();
-        }
-        return null;
-    }
-
-    @Override
-    public void loadTaskList(int planningPokerId) {
-        try {
-            this.loadTaskListFromServer(planningPokerId);
-        } catch (RemoteException e) {
-            throw new RuntimeException();
-        }
-    }
 
     @Override
     public void addPropertyChangeListener(
@@ -203,78 +264,13 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     }
 
     @Override
-    public void removePropertyChangeListener(String name,
-                                             PropertyChangeListener listener) {
+    public void removePropertyChangeListener(String name, PropertyChangeListener listener) {
         propertyChangeSupport.removePropertyChangeListener(name, listener);
-    }
-
-    @Override
-    public User setRoleOnServer(UserRole roleToApply, int planningPokerId, User userToReceiveRole) throws RemoteException {
-        return server.setRoleInPlanningPokerGame(roleToApply, userToReceiveRole, planningPokerId);
-    }
-
-    @Override
-    public void loadTaskListFromServer(int planningPokerId) throws RemoteException {
-        ArrayList<Task> taskList = server.getTaskList(planningPokerId);
-        if (taskList != null) {
-            // Fires a PropertyChange event with a Null value to absorb any similarities to the contents inside any of the already loaded taskList:
-            propertyChangeSupport.firePropertyChange("receivedUpdatedTaskList", null, null);
-
-            // Fires the proper PropertyChange event, with the taskList attached as the newValue():
-            propertyChangeSupport.firePropertyChange("receivedUpdatedTaskList", null, taskList);
-        }
-    }
-
-    @Override
-    public void addTask(Task task, int planningPokerId) {
-        try {
-            this.addTaskToServer(task, planningPokerId);
-        } catch (RemoteException e) {
-            throw new RuntimeException();
-        }
-    }
-
-    @Override
-    public boolean removeTask(Task task, int planningPokerId) {
-        try {
-            return this.removeTaskFromServer(task, planningPokerId);
-        } catch (RemoteException e) {
-            throw new RuntimeException();
-        }
-    }
-
-    @Override
-    public boolean editTask(Task oldTask, Task newTask, int planningPokerId) {
-        try {
-            return this.editTaskOnServer(oldTask, newTask, planningPokerId);
-        } catch (RemoteException e) {
-            throw new RuntimeException();
-        }
-    }
-
-    @Override
-    public void skipTasks(ArrayList<Task> skippedTasksList, int planningPokerId) {
-        try {
-            this.broadcastSkipTasksOnServer(skippedTasksList, planningPokerId);
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
     public void updateSkippedTaskList(ArrayList<Task> skippedTasksList) throws RemoteException {
         propertyChangeSupport.firePropertyChange("receivedListOfTasksToSkip", null, skippedTasksList);
-    }
-
-    @Override
-    public void sendUser() {
-        Platform.runLater(() -> {
-            try {
-                server.addConnectedUserToSession(Session.getCurrentUser());
-            } catch (RemoteException e) {
-                throw new RuntimeException();
-            }
-        });
     }
 
     @Override
@@ -285,6 +281,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
             throw new RuntimeException(e);
         }
     }
+
 
 
     @Override
@@ -333,11 +330,6 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     @Override
     public void broadcastSkipTasksOnServer(ArrayList<Task> skippedTasksList, int planningPokerId) throws RemoteException {
         server.broadcastSkipTasks(skippedTasksList, planningPokerId);
-    }
-
-    @Override
-    public void broadcastSkipTasksOnServer(ArrayList<Task> skippedTasksList, String gameId) throws RemoteException {
-        server.broadcastSkipTasks(skippedTasksList, gameId);
     }
 
     @Override
