@@ -314,7 +314,7 @@ public class Server_RMI implements ServerConnection_RMI {
     }
 
     /** These roles are set from the following client classes:<br>
-     - Scrum Master is set on client creation of a Planning Poker game. The call cascades from MainModelImpl and down to the server connection. <br>
+     - Scrum Master is set on game creation of a Planning Poker game. The call cascades from MainModelImpl and down to the server connection. <br>
      - Product Owner is currently NOT set anywhere. Should be set from within the PlanningPokerViewModel once implemented.<br>
      - Developer is currently assigned to each user (other than the game creator) who joins a game.<br>
      */

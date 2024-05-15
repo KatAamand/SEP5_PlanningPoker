@@ -5,6 +5,7 @@ import Application.Session;
 import DataTypes.Effort;
 import DataTypes.Task;
 import DataTypes.UserCardData;
+import DataTypes.UserRoles.UserPermission;
 import Model.PlanningPoker.PlanningPokerModelImpl;
 import Networking.Client;
 import javafx.application.Platform;
@@ -69,26 +70,30 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
 
   @Override public void skipTask(Task task)
   {
-    ArrayList<Task> taskList = (ArrayList<Task>) super.getActivePlanningPokerGame().getTaskList();
-    // First check if there are tasks that haven't been estimated on, and that haven't already been skipped:
-    for (Task taskFromList : taskList) {
-      // If the tasks do not already have a final effort assigned, and the task has not been skipped, we display it.
-      if (taskFromList.getFinalEffort() != null && !skippedTaskList.contains(task)) {
-        // Add the skipped task to a list of skipped tasks:
-        skippedTaskList.add(task);
+    // Only skip if the local user has the proper permissions to skip:
+    if(Session.getCurrentUser().getRole().getPermissions().contains(UserPermission.SKIP_TASK)) {
 
-        // Transfer the skipped taskList to connected clients, so all clients have the same experience.
-        clientConnection.skipTasks(skippedTaskList, super.getActivePlanningPokerGame().getPlanningPokerID());
-        return;
+      ArrayList<Task> taskList = (ArrayList<Task>) super.getActivePlanningPokerGame().getTaskList();
+      // First check if there are tasks that haven't been estimated on, and that haven't already been skipped:
+      for (Task taskFromList : taskList) {
+        // If the tasks do not already have a final effort assigned, and the task has not been skipped, we display it.
+        if (taskFromList.getFinalEffort() != null && !skippedTaskList.contains(task)) {
+          // Add the skipped task to a list of skipped tasks:
+          skippedTaskList.add(task);
+
+          // Transfer the skipped taskList to connected clients, so all clients have the same experience.
+          clientConnection.skipTasks(skippedTaskList, super.getActivePlanningPokerGame().getPlanningPokerID());
+          return;
+        }
       }
+
+      // If we reach here, we know all tasks have either been estimated on, or skipped. Clear the skippedTaskList, so can be re-populated:
+      skippedTaskList.clear();
+      skippedTaskList.add(task);
+
+      // Transfer the skipped taskList to connected clients, so all clients have the same experience.
+      clientConnection.skipTasks(skippedTaskList, super.getActivePlanningPokerGame().getPlanningPokerID());
     }
-
-    // If we reach here, we know all tasks have either been estimated on, or skipped. Clear the skippedTaskList, so can be re-populated:
-    skippedTaskList.clear();
-    skippedTaskList.add(task);
-
-    // Transfer the skipped taskList to connected clients, so all clients have the same experience.
-    clientConnection.skipTasks(skippedTaskList, super.getActivePlanningPokerGame().getPlanningPokerID());
   }
 
 

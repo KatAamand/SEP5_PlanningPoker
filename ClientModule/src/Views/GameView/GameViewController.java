@@ -16,6 +16,9 @@ public class GameViewController
 {
   @FXML public StackPane effortWrapper;
   @FXML public HBox placedCardsWrapper;
+  @FXML private Button clearCardsButton;
+  @FXML private Button showCardsButton;
+  @FXML private Button setEffortButton;
   @FXML private Button skipButton;
   @FXML private Label taskHeaderLabel;
   @FXML private Label taskDescLabel;
@@ -34,6 +37,10 @@ public class GameViewController
     applyBindings();
     gameViewModel.setPlacedCardsWrapper(placedCardsWrapper);
     gameViewModel.setSkipButtonRef(skipButton);
+    gameViewModel.setEffortButtonRef(setEffortButton);
+    gameViewModel.setFinalEffortDropdownRef(finalEffortDropdown);
+    gameViewModel.setClearCardsButtonRef(clearCardsButton);
+    gameViewModel.setShowCardsButtonRef(showCardsButton);
     gameViewModel.setGameStarted(false);
     gameViewModel.refresh();
     showPlayingCards();

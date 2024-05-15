@@ -378,8 +378,8 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
       throw new RuntimeException();
     }
 
-    // Update the local user in the local Session with returned modified user including the added roles
-    if(serverAnswer != null) {
+    // Update the local user in the local Session with returned modified user including the added roles - if the returned user is also the local user:
+    if(serverAnswer != null && Session.getCurrentUser().getUsername().equals(serverAnswer.getUsername())) {
       Session.setCurrentUser(serverAnswer);
       System.out.println("Local user [" + Session.getCurrentUser().getUsername() + "] has become '" + Session.getCurrentUser().getRole().getRoleAsString() + "' in game [" + gameId + "]");
       propertyChangeSupport.firePropertyChange("UpdatedLocalUser", null, null);
