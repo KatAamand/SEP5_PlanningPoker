@@ -11,6 +11,7 @@ import Database.PlanningPoker.PlanningPokerDAO;
 import Database.PlanningPoker.PlanningPokerDAOImpl;
 import Networking.ClientConnection_RMI;
 import Networking.ServerConnection_RMI;
+import Networking.Server_RMI;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -22,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static DataTypes.UserRoles.UserRole.DEVELOPER;
+import static DataTypes.UserRoles.UserRole.PRODUCT_OWNER;
 
 public class MainServerModelImpl implements MainServerModel, Runnable {
 
@@ -38,9 +40,9 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
     }
 
     @Override
-    public boolean validatePlanningPoker(String planningPokerID) {
+    public boolean validatePlanningPoker(int planningPokerID) {
         for (PlanningPoker planningPoker : planningPokerGames) {
-            if (planningPoker.getPlanningPokerID().equals(planningPokerID)) {
+            if (planningPoker.getPlanningPokerID() == planningPokerID) {
                 return true;
             }
         }
@@ -49,11 +51,6 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
 
     @Override
     public PlanningPoker createPlanningPoker() {
-    /* The old way of creating planning poker game.
-    PlanningPoker planningPoker = new PlanningPoker();
-    planningPoker.generatePlanningPokerID();
-     */
-
         PlanningPoker planningPoker;
         try {
             PlanningPokerDAO planningPokerDAO = PlanningPokerDAOImpl.getInstance();
@@ -69,10 +66,10 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
     }
 
     @Override
-    public PlanningPoker getPlanningPokerGame(String planningPokerId) {
+    public PlanningPoker getPlanningPokerGame(int planningPokerId) {
         if (validatePlanningPoker(planningPokerId)) {
             for (PlanningPoker planningPoker : planningPokerGames) {
-                if (planningPoker.getPlanningPokerID().equals(planningPokerId)) {
+                if (planningPoker.getPlanningPokerID() == planningPokerId) {
                     return planningPoker;
                 }
             }
@@ -91,64 +88,64 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
     }
 
     /** Add new Planning Poker Game roles to this list when they are implemented. */
-    @Override public User applyPlanningPokerRole(UserRole role, User user, String gameId) {
+    @Override public User applyPlanningPokerRole(UserRole role, User user, int planningPokerId) {
         switch(role) {
             case DEVELOPER:
-                return this.setDeveloper(user, gameId);
+                return this.setDeveloper(user, planningPokerId);
 
             case PRODUCT_OWNER:
-                return this.setProductOwner(user, gameId);
+                return this.setProductOwner(user, planningPokerId);
 
             case SCRUM_MASTER:
-                return this.setScrumMaster(user, gameId);
+                return this.setScrumMaster(user, planningPokerId);
 
             default:
                 return null;
         }
     }
 
-    private User setDeveloper(User user, String gameId) {
+    private User setDeveloper(User user, int planningPokerId) {
         // Find the Planning Poker game in the Array:
         for (int i = 0; i < planningPokerGames.size(); i++) {
-            if(planningPokerGames.get(i).getPlanningPokerID().equals(gameId)) {
+            if(planningPokerGames.get(i).getPlanningPokerID() == (planningPokerId)) {
                 // TODO: Check if the user is either a ProductOwner or ScrumMaster in the current game, and remove them.
 
                 user.setRole(new Developer());
-                System.out.println("MainServerModelImpl: [" + user.getUsername() + "] is now a Developer in game [" + gameId + "]");
+                System.out.println("MainServerModelImpl: [" + user.getUsername() + "] is now a Developer in game [" + planningPokerId + "]");
                 return user;
             }
         }
         return null;
     }
 
-    private User setScrumMaster(User user, String gameId) {
+    private User setScrumMaster(User user, int planningPokerId) {
         // Find the Planning Poker game in the Array:
         for (int i = 0; i < planningPokerGames.size(); i++) {
-            if(planningPokerGames.get(i).getPlanningPokerID().equals(gameId)) {
+            if(planningPokerGames.get(i).getPlanningPokerID() == (planningPokerId)) {
                 planningPokerGames.get(i).setScrumMaster(user);
                 user.setRole(new ScrumMaster());
-                System.out.println("MainServerModelImpl: ScrumMaster is now [" + user.getUsername() + "] in game [" + gameId + "]");
+                System.out.println("MainServerModelImpl: ScrumMaster is now [" + user.getUsername() + "] in game [" + planningPokerId + "]");
                 return user;
             }
         }
         return null;
     }
 
-    private User setProductOwner(User user, String gameId) {
+    private User setProductOwner(User user, int planningPokerId) {
         // Find the Planning Poker game in the Array:
         for (int i = 0; i < planningPokerGames.size(); i++) {
-            if(planningPokerGames.get(i).getPlanningPokerID().equals(gameId)) {
+            if(planningPokerGames.get(i).getPlanningPokerID() == (planningPokerId)) {
                 planningPokerGames.get(i).setProductOwner(user);
                 user.setRole(new ProductOwner());
-                System.out.println("MainServerModelImpl: ProductOwner is now [" + user.getUsername() + "] in game [" + gameId + "]");
+                System.out.println("MainServerModelImpl: ProductOwner is now [" + user.getUsername() + "] in game [" + planningPokerId + "]");
                 return user;
             }
         }
         return null;
     }
 
-    @Override public void broadcastPlanningPokerObjUpdate(Map<String, ArrayList<ClientConnection_RMI>> clientList, ServerConnection_RMI server, String gameId) {
-        ArrayList<ClientConnection_RMI> receivingClients = clientList.get(gameId);
+    @Override public void broadcastPlanningPokerObjUpdate(Map<Integer, ArrayList<ClientConnection_RMI>> clientList, ServerConnection_RMI server, int planningPokerId) {
+        ArrayList<ClientConnection_RMI> receivingClients = clientList.get(planningPokerId);
         if(receivingClients != null) {
             for (int i = 0; i < receivingClients.size(); i++) {
                 if(receivingClients.get(i) == null) {
@@ -157,18 +154,18 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
                 }
             }
 
-            System.out.println("Server: Broadcasting changes to the Planning Poker Object to clients in game [" + gameId + "]");
+            System.out.println("Server: Broadcasting changes to the Planning Poker Object to clients in game [" + planningPokerId + "]");
             for (ClientConnection_RMI client : receivingClients) {
                 //Create a new thread for each connected client, and then call the desired broadcast operation. This minimizes server lag/hanging due to clients who have connection issues.
                 Thread transmitThread = new Thread(() -> {
                     try {
-                        client.updatePlanningPokerObj(gameId);
+                        client.updatePlanningPokerObj(planningPokerId);
                     }
                     catch (RemoteException e) {
                         if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
                             //Unregisters clients from the Game Server, who have lost connection in order to avoid further server errors.
                             try {
-                                server.unRegisterClientFromGame(client, gameId);
+                                server.unRegisterClientFromGame(client, planningPokerId);
                             } catch (RemoteException ex) {
                                 throw new RuntimeException();
                             }
@@ -182,6 +179,22 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
                 });
                 transmitThread.setDaemon(true);
                 transmitThread.start();
+            }
+        }
+    }
+
+    @Override
+    public void setProductOwner(User user, ArrayList<ClientConnection_RMI> connectedClients, Server_RMI serverRmi) {
+        for(ClientConnection_RMI client : connectedClients)
+        {
+            try {
+                if (client.getCurrentUser().equals(user))
+                {
+                    client.setRoleInGameFromServer(PRODUCT_OWNER, user.getPlanningPoker().getPlanningPokerID(), user);
+                    break;
+                }
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
             }
         }
     }

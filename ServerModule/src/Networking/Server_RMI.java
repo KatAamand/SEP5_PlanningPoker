@@ -29,7 +29,7 @@ public class Server_RMI implements ServerConnection_RMI {
     private MainServerModel mainServerModel;
     private ArrayList<ClientConnection_RMI> connectedClients;
     private Map<ClientConnection_RMI, PropertyChangeListener> listeners = new HashMap<>();
-    private Map<String, ArrayList<ClientConnection_RMI>> clientsInEachGame = new HashMap<>();
+    private Map<Integer, ArrayList<ClientConnection_RMI>> clientsInEachGame = new HashMap<>();
 
     public Server_RMI() throws RemoteException {
         UnicastRemoteObject.exportObject(this, 0);
@@ -49,7 +49,7 @@ public class Server_RMI implements ServerConnection_RMI {
     private void assignServerListeners() {
         taskServerModel.addPropertyChangeListener("TaskDataChanged", (evt) -> {
             if(evt.getNewValue() != null) {
-                broadcastTaskListUpdate((String) evt.getNewValue());
+                broadcastTaskListUpdate((Integer) evt.getNewValue());
             }}
         );
     }
@@ -60,19 +60,19 @@ public class Server_RMI implements ServerConnection_RMI {
         connectedClients.add(client);
     }
 
-    @Override public void registerClientToGame(ClientConnection_RMI client, String gameId) throws RemoteException
+    @Override public void registerClientToGame(ClientConnection_RMI client, int planningPokerId) throws RemoteException
     {
         ArrayList<ClientConnection_RMI> existingClients;
 
-        if(clientsInEachGame.get(gameId) != null) {
-            existingClients = clientsInEachGame.get(gameId);
+        if(clientsInEachGame.get(planningPokerId) != null) {
+            existingClients = clientsInEachGame.get(planningPokerId);
         } else {
             existingClients = new ArrayList<>();
         }
 
         if(!existingClients.contains(client)) {
             existingClients.add(client);
-            clientsInEachGame.put(gameId, existingClients);
+            clientsInEachGame.put(planningPokerId, existingClients);
         }
     }
 
@@ -82,20 +82,20 @@ public class Server_RMI implements ServerConnection_RMI {
         this.unRegisterClientsFromAnyConnectedGames(client);
     }
 
-    @Override public void unRegisterClientFromGame(ClientConnection_RMI client, String gameId)
+    @Override public void unRegisterClientFromGame(ClientConnection_RMI client, int planningPokerId)
     {
-        ArrayList<ClientConnection_RMI> existingClients = clientsInEachGame.get(gameId);
+        ArrayList<ClientConnection_RMI> existingClients = clientsInEachGame.get(planningPokerId);
 
         if(existingClients != null && existingClients.remove(client)) {
-            clientsInEachGame.put(gameId, existingClients);
+            clientsInEachGame.put(planningPokerId, existingClients);
         }
     }
 
     private void unRegisterClientsFromAnyConnectedGames(ClientConnection_RMI client) {
-        ArrayList<String> gameIdsToRemoveClientsFrom = new ArrayList<>();
+        ArrayList<Integer> gameIdsToRemoveClientsFrom = new ArrayList<>();
         ArrayList<ClientConnection_RMI> clientsToRemove = new ArrayList<>();
 
-        for (Map.Entry<String, ArrayList<ClientConnection_RMI>> contents : clientsInEachGame.entrySet()) {
+        for (Map.Entry<Integer, ArrayList<ClientConnection_RMI>> contents : clientsInEachGame.entrySet()) {
             for (int i = 0; i < contents.getValue().size(); i++)
             {
                 if(contents.getValue().get(i).equals(client)) {
@@ -188,8 +188,8 @@ public class Server_RMI implements ServerConnection_RMI {
     }
 
     /** Responsible for broadcasting taskListUpdates ONLY to the clients connected to the Game with the provided gameId */
-    private void broadcastTaskListUpdate(String gameId) {
-        taskServerModel.broadcastTaskListUpdate(clientsInEachGame, this, gameId);
+    private void broadcastTaskListUpdate(int planningPokerId) {
+        taskServerModel.broadcastTaskListUpdate(clientsInEachGame, this, planningPokerId);
     }
 
     private void sendUpdateToClient(Runnable updateAction, ClientConnection_RMI client) {
@@ -220,50 +220,50 @@ public class Server_RMI implements ServerConnection_RMI {
 
 
     //Task related requests
-    @Override public ArrayList<Task> getTaskList(String gameId) throws RemoteException
+    @Override public ArrayList<Task> getTaskList(int planningPokerId) throws RemoteException
     {
-        return taskServerModel.getTaskList(gameId);
+        return taskServerModel.getTaskList(planningPokerId);
     }
 
-    @Override public void addTask(Task task, String gameId) throws RemoteException
+    @Override public void addTask(Task task, int planningPokerId) throws RemoteException
     {
         // Create the task:
-        taskServerModel.addTask(task, gameId);
+        taskServerModel.addTask(task, planningPokerId);
 
         // Update the Planning Poker object, so that it now holds the proper list of assigned tasks.
-        mainServerModel.getPlanningPokerGame(gameId).setTaskList(taskServerModel.getTaskList(gameId));
+        mainServerModel.getPlanningPokerGame(planningPokerId).setTaskList(taskServerModel.getTaskList(planningPokerId));
     }
 
-    @Override public boolean removeTask(Task task, String gameId) throws RemoteException
+    @Override public boolean removeTask(Task task, int planningPokerId) throws RemoteException
     {
         // Attempt to remove the task:
-        boolean success = taskServerModel.removeTask(task, gameId);
+        boolean success = taskServerModel.removeTask(task, planningPokerId);
         if(success) {
             // If successful, update the Planning Poker object, so that it now holds the proper list of assigned tasks.
-            mainServerModel.getPlanningPokerGame(gameId).setTaskList(taskServerModel.getTaskList(gameId));
+            mainServerModel.getPlanningPokerGame(planningPokerId).setTaskList(taskServerModel.getTaskList(planningPokerId));
         }
         return success;
     }
 
-    @Override public boolean editTask(Task oldTask, Task newTask, String gameId) throws RemoteException
+    @Override public boolean editTask(Task oldTask, Task newTask, int planningPokerId) throws RemoteException
     {
         // Attempt to edit the task:
-        boolean success = taskServerModel.editTask(oldTask, newTask, gameId);
+        boolean success = taskServerModel.editTask(oldTask, newTask, planningPokerId);
         if(success) {
             // If successful, update the Planning Poker object, so that it now holds the proper list of assigned tasks.
-            mainServerModel.getPlanningPokerGame(gameId).setTaskList(taskServerModel.getTaskList(gameId));
+            mainServerModel.getPlanningPokerGame(planningPokerId).setTaskList(taskServerModel.getTaskList(planningPokerId));
         }
         return success;
     }
 
-    @Override public void broadcastSkipTasks(ArrayList<Task> skippedTasksList, String gameId) throws RemoteException
+    @Override public void broadcastSkipTasks(ArrayList<Task> skippedTasksList, int planningPokerId) throws RemoteException
     {
         // Attempt to broadcast the list of tasks to skip in the current game's UI to all clients:
-        gameServerModel.broadcastListOfSkippedTasksToClients(clientsInEachGame, skippedTasksList, gameId, this);
+        gameServerModel.broadcastListOfSkippedTasksToClients(clientsInEachGame, skippedTasksList, planningPokerId, this);
     }
 
     // MainView related requests
-    @Override public boolean validatePlanningPokerID(String planningPokerID)
+    @Override public boolean validatePlanningPokerID(int planningPokerID)
     {
       System.out.println("Server_RMI: planningPokerID [" + planningPokerID + "] trying to validate");
       return mainServerModel.validatePlanningPoker(planningPokerID);
@@ -281,7 +281,7 @@ public class Server_RMI implements ServerConnection_RMI {
       return planningPoker;
     }
 
-    @Override public PlanningPoker loadPlanningPokerGame(String planningPokerId, ClientConnection_RMI client) throws RemoteException {
+    @Override public PlanningPoker loadPlanningPokerGame(int planningPokerId, ClientConnection_RMI client) throws RemoteException {
         System.out.println("Server_RMI: planningPokerID trying to validate");
         PlanningPoker planningPoker = mainServerModel.getPlanningPokerGame(planningPokerId);
 
@@ -318,19 +318,34 @@ public class Server_RMI implements ServerConnection_RMI {
      - Product Owner is currently NOT set anywhere. Should be set from within the PlanningPokerViewModel once implemented.<br>
      - Developer is currently assigned to each user (other than the game creator) who joins a game.<br>
      */
-    @Override public User setRoleInPlanningPokerGame(UserRole roleToApply, User userToReceiveRole, String gameId) throws RemoteException
+    @Override public User setRoleInPlanningPokerGame(UserRole roleToApply, User userToReceiveRole, int planningPokerId) throws RemoteException
     {
         // Apply the role to the specified user in the specified game:
-        User returnedUser = mainServerModel.applyPlanningPokerRole(roleToApply, userToReceiveRole, gameId);
+        User returnedUser = mainServerModel.applyPlanningPokerRole(roleToApply, userToReceiveRole, planningPokerId);
         if(returnedUser != null) {
             // Broadcast the updated PlanningPoker Object to all connected clients in the specified game
-            mainServerModel.broadcastPlanningPokerObjUpdate(clientsInEachGame, this, gameId);
+            mainServerModel.broadcastPlanningPokerObjUpdate(clientsInEachGame, this, planningPokerId);
             return returnedUser;
         } else {
             // Failed to set the role. Do nothing further.
             System.out.println("Server_RMI: Failed to set the Role [" + roleToApply + "] to user [" + userToReceiveRole.getUsername() + "]");
             return null;
         }
+    }
+
+    @Override
+    public void requestShowCards() throws RemoteException {
+        gameServerModel.showCards(connectedClients, this);
+    }
+
+    @Override
+    public void broadcastUserInSession(User user) throws RemoteException {
+        chatServerModel.broadcastUsers(user, connectedClients, this, user.getPlanningPoker());
+    }
+
+    @Override
+    public void setProductOwner(User user) throws RemoteException {
+        mainServerModel.setProductOwner(user, connectedClients, this);
     }
 
     @Override

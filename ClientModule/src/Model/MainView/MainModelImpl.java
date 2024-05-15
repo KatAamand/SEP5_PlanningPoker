@@ -7,7 +7,6 @@ import DataTypes.PlanningPoker;
 import DataTypes.UserRoles.UserRole;
 import Networking.Client;
 
-import Util.PropertyChangeSubject;
 import javafx.application.Platform;
 
 import java.beans.PropertyChangeListener;
@@ -50,7 +49,7 @@ public class MainModelImpl implements MainModel
     clientConnection.setRoleInGame(UserRole.SCRUM_MASTER, Session.getConnectedGameId(), Session.getCurrentUser());
   }
 
-  @Override public void requestConnectPlanningPoker(String planningPokerID) throws RemoteException
+  @Override public void requestConnectPlanningPoker(int planningPokerID) throws RemoteException
   {
     if(clientConnection.validatePlanningPokerID(planningPokerID))
     {

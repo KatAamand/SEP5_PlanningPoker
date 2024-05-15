@@ -1,6 +1,7 @@
 package Model.Chat;
 
 import DataTypes.Message;
+import DataTypes.PlanningPoker;
 import DataTypes.User;
 import Networking.ClientConnection_RMI;
 import Networking.ServerConnection_RMI;
@@ -17,14 +18,13 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
   private PropertyChangeSupport propertyChangeSupport;
   private static ChatServerModel instance;
   private static final Lock lock = new ReentrantLock();
-  private ArrayList<User> usersConnectedToSession;
 
 
 
   private ChatServerModelImpl()
   {
     //TODO
-    usersConnectedToSession = new ArrayList<>();
+
   }
 
   public static ChatServerModel getInstance()
@@ -71,7 +71,7 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
       // Run this in a try brackets:
       Thread sendMessageThread = new Thread(() -> {
         try {
-          if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID().equals(sender.getPlanningPoker().getPlanningPokerID()))
+          if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == sender.getPlanningPoker().getPlanningPokerID())
           {
             client.receiveMessage(message);
             System.out.println("Sending message to: " + client);
@@ -99,26 +99,32 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
   public void addUserToSession(User user, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) throws RemoteException {
 
     for (ClientConnection_RMI client : connectedClients) {
-      if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID().equals(user.getPlanningPoker().getPlanningPokerID()))
+      if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == user.getPlanningPoker().getPlanningPokerID())
       {
-        if (!usersConnectedToSession.contains(client.getCurrentUser())) {
-          usersConnectedToSession.add(client.getCurrentUser());
+        if (!user.getPlanningPoker().getConnectedUsers().contains(client.getCurrentUser())) {
+          user.getPlanningPoker().getConnectedUsers().add(client.getCurrentUser());
         }
       }
     }
-    broadcastUsers(user, connectedClients, server);
+    broadcastUsers(user, connectedClients, server, user.getPlanningPoker());
   }
 
   @Override
-  public void broadcastUsers(User user, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) throws RemoteException {
+  public void broadcastUsers(User user, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server, PlanningPoker planningPoker) throws RemoteException {
+    planningPoker.getConnectedUsers().clear();
+    for (ClientConnection_RMI client : connectedClients)
+    {
+        if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == planningPoker.getPlanningPokerID()) {
+          planningPoker.getConnectedUsers().add(client.getCurrentUser());
+        }
+    }
     for (ClientConnection_RMI client : connectedClients) {
       Thread sendUserThread = new Thread(() -> {
         try {
-          if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID().equals(user.getPlanningPoker().getPlanningPokerID()))
-          {
-            System.out.println("Sending user to client");
-            client.receiveUser(usersConnectedToSession);
-          }
+            if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == planningPoker.getPlanningPokerID()) {
+              System.out.println("Sending user to client");
+              client.receiveUser(planningPoker.getConnectedUsers());
+            }
         } catch (RemoteException e) {
           if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
             //Unregisters clients from the Server, who have lost connection in order to avoid further server errors.
@@ -140,10 +146,12 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
 
   @Override
   public void removeUserFromSession(User user, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) throws RemoteException {
-    if (usersConnectedToSession.contains(user))
+    if (user.getPlanningPoker().getConnectedUsers().contains(user))
     {
-      usersConnectedToSession.remove(user);
-      broadcastUsers(user, connectedClients, server);
+      System.out.println("Removing user from session");
+      PlanningPoker temp = user.getPlanningPoker();
+      temp.getConnectedUsers().remove(user);
+      broadcastUsers(user, connectedClients, server, temp);
     }
 
   }

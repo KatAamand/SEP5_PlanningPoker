@@ -46,14 +46,18 @@ public class PlanningPokerViewModel
       user = Session.getCurrentUser().getUsername();
       role = Session.getCurrentUser().getRole().getRoleAsString();
     }
-    taskViewModel.labelUserIdProperty().setValue(user + " [" + role + "]");
+    String finalRole = role;
+    String finalUser = user;
+    Platform.runLater(() -> {
+      taskViewModel.labelUserIdProperty().setValue(finalUser + " [" + finalRole + "]");
+    });
 
     //Set the GameId in the TaskView:
-    String gameId = "ERROR";
-    if(Session.getConnectedGameId() != null) {
-      gameId = planningPokerModel.getActivePlanningPokerGame().getPlanningPokerID();
+    int planningPokerId = 0;
+    if(Session.getConnectedGameId() != 0) {
+      planningPokerId = planningPokerModel.getActivePlanningPokerGame().getPlanningPokerID();
     }
-    taskViewModel.sessionIdProperty().setValue(gameId);
+    taskViewModel.sessionIdProperty().setValue(String.valueOf(planningPokerId));
   }
 
   public void refresh() {
@@ -80,6 +84,7 @@ public class PlanningPokerViewModel
       // TODO: Implement at network call to tell all connected users that the current game has been closed, as described in Use Case #2, ALT0 Sequence.
 
       // TODO: Implement user leaving connected list User story #11
+      System.out.println("Closing planning poker window");
       planningPokerModel.removeUserFromSession();
 
       // Reset the users permission level to simply be a developer, outside the game that is being closed:

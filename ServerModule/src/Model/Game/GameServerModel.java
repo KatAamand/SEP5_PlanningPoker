@@ -15,7 +15,9 @@ public interface GameServerModel extends PropertyChangeSubject
 {
     ArrayList<Effort> getEffortList();
     ArrayList<Effort> getEffortListFromDB();
-    void broadcastListOfSkippedTasksToClients(Map<String, ArrayList<ClientConnection_RMI>> clientList, ArrayList<Task> skippedTaskList, String gameId, ServerConnection_RMI server);
+    void broadcastListOfSkippedTasksToClients(Map<Integer, ArrayList<ClientConnection_RMI>> clientList, ArrayList<Task> skippedTaskList, int planningPokerId, ServerConnection_RMI server);
     void placeCard(UserCardData userCardData, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server);
     void clearPlacedCards(ArrayList<ClientConnection_RMI> connectedClients, Server_RMI serverRmi);
+
+    void showCards(ArrayList<ClientConnection_RMI> connectedClients, Server_RMI serverRmi);
 }

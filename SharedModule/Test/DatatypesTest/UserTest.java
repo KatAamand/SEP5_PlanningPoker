@@ -26,7 +26,7 @@ class UserTest {
     @Test
     void testSetAndGetPlanningPoker()
     {
-        PlanningPoker poker = new PlanningPoker();
+        PlanningPoker poker = new PlanningPoker(101);
         user.setPlanningPoker(poker);
         assertEquals(poker, user.getPlanningPoker());
     }
@@ -34,7 +34,7 @@ class UserTest {
     @Test
     void testUserAddedToPokerSessionViaSetPlanningPoker()
     {
-        PlanningPoker poker = new PlanningPoker();
+        PlanningPoker poker = new PlanningPoker(101);
         user.setPlanningPoker(poker);
         assertEquals(user, poker.getConnectedUsers().get(0));
     }

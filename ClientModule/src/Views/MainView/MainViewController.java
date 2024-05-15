@@ -80,7 +80,7 @@ public class MainViewController
   {
     try
     {
-      String planningPokerID = planningPokerIdTextField.getText();
+      int planningPokerID = Integer.parseInt(planningPokerIdTextField.getText());
       mainViewModel.requestConnectPlanningPokerID(planningPokerID);
       planningPokerIdTextField.clear();
     }

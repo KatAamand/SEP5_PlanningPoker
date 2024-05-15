@@ -1,6 +1,5 @@
 package Model.MainView;
 
-import DataTypes.PlanningPoker;
 import Util.PropertyChangeSubject;
 
 import java.rmi.RemoteException;
@@ -11,5 +10,5 @@ public interface MainModel extends PropertyChangeSubject
    * Platform.runLater() method to ensure increase thread safety with javaFx.*/
   void init();
   void requestCreatePlanningPokerID() throws RemoteException;
-  void requestConnectPlanningPoker(String planningPokerID) throws RemoteException;
+  void requestConnectPlanningPoker(int planningPokerID) throws RemoteException;
 }

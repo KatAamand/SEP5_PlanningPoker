@@ -29,4 +29,6 @@ public interface GameModel extends PropertyChangeSubject {
 
     void refreshTaskList();
     void requestClearPlacedCards();
+
+    void requestShowCards();
 }

@@ -5,15 +5,14 @@ import Networking.ClientConnection_RMI;
 import Networking.ServerConnection_RMI;
 import Util.PropertyChangeSubject;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public interface TaskServerModel extends PropertyChangeSubject
 {
-  void addTask(Task task, String planningPokerId);
-  boolean removeTask(Task task, String planningPokerId);
-  boolean editTask(Task oldTask, Task newTask, String planningPokerId);
-  ArrayList<Task> getTaskList(String planningPokerId);
-  ArrayList<Task> getTaskListFromDB(String planningPokerId);
-  void broadcastTaskListUpdate(Map<String, ArrayList<ClientConnection_RMI>> clientList, ServerConnection_RMI server, String planningPokerId);
+  void addTask(Task task, int planningPokerId);
+  boolean removeTask(Task task, int planningPokerId);
+  boolean editTask(Task oldTask, Task newTask, int planningPokerId);
+  ArrayList<Task> getTaskList(int planningPokerId);
+  ArrayList<Task> getTaskListFromDB(int planningPokerId);
+  void broadcastTaskListUpdate(Map<Integer, ArrayList<ClientConnection_RMI>> clientList, ServerConnection_RMI server, int planningPokerId);
 }

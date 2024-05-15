@@ -62,6 +62,11 @@ public class ChatModelImpl implements ChatModel
     clientConnection.removeUserFromSession();
   }
 
+  @Override
+  public void setProductOwner(User user) {
+    clientConnection.setProductOwner(user);
+  }
+
 
   /** Assigns all the required listeners to the clientConnection allowing for Observable behavior betweeen these classes. */
   private void assignListeners()

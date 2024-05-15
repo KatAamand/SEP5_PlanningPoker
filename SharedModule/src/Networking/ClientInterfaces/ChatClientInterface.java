@@ -12,4 +12,5 @@ public interface ChatClientInterface extends Remote {
     void receiveMessage(Message message)  throws RemoteException;
     User getCurrentUser() throws RemoteException;
     void receiveUser(ArrayList<User> users) throws RemoteException;
+
 }

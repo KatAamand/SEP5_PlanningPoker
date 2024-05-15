@@ -2,6 +2,7 @@ package Networking;
 
 import Application.Session;
 import DataTypes.*;
+import DataTypes.UserRoles.ConcreteRoles.ProductOwner;
 import DataTypes.UserRoles.UserRole;
 import javafx.application.Platform;
 
@@ -20,8 +21,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     private ServerConnection_RMI server;
     private PropertyChangeSupport propertyChangeSupport;
 
-    public Client_RMI_Impl()
-    {
+    public Client_RMI_Impl() {
         propertyChangeSupport = new PropertyChangeSupport(this);
         try {
             UnicastRemoteObject.exportObject(this, 0);
@@ -36,353 +36,392 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
         }
     }
 
-  // Requests for Login
-  @Override public void validateUser(String username, String password)
-  {
-    try
-    {
-      server.validateUser(username, password, this);
-    }
-    catch (RemoteException e)
-    {
-      throw new RuntimeException(e);
-    }
-    System.out.println("Client_RMI: user trying to validate");
-  }
-
-  @Override public void createUser(String username, String password)
-  {
-    try
-    {
-      server.createUser(username, password, this);
-    }
-    catch (RemoteException e)
-    {
-      throw new RuntimeException(e);
-    }
-    System.out.println("Client_RMI: user trying to create user");
-  }
-
-  @Override public void logoutUser(String username, String password)
-  {
-    //Check that the requested user is the local user before logging out (prevent local user from logging out other remote users):
-    if(Session.getCurrentUser() != null
-        && Session.getCurrentUser().getUsername().equals(username)
-        && Session.getCurrentUser().getUsername().equals(password)) {
-      try {
-        this.logoutUserFromServer(username, password);
-      } catch (RemoteException e) {
-        throw new RuntimeException();
-      }
-    }
-
-    //Disconnect the client:
-    this.disconnectLocalClient();
-  }
-
-
-  @Override public void disconnectLocalClient() {
-    try {
-      // Unregister the client from the server:
-      server.unRegisterClient(this);
-
-      // Unexport the client from the RMI:
-      UnicastRemoteObject.unexportObject(this, true);
-
-      System.out.println("Client_RMI: Local Client is disconnected");
-    } catch (RemoteException e) {
-      throw new RuntimeException();
-    }
-
-    // Shut down the client thread:
-    System.exit(0);
-  }
-
-
-  @Override public void logoutUserFromServer(String username, String password) throws RemoteException {
-      server.logoutUser(username, password);
-  }
-
-  @Override
-  public void userValidationFailed(String errorMessage) {
-      propertyChangeSupport.firePropertyChange("userValidationFailed", null, errorMessage);
-  }
-
-  @Override public void userCreatedSuccessfully()
-  {
-    System.out.println("Opdatering fra server: user is created successfully");
-    propertyChangeSupport.firePropertyChange("userCreatedSuccess", null, null);
-  }
-
-  @Override public void updateUser(User user)
-  {
-    System.out.println("Opdatering fra server: user is logged in successfully");
-    propertyChangeSupport.firePropertyChange("userLoginSuccess", null, user);
-  }
-
-  @Override public boolean validatePlanningPokerID(String planningPokerID)
-  {
-    try
-    {
-      System.out.println("Client_RMI: planningPokerID trying to validate");
-      boolean serverAnswer = server.validatePlanningPokerID(planningPokerID);
-      if(serverAnswer) {
-        System.out.println("Opdatering fra server: planningPokerID is validated");
-        propertyChangeSupport.firePropertyChange("planningPokerIDValidatedSuccess", null, planningPokerID);
-      } else {
-        System.out.println("Client_RMI: planningPokerID validation failed");
-      }
-      return serverAnswer;
-    }
-    catch (RemoteException e)
-    {
-      throw new RuntimeException(e);
-    }
-  }
-
-  @Override public PlanningPoker createPlanningPoker()
-  {
-    try
-    {
-      System.out.println("Client_RMI: user trying to create planningPoker");
-      PlanningPoker serverAnswer = server.createPlanningPoker(this);
-
-      if(serverAnswer != null) {
-        //PlanningPoker created successfully
-        System.out.println("Opdatering fra server: planningPokerID is created successfully");
-        propertyChangeSupport.firePropertyChange("planningPokerCreatedSuccess", null, serverAnswer);
-        return serverAnswer;
-      }
-    }
-    catch (RemoteException e)
-    {
-      throw new RuntimeException(e);
-    }
-    return null;
-  }
-
-  @Override public void updatePlanningPokerObj(String gameId) throws RemoteException {
-    PlanningPoker serverAnswer = server.loadPlanningPokerGame(gameId, this);
-    if(serverAnswer != null) {
-      propertyChangeSupport.firePropertyChange("PlanningPokerObjUpdated", null, serverAnswer);
-    }
-  }
-
-  @Override public PlanningPoker loadPlanningPoker(String planningPokerId) {
-      try {
-        System.out.println("Client_RMI: trying to load PlanningPoker Game with ID " + planningPokerId);
-        PlanningPoker serverAnswer = server.loadPlanningPokerGame(planningPokerId, this);
-
-        if(serverAnswer != null) {
-          //PlanningPoker loaded successfully
-          System.out.println("Opdatering fra server: PlanningPoker game has been loaded successfully");
-          return serverAnswer;
-        }
-      } catch (RemoteException e) {
-        throw new RuntimeException();
-      }
-      return null;
-  }
-
-  @Override public void loadTaskList(String gameId) {
-    try {
-      this.loadTaskListFromServer(gameId);
-    } catch (RemoteException e) {
-      throw new RuntimeException();
-    }
-  }
-
-  @Override public void addPropertyChangeListener(
-      PropertyChangeListener listener)
-  {
-    propertyChangeSupport.addPropertyChangeListener(listener);
-  }
-
-  @Override public void addPropertyChangeListener(String name,
-      PropertyChangeListener listener)
-  {
-    propertyChangeSupport.addPropertyChangeListener(name, listener);
-  }
-
-  @Override public void removePropertyChangeListener(
-      PropertyChangeListener listener)
-  {
-    propertyChangeSupport.removePropertyChangeListener(listener);
-  }
-
-  @Override public void removePropertyChangeListener(String name,
-      PropertyChangeListener listener)
-  {
-    propertyChangeSupport.removePropertyChangeListener(name, listener);
-  }
-
-  @Override public User setRoleOnServer(UserRole roleToApply, String gameId, User userToReceiveRole) throws RemoteException {
-    return server.setRoleInPlanningPokerGame(roleToApply, userToReceiveRole, gameId);
-  }
-
-  @Override public void loadTaskListFromServer(String gameId) throws RemoteException {
-    ArrayList<Task> taskList = server.getTaskList(gameId);
-    if(taskList != null) {
-      // Fires a PropertyChange event with a Null value to absorb any similarities to the contents inside any of the already loaded taskList:
-      propertyChangeSupport.firePropertyChange("receivedUpdatedTaskList", null, null);
-
-      // Fires the proper PropertyChange event, with the taskList attached as the newValue():
-      propertyChangeSupport.firePropertyChange("receivedUpdatedTaskList", null, taskList);
-    }
-  }
-
-  @Override public void addTask(Task task, String gameId) {
-    try {
-      this.addTaskToServer(task, gameId);
-    } catch (RemoteException e) {
-      throw new RuntimeException();
-    }
-  }
-
-  @Override public boolean removeTask(Task task, String gameId) {
-    try {
-      return this.removeTaskFromServer(task, gameId);
-    } catch (RemoteException e) {
-      throw new RuntimeException();
-    }
-  }
-
-  @Override public boolean editTask(Task oldTask, Task newTask, String gameId) {
-    try {
-      return this.editTaskOnServer(oldTask, newTask, gameId);
-    } catch (RemoteException e) {
-      throw new RuntimeException();
-    }
-  }
-
-  @Override public void skipTasks(ArrayList<Task> skippedTasksList, String gameId) {
-    try {
-      this.broadcastSkipTasksOnServer(skippedTasksList, gameId);
-    } catch (RemoteException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  @Override public void updateSkippedTaskList(ArrayList<Task> skippedTasksList) throws RemoteException {
-    propertyChangeSupport.firePropertyChange("receivedListOfTasksToSkip", null, skippedTasksList);
-  }
-
-  @Override
-  public void sendUser() {
-      Platform.runLater(() -> {
+    // Requests for Login
+    @Override
+    public void validateUser(String username, String password) {
         try {
-          server.addConnectedUserToSession(Session.getCurrentUser());
+            server.validateUser(username, password, this);
         } catch (RemoteException e) {
-          throw new RuntimeException();
+            throw new RuntimeException(e);
         }
-      });
-  }
+        System.out.println("Client_RMI: user trying to validate");
+    }
 
-  @Override
-  public void removeUserFromSession() {
-      try {
-          server.removeUserFromSession(Session.getCurrentUser());
-      } catch (RemoteException e) {
-          throw new RuntimeException(e);
-      }
-  }
-
-  @Override
-  public ArrayList<Effort> getEffortList() {
-      try {
-          return server.getEffortList();
-      } catch (RemoteException e) {
-          throw new RuntimeException(e);
-      }
-  }
-
-  @Override
-  public void placeCard(UserCardData userCardData) {
+    @Override
+    public void createUser(String username, String password) {
         try {
-          System.out.println("Client_RMI: Requesting placed card");
+            server.createUser(username, password, this);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println("Client_RMI: user trying to create user");
+        // Requests for Login
+    }
+
+    @Override
+    public boolean validatePlanningPokerID(int planningPokerID) {
+        try {
+            System.out.println("Client_RMI: planningPokerID trying to validate");
+            boolean serverAnswer = server.validatePlanningPokerID(planningPokerID);
+            if (serverAnswer) {
+                System.out.println("Opdatering fra server: planningPokerID is validated");
+                propertyChangeSupport.firePropertyChange("planningPokerIDValidatedSuccess", null, planningPokerID);
+            } else {
+                System.out.println("Client_RMI: planningPokerID validation failed");
+            }
+            return serverAnswer;
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void updatePlanningPokerObj(int planningPokerId) throws RemoteException {
+        PlanningPoker serverAnswer = server.loadPlanningPokerGame(planningPokerId, this);
+        if (serverAnswer != null) {
+            propertyChangeSupport.firePropertyChange("PlanningPokerObjUpdated", null, serverAnswer);
+        }
+    }
+
+    @Override
+    public PlanningPoker loadPlanningPoker(int planningPokerId) {
+        try {
+            System.out.println("Client_RMI: trying to load PlanningPoker Game with ID " + planningPokerId);
+            PlanningPoker serverAnswer = server.loadPlanningPokerGame(planningPokerId, this);
+
+            if (serverAnswer != null) {
+                //PlanningPoker loaded successfully
+                System.out.println("Opdatering fra server: PlanningPoker game has been loaded successfully");
+                return serverAnswer;
+            }
+        } catch (RemoteException e) {
+            throw new RuntimeException();
+        }
+        return null;
+    }
+
+    @Override
+    public void loadTaskList(int planningPokerId) {
+        try {
+            this.loadTaskListFromServer(planningPokerId);
+        } catch (RemoteException e) {
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public User setRoleOnServer(UserRole roleToApply, int s, User userToReceiveRole) throws RemoteException {
+        return server.setRoleInPlanningPokerGame(roleToApply, userToReceiveRole, s);
+    }
+
+    @Override
+    public void setRoleInGameFromServer(UserRole userRole, int s, User user) throws RemoteException {
+        setRoleInGame(userRole, s, user);
+    }
+
+    @Override
+    public void loadTaskListFromServer(int planningPokerId) throws RemoteException {
+        ArrayList<Task> taskList = server.getTaskList(planningPokerId);
+        if (taskList != null) {
+            // Fires a PropertyChange event with a Null value to absorb any similarities to the contents inside any of the already loaded taskList:
+            propertyChangeSupport.firePropertyChange("receivedUpdatedTaskList", null, null);
+
+            // Fires the proper PropertyChange event, with the taskList attached as the newValue():
+            propertyChangeSupport.firePropertyChange("receivedUpdatedTaskList", null, taskList);
+        }
+    }
+
+    @Override
+    public void addTask(Task task, int planningPokerId) {
+        try {
+            this.addTaskToServer(task, planningPokerId);
+        } catch (RemoteException e) {
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public boolean removeTask(Task task, int planningPokerId) {
+        try {
+            return this.removeTaskFromServer(task, planningPokerId);
+        } catch (RemoteException e) {
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public boolean editTask(Task oldTask, Task newTask, int planningPokerId) {
+        try {
+            return this.editTaskOnServer(oldTask, newTask, planningPokerId);
+        } catch (RemoteException e) {
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public void skipTasks(ArrayList<Task> skippedTasksList, int planningPokerId) {
+        try {
+            this.broadcastSkipTasksOnServer(skippedTasksList, planningPokerId);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void sendUser() {
+        Platform.runLater(() -> {
+            try {
+                server.addConnectedUserToSession(Session.getCurrentUser());
+            } catch (RemoteException e) {
+                throw new RuntimeException();
+            }
+        });
+    }
+
+    @Override
+    public void logoutUser(String username, String password) {
+        //Check that the requested user is the local user before logging out (prevent local user from logging out other remote users):
+        if (Session.getCurrentUser() != null
+                && Session.getCurrentUser().getUsername().equals(username)
+                && Session.getCurrentUser().getUsername().equals(password)) {
+            try {
+                this.logoutUserFromServer(username, password);
+            } catch (RemoteException e) {
+                throw new RuntimeException();
+            }
+        }
+
+        //Disconnect the client:
+        this.disconnectLocalClient();
+    }
+
+
+    @Override
+    public void disconnectLocalClient() {
+        try {
+            // Unregister the client from the server:
+            server.unRegisterClient(this);
+
+            // Unexport the client from the RMI:
+            UnicastRemoteObject.unexportObject(this, true);
+
+            System.out.println("Client_RMI: Local Client is disconnected");
+        } catch (RemoteException e) {
+            throw new RuntimeException();
+        }
+
+        // Shut down the client thread:
+        System.exit(0);
+    }
+
+
+    @Override
+    public void logoutUserFromServer(String username, String password) throws RemoteException {
+        server.logoutUser(username, password);
+    }
+
+    @Override
+    public void userValidationFailed(String errorMessage) {
+        propertyChangeSupport.firePropertyChange("userValidationFailed", null, errorMessage);
+    }
+
+    @Override
+    public void userCreatedSuccessfully() {
+        System.out.println("Opdatering fra server: user is created successfully");
+        propertyChangeSupport.firePropertyChange("userCreatedSuccess", null, null);
+    }
+
+    @Override
+    public void updateUser(User user) {
+        System.out.println("Opdatering fra server: user is logged in successfully");
+        propertyChangeSupport.firePropertyChange("userLoginSuccess", null, user);
+    }
+
+    @Override
+    public PlanningPoker createPlanningPoker() {
+        try {
+            System.out.println("Client_RMI: user trying to create planningPoker");
+            PlanningPoker serverAnswer = server.createPlanningPoker(this);
+
+            if (serverAnswer != null) {
+                //PlanningPoker created successfully
+                System.out.println("Opdatering fra server: planningPokerID is created successfully");
+                propertyChangeSupport.firePropertyChange("planningPokerCreatedSuccess", null, serverAnswer);
+                return serverAnswer;
+            }
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+
+
+    @Override
+    public void addPropertyChangeListener(
+            PropertyChangeListener listener) {
+        propertyChangeSupport.addPropertyChangeListener(listener);
+    }
+
+    @Override
+    public void addPropertyChangeListener(String name,
+                                          PropertyChangeListener listener) {
+        propertyChangeSupport.addPropertyChangeListener(name, listener);
+    }
+
+    @Override
+    public void removePropertyChangeListener(
+            PropertyChangeListener listener) {
+        propertyChangeSupport.removePropertyChangeListener(listener);
+    }
+
+    @Override
+    public void removePropertyChangeListener(String name, PropertyChangeListener listener) {
+        propertyChangeSupport.removePropertyChangeListener(name, listener);
+    }
+
+    @Override
+    public void updateSkippedTaskList(ArrayList<Task> skippedTasksList) throws RemoteException {
+        propertyChangeSupport.firePropertyChange("receivedListOfTasksToSkip", null, skippedTasksList);
+    }
+
+    @Override
+    public void removeUserFromSession() {
+        try {
+            server.removeUserFromSession(Session.getCurrentUser());
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
+    @Override
+    public ArrayList<Effort> getEffortList() {
+        try {
+            return server.getEffortList();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void placeCard(UserCardData userCardData) {
+        try {
+            System.out.println("Client_RMI: Requesting placed card");
             server.placeCard(userCardData);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
-  }
+    }
 
-  @Override
-  public void requestClearPlacedCards() {
-    try {
+    @Override
+    public void requestClearPlacedCards() {
+        try {
             server.requestClearPlacedCards();
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
-  }
-
-  @Override public void addTaskToServer(Task task, String gameId) throws RemoteException {
-      server.addTask(task, gameId);
     }
 
-  @Override public boolean removeTaskFromServer(Task task, String gameId) throws RemoteException {
-    return server.removeTask(task, gameId);
-  }
+    @Override
+    public void addTaskToServer(Task task, int planningPokerId) throws RemoteException {
+        server.addTask(task, planningPokerId);
+    }
 
-  @Override public boolean editTaskOnServer(Task oldTask, Task newTask, String gameId) throws RemoteException {
-    return server.editTask(oldTask, newTask, gameId);
-  }
+    @Override
+    public boolean removeTaskFromServer(Task task, int planningPokerId) throws RemoteException {
+        return server.removeTask(task, planningPokerId);
+    }
 
-  @Override public void broadcastSkipTasksOnServer(ArrayList<Task> skippedTasksList, String gameId) throws RemoteException
-  {
-    server.broadcastSkipTasks(skippedTasksList, gameId);
-  }
+    @Override
+    public boolean editTaskOnServer(Task oldTask, Task newTask, int planningPokerId) throws RemoteException {
+        return server.editTask(oldTask, newTask, planningPokerId);
+    }
 
-  @Override
-  public void sendMessage(Message message, User sender) {
-      try {
-          server.sendMessage(message, sender);
-      } catch (RemoteException e) {
-          throw new RuntimeException(e);
-      }
-  }
+    @Override
+    public void broadcastSkipTasksOnServer(ArrayList<Task> skippedTasksList, int planningPokerId) throws RemoteException {
+        server.broadcastSkipTasks(skippedTasksList, planningPokerId);
+    }
 
-  @Override public void receiveMessage(Message message)
-  {
-    propertyChangeSupport.firePropertyChange("messageReceived", null, message);
-    System.out.println("Client_RMI: " + message.getMessage());
-  }
+    @Override
+    public void sendMessage(Message message, User sender) {
+        try {
+            server.sendMessage(message, sender);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void receiveMessage(Message message) {
+        propertyChangeSupport.firePropertyChange("messageReceived", null, message);
+        System.out.println("Client_RMI: " + message.getMessage());
+    }
 
     @Override
     public User getCurrentUser() throws RemoteException {
         return Session.getCurrentUser();
     }
 
-  @Override
-  public void receiveUser(ArrayList<User> users) throws RemoteException {
-    System.out.println("Client receiving user");
-    propertyChangeSupport.firePropertyChange("userReceived", null, users);
-  }
-
-
-  @Override
-  public void receivePlacedCard(UserCardData userCardData) throws RemoteException {
-    System.out.println("Client_RMI: Received placed card " + userCardData.getUsername() + " " + userCardData.getPlacedCard());
-    propertyChangeSupport.firePropertyChange("placedCardReceived", null, userCardData);
-  }
-
-  @Override
-  public void clearPlacedCards() throws RemoteException {
-    propertyChangeSupport.firePropertyChange("clearPlacedCards", null, null);
-  }
-
-  @Override public void setRoleInGame(UserRole role, String gameId, User user) {
-    User serverAnswer;
-    try {
-      serverAnswer = this.setRoleOnServer(role, gameId, user);
-    } catch (RemoteException e) {
-      throw new RuntimeException();
+    @Override
+    public void receiveUser(ArrayList<User> users) throws RemoteException {
+        System.out.println("Client receiving user");
+        propertyChangeSupport.firePropertyChange("userReceived", null, users);
+        propertyChangeSupport.firePropertyChange("UpdatedLocalUser", null, null);
     }
 
-    // Update the local user in the local Session with returned modified user including the added roles - if the returned user is also the local user:
-    if(serverAnswer != null && Session.getCurrentUser().getUsername().equals(serverAnswer.getUsername())) {
-      Session.setCurrentUser(serverAnswer);
-      System.out.println("Local user [" + Session.getCurrentUser().getUsername() + "] has become '" + Session.getCurrentUser().getRole().getRoleAsString() + "' in game [" + gameId + "]");
-      propertyChangeSupport.firePropertyChange("UpdatedLocalUser", null, null);
+
+    @Override
+    public void receivePlacedCard(UserCardData userCardData) throws RemoteException {
+        System.out.println("Client_RMI: Received placed card " + userCardData.getUsername() + " " + userCardData.getPlacedCard());
+        propertyChangeSupport.firePropertyChange("placedCardReceived", null, userCardData);
     }
-  }
+
+    @Override
+    public void clearPlacedCards() throws RemoteException {
+        propertyChangeSupport.firePropertyChange("clearPlacedCards", null, null);
+    }
+
+    @Override
+    public void showCards() throws RemoteException {
+        propertyChangeSupport.firePropertyChange("showCards", null, null);
+    }
+
+    @Override
+    public void setRoleInGame(UserRole role, int planningPokerId, User user) {
+        User serverAnswer;
+        try {
+            serverAnswer = this.setRoleOnServer(role, planningPokerId, user);
+        } catch (RemoteException e) {
+            throw new RuntimeException();
+        }
+
+        // Update the local user in the local Session with returned modified user including the added roles - if the returned user is also the local user:
+        if (serverAnswer != null && Session.getCurrentUser().getUsername().equals(serverAnswer.getUsername())) {
+            Session.setCurrentUser(serverAnswer);
+            System.out.println("Local user [" + Session.getCurrentUser().getUsername() + "] has become '" + Session.getCurrentUser().getRole().getRoleAsString() + "' in game [" + planningPokerId + "]");
+            propertyChangeSupport.firePropertyChange("UpdatedLocalUser", null, null);
+
+        }
+    }
+
+    @Override
+    public void requestShowCards() {
+        try {
+            server.requestShowCards();
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    @Override
+    public void setProductOwner(User user) {
+        try {
+            server.setProductOwner(user);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
+

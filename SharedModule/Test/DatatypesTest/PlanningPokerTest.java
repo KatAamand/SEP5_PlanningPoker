@@ -19,7 +19,7 @@ class PlanningPokerTest
 
   @BeforeEach void setUp()
   {
-    planningPoker = new PlanningPoker();
+    planningPoker = new PlanningPoker(101);
   }
 
   @AfterEach void tearDown()
@@ -29,10 +29,9 @@ class PlanningPokerTest
   @Test
   void testGeneratePlanningPokerIDGeneratesWithinBounds()
   {
-    PlanningPoker planningPokerTest = new PlanningPoker();
+    PlanningPoker planningPokerTest = new PlanningPoker(101);
     for (int i = 0; i < 1000; i++) {
-      planningPokerTest.generatePlanningPokerID();
-      int generatedID = Integer.parseInt(planningPokerTest.getPlanningPokerID());
+      int generatedID = planningPokerTest.getPlanningPokerID();
       assertTrue(0 < generatedID && generatedID < 10000);
     }
   }
@@ -44,7 +43,7 @@ class PlanningPokerTest
     boolean connectedUsersInitialized = planningPoker.getConnectedUsers() != null;
     boolean chatInitialized = planningPoker.getChat() != null;
     boolean taskListInitialized = planningPoker.getTaskList() != null;
-    boolean gameIdWasGenerated = planningPoker.getPlanningPokerID() != null;
+    boolean gameIdWasGenerated = planningPoker.getPlanningPokerID() != 0;
 
     boolean result = connectedUsersInitialized && chatInitialized && taskListInitialized && gameIdWasGenerated;
 

@@ -46,7 +46,7 @@ public class MainViewModel  {
         mainModel.requestCreatePlanningPokerID();
     }
 
-    public void requestConnectPlanningPokerID(String planningPokerID) throws RemoteException {
+    public void requestConnectPlanningPokerID(int planningPokerID) throws RemoteException {
         mainModel.requestConnectPlanningPoker(planningPokerID);
     }
 
