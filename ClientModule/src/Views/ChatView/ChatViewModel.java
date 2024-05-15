@@ -35,6 +35,10 @@ public class ChatViewModel extends ViewModel {
         });
     }
 
+    public void setProductOwner(User user) {
+        chatModel.setProductOwner(user);
+    }
+
     public StringProperty messageProperty()
     {
         return message;

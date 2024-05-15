@@ -339,6 +339,16 @@ public class Server_RMI implements ServerConnection_RMI {
     }
 
     @Override
+    public void broadcastUserInSession(User user) throws RemoteException {
+        chatServerModel.broadcastUsers(user, connectedClients, this, user.getPlanningPoker());
+    }
+
+    @Override
+    public void setProductOwner(User user) throws RemoteException {
+        mainServerModel.setProductOwner(user, connectedClients, this);
+    }
+
+    @Override
     public ArrayList<Effort> getEffortList() throws RemoteException {
         return gameServerModel.getEffortList();
     }

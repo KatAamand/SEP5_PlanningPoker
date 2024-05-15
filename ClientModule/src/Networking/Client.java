@@ -33,4 +33,6 @@ public interface Client extends PropertyChangeSubject {
     void setRoleInGame(DataTypes.UserRoles.UserRole userRole, int s, DataTypes.User user);
 
     void requestShowCards();
+
+    void setProductOwner(User user);
 }

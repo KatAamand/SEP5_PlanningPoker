@@ -43,7 +43,9 @@ public class User implements Serializable
 
   public void setPlanningPoker(PlanningPoker planningPoker) {
     this.planningPoker = planningPoker;
-    planningPoker.addUserToSession(this);
+    if (planningPoker != null) {
+      planningPoker.addUserToSession(this);
+    }
   }
 
   public Role getRole() {
@@ -56,6 +58,11 @@ public class User implements Serializable
     } else {
       this.role = role;
     }
+  }
+
+  public String getRoleAsString()
+  {
+    return role.getRoleAsString();
   }
 
   @Override public boolean equals(Object obj) {

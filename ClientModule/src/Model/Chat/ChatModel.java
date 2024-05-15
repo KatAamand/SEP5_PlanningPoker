@@ -13,4 +13,6 @@ public interface ChatModel extends PropertyChangeSubject {
     void loadUsers();
 
   void removeUserFromSession();
+
+    void setProductOwner(User user);
 }
