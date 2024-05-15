@@ -58,6 +58,22 @@ public class TaskDAOImpl extends DatabaseConnection implements TaskDAO {
         }
     }
 
+    public Task readByTaskId(int taskId) throws SQLException {
+        try (Connection connection = super.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM task WHERE taskid = ?");
+            statement.setInt(1, taskId);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                String header = resultSet.getString("header");
+                String description = resultSet.getString("desc");
+                return new Task(taskId, header, description);
+            } else {
+                throw new SQLException("Task not found");
+            }
+        }
+    }
+
     @Override
     public ArrayList<Task> readByPlanningPokerId(int planningPokerId) throws SQLException {
         try (Connection connection = super.getConnection()) {

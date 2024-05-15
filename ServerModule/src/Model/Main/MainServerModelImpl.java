@@ -26,9 +26,9 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
     }
 
     @Override
-    public boolean validatePlanningPoker(String planningPokerID) {
+    public boolean validatePlanningPoker(int planningPokerID) {
         for (PlanningPoker planningPoker : planningPokerGames) {
-            if (planningPoker.getPlanningPokerID().equals(planningPokerID)) {
+            if (planningPoker.getPlanningPokerID() == planningPokerID) {
                 return true;
             }
         }
@@ -37,11 +37,6 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
 
     @Override
     public PlanningPoker createPlanningPoker() {
-    /* The old way of creating planning poker game.
-    PlanningPoker planningPoker = new PlanningPoker();
-    planningPoker.generatePlanningPokerID();
-     */
-
         PlanningPoker planningPoker;
         try {
             PlanningPokerDAO planningPokerDAO = PlanningPokerDAOImpl.getInstance();
@@ -57,10 +52,10 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
     }
 
     @Override
-    public PlanningPoker getPlanningPokerGame(String planningPokerId) {
+    public PlanningPoker getPlanningPokerGame(int planningPokerId) {
         if (validatePlanningPoker(planningPokerId)) {
             for (PlanningPoker planningPoker : planningPokerGames) {
-                if (planningPoker.getPlanningPokerID().equals(planningPokerId)) {
+                if (planningPoker.getPlanningPokerID() == planningPokerId) {
                     return planningPoker;
                 }
             }

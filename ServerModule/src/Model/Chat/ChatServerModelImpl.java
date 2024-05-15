@@ -71,7 +71,7 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
       // Run this in a try brackets:
       Thread sendMessageThread = new Thread(() -> {
         try {
-          if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID().equals(sender.getPlanningPoker().getPlanningPokerID()))
+          if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == sender.getPlanningPoker().getPlanningPokerID())
           {
             client.receiveMessage(message);
             System.out.println("Sending message to: " + client);
@@ -99,7 +99,7 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
   public void addUserToSession(User user, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) throws RemoteException {
 
     for (ClientConnection_RMI client : connectedClients) {
-      if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID().equals(user.getPlanningPoker().getPlanningPokerID()))
+      if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == user.getPlanningPoker().getPlanningPokerID())
       {
         if (!usersConnectedToSession.contains(client.getCurrentUser())) {
           usersConnectedToSession.add(client.getCurrentUser());
@@ -114,7 +114,7 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
     for (ClientConnection_RMI client : connectedClients) {
       Thread sendUserThread = new Thread(() -> {
         try {
-          if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID().equals(user.getPlanningPoker().getPlanningPokerID()))
+          if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == user.getPlanningPoker().getPlanningPokerID())
           {
             System.out.println("Sending user to client");
             client.receiveUser(usersConnectedToSession);

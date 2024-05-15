@@ -1,39 +1,22 @@
 package DataTypes;
 
-import DataTypes.States.PlanningPokerState;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class PlanningPoker implements Serializable
 {
-  //private String connectionCode; TODO: Remove line if unnecessary
   private ArrayList<User> connectedUsers;
-  private PlanningPokerState currentState;
-  //private PlanningPoker planningPoker; TODO: Remove line if unnecessary
-  private String planningPokerID;
+  private int planningPokerID;
   private Chat chat;
-  private static final Random random = new Random();
   private List<Task> taskList;
 
-  public PlanningPoker()
+  public PlanningPoker(int planningPokerId)
   {
     connectedUsers = new ArrayList<>();
     chat = new Chat();
+    setPlanningPokerID(planningPokerId);
     taskList = new ArrayList<>();
-    generatePlanningPokerID();
-    setPlanningPokerID(planningPokerID);
-  }
-
-  public PlanningPoker(String planningPokerId)
-  {
-    connectedUsers = new ArrayList<>();
-    chat = new Chat();
-    taskList = new ArrayList<>();
-    generatePlanningPokerID();
-    setPlanningPokerID(planningPokerID);
   }
 
   public Chat getChat()
@@ -59,8 +42,6 @@ public class PlanningPoker implements Serializable
     }
   }
 
-  //TODO: Do we need a removeUser method here?
-
   public List<Task> getTaskList()
   {
     return this.taskList;
@@ -75,34 +56,13 @@ public class PlanningPoker implements Serializable
     this.taskList = taskList;
   }
 
-  public void setCurrentState(PlanningPokerState planningPokerState)
-  {
-    this.currentState = planningPokerState;
-  }
-
-  public PlanningPokerState getCurrentState()
-  {
-    return this.currentState;
-  }
-
-  public void declareFinalEffort(Task task)
-  {
-    //does nothing yet.
-  }
-
-  public void setPlanningPokerID(String planningPokerID)
+  public void setPlanningPokerID(int planningPokerID)
   {
     this.planningPokerID = planningPokerID;
   }
 
-  public String getPlanningPokerID()
+  public int getPlanningPokerID()
   {
     return planningPokerID;
-  }
-
-  public void generatePlanningPokerID()
-  {
-    int randomNumber = random.nextInt(10000);
-    this.planningPokerID = String.valueOf(randomNumber);
   }
 }

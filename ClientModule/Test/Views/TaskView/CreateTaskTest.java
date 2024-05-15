@@ -268,7 +268,7 @@ class CreateTaskTest
     }
     runLaterExecuted = false;
 
-    String createdGameID;
+    int createdGameID;
     try {
       createdGameID = server.createPlanningPoker(client2).getPlanningPokerID();
     } catch (RemoteException e) {
@@ -278,7 +278,7 @@ class CreateTaskTest
     Platform.runLater(() -> {
       try {
         // Simulate local user entering the created gameID to join:
-        mainViewController.planningPokerIdTextField.setText(createdGameID);
+        mainViewController.planningPokerIdTextField.setText(String.valueOf(createdGameID));
 
         // Simulate local user pressing the 'Join Planning Poker' button:
         mainViewController.connectToPlanningPokerButton.fire();
@@ -417,7 +417,7 @@ class CreateTaskTest
     }
     runLaterExecuted = false;
 
-    String createdGameID;
+    int createdGameID;
     try {
       createdGameID = server.createPlanningPoker(client2).getPlanningPokerID();
     } catch (RemoteException e) {
@@ -427,7 +427,7 @@ class CreateTaskTest
     Platform.runLater(() -> {
       try {
         // Simulate local user entering the created gameID to join:
-        mainViewController.planningPokerIdTextField.setText(createdGameID);
+        mainViewController.planningPokerIdTextField.setText(String.valueOf(createdGameID));
 
         // Simulate local user pressing the 'Join Planning Poker' button:
         mainViewController.connectToPlanningPokerButton.fire();
@@ -566,7 +566,7 @@ class CreateTaskTest
     }
     runLaterExecuted = false;
 
-    String createdGameID;
+    int createdGameID;
     try {
       createdGameID = server.createPlanningPoker(client2).getPlanningPokerID();
     } catch (RemoteException e) {
@@ -576,7 +576,7 @@ class CreateTaskTest
     Platform.runLater(() -> {
       try {
         // Simulate local user entering the created gameID to join:
-        mainViewController.planningPokerIdTextField.setText(createdGameID);
+        mainViewController.planningPokerIdTextField.setText(String.valueOf(createdGameID));
 
         // Simulate local user pressing the 'Join Planning Poker' button:
         mainViewController.connectToPlanningPokerButton.fire();
@@ -712,7 +712,7 @@ class CreateTaskTest
     }
     runLaterExecuted = false;
 
-    String createdGameID;
+    int createdGameID;
     try {
       createdGameID = server.createPlanningPoker(client2).getPlanningPokerID();
     } catch (RemoteException e) {
@@ -731,7 +731,7 @@ class CreateTaskTest
         }
 
         // Simulate local user entering the created gameID to join:
-        mainViewController.planningPokerIdTextField.setText(createdGameID);
+        mainViewController.planningPokerIdTextField.setText(String.valueOf(createdGameID));
 
         // Simulate local user pressing the 'Join Planning Poker' button:
         mainViewController.connectToPlanningPokerButton.fire();

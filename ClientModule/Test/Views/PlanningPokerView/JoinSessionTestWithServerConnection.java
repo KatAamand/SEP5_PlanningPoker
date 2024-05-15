@@ -253,9 +253,9 @@ class JoinSessionTestWithServerConnection
     }
     runLaterExecuted = false;
 
-    String createdGameID;
+    int createdGameID;
     try {
-      createdGameID = server.createPlanningPoker(client2).getPlanningPokerID();
+      createdGameID = (server.createPlanningPoker(client2).getPlanningPokerID());
     } catch (RemoteException e) {
       throw new RuntimeException();
     }
@@ -263,7 +263,7 @@ class JoinSessionTestWithServerConnection
     Platform.runLater(() -> {
       try {
         // 1. Simulate user entering the created gameID to join:
-        mainViewController.planningPokerIdTextField.setText(createdGameID);
+        mainViewController.planningPokerIdTextField.setText(String.valueOf(createdGameID));
 
         // 2. Simulate user pressing the 'Join Planning Poker' button:
         mainViewController.connectToPlanningPokerButton.fire();
@@ -298,7 +298,7 @@ class JoinSessionTestWithServerConnection
     boolean wasPlanningPokerGameCreated = testListener.getPropertyName().equals("planningPokerIDValidatedSuccess");
 
     //Check that the local session Object was updated with the currently connected Game Id:
-    boolean wasLocalSessionObjectUpdated = Session.getConnectedGameId().equals(createdGameID);
+    boolean wasLocalSessionObjectUpdated = Session.getConnectedGameId() == (createdGameID);
 
     //Check that a Planning Poker Object was saved locally in the Planning Poker Model:
     boolean wasPlanningPokerObjectSavedLocally;
@@ -335,9 +335,9 @@ class JoinSessionTestWithServerConnection
     }
     runLaterExecuted = false;
 
-    String createdGameID;
+    int createdGameID;
     try {
-      createdGameID = server.createPlanningPoker(client2).getPlanningPokerID();
+      createdGameID = (server.createPlanningPoker(client2).getPlanningPokerID());
     } catch (RemoteException e) {
       throw new RuntimeException();
     }
@@ -346,7 +346,7 @@ class JoinSessionTestWithServerConnection
     Platform.runLater(() -> {
       try {
         // 1. Simulate user entering the created gameID to join:
-        mainViewController.planningPokerIdTextField.setText(createdGameID);
+        mainViewController.planningPokerIdTextField.setText(String.valueOf(createdGameID));
 
         // 2. Simulate user pressing the 'Join Planning Poker' button:
         mainViewController.connectToPlanningPokerButton.fire();
@@ -380,7 +380,7 @@ class JoinSessionTestWithServerConnection
     boolean wasPlanningPokerGameJoined = testListener.getPropertyName().equals("planningPokerIDValidatedSuccess");
 
     //Check that the local session Object was updated with the currently connected Game Id:
-    boolean wasLocalSessionObjectUpdated = Session.getConnectedGameId().equals(createdGameID);
+    boolean wasLocalSessionObjectUpdated = Session.getConnectedGameId() == (createdGameID);
 
     // 3. Simulate local user closing the currently shown stage by either Alt+F4 or other means (clicking the exit icon in the window)
     Platform.runLater(() -> {
@@ -440,9 +440,9 @@ class JoinSessionTestWithServerConnection
     }
     runLaterExecuted = false;
 
-    String createdGameID;
+    int createdGameID;
     try {
-      createdGameID = server.createPlanningPoker(client2).getPlanningPokerID();
+      createdGameID = (server.createPlanningPoker(client2).getPlanningPokerID());
     } catch (RemoteException e) {
       throw new RuntimeException();
     }
@@ -479,7 +479,7 @@ class JoinSessionTestWithServerConnection
     }
 
     //Check that the local session Object was updated with the currently connected Game Id:
-    boolean wasLocalSessionObjectUpdated = Session.getConnectedGameId().equals(createdGameID);
+    boolean wasLocalSessionObjectUpdated = Session.getConnectedGameId() == (createdGameID);
 
     //Check that the main view is still the active view
     boolean isMainViewNotShowing = !ViewFactory.getInstance().getMainViewStage().isShowing();
@@ -523,9 +523,9 @@ class JoinSessionTestWithServerConnection
     }
     runLaterExecuted = false;
 
-    String createdGameID;
+    int createdGameID;
     try {
-      createdGameID = server.createPlanningPoker(client2).getPlanningPokerID();
+      createdGameID = (server.createPlanningPoker(client2).getPlanningPokerID());
     } catch (RemoteException e) {
       throw new RuntimeException();
     }
@@ -561,7 +561,7 @@ class JoinSessionTestWithServerConnection
     }
 
     //Check that the local session Object was updated with the currently connected Game Id:
-    boolean wasLocalSessionObjectUpdated = Session.getConnectedGameId().equals(createdGameID);
+    boolean wasLocalSessionObjectUpdated = Session.getConnectedGameId() == (createdGameID);
 
     //Check that the main view is still the active view
     boolean isMainViewNotShowing = !ViewFactory.getInstance().getMainViewStage().isShowing();

@@ -87,8 +87,8 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
         }
     }
 
-    @Override public void broadcastListOfSkippedTasksToClients(Map<String, ArrayList<ClientConnection_RMI>> clientList, ArrayList<Task> skippedTaskList, String gameId, ServerConnection_RMI server) {
-        ArrayList<ClientConnection_RMI> receivingClients = clientList.get(gameId);
+    @Override public void broadcastListOfSkippedTasksToClients(Map<Integer, ArrayList<ClientConnection_RMI>> clientList, ArrayList<Task> skippedTaskList, int planningPokerId, ServerConnection_RMI server) {
+        ArrayList<ClientConnection_RMI> receivingClients = clientList.get(planningPokerId);
         if(receivingClients != null) {
             for (int i = 0; i < receivingClients.size(); i++) {
                 if(receivingClients.get(i) == null) {
@@ -97,7 +97,7 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
                 }
             }
 
-            System.out.println("Server: Broadcasting list of skipped tasks to players in game [" + gameId + "]");
+            System.out.println("Server: Broadcasting list of skipped tasks to players in game [" + planningPokerId + "]");
             for (ClientConnection_RMI client : receivingClients) {
                 //Create a new thread for each connected client, and then call the desired broadcast operation. This minimizes server lag/hanging due to clients who have connection issues.
                 Thread transmitThread = new Thread(() -> {
@@ -108,7 +108,7 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
                         if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
                             //Unregisters clients from the Game Server, who have lost connection in order to avoid further server errors.
                             try {
-                                server.unRegisterClientFromGame(client, gameId);
+                                server.unRegisterClientFromGame(client, planningPokerId);
                             } catch (RemoteException ex) {
                                 throw new RuntimeException();
                             }

@@ -119,7 +119,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     propertyChangeSupport.firePropertyChange("userLoginSuccess", null, user);
   }
 
-  @Override public boolean validatePlanningPokerID(String planningPokerID)
+  @Override public boolean validatePlanningPokerID(int planningPokerID)
   {
     try
     {
@@ -160,7 +160,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     return null;
   }
 
-  @Override public PlanningPoker loadPlanningPoker(String planningPokerId) {
+  @Override public PlanningPoker loadPlanningPoker(int planningPokerId) {
       try {
         System.out.println("Client_RMI: trying to load PlanningPoker Game with ID " + planningPokerId);
         PlanningPoker serverAnswer = server.loadPlanningPokerGame(planningPokerId, this);
@@ -176,9 +176,9 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
       return null;
   }
 
-  @Override public void loadTaskList(String gameId) {
+  @Override public void loadTaskList(int planningPokerId) {
     try {
-      this.loadTaskListFromServer(gameId);
+      this.loadTaskListFromServer(planningPokerId);
     } catch (RemoteException e) {
       throw new RuntimeException();
     }
@@ -208,8 +208,8 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     propertyChangeSupport.removePropertyChangeListener(name, listener);
   }
 
-  @Override public void loadTaskListFromServer(String gameId) throws RemoteException {
-    ArrayList<Task> taskList = server.getTaskList(gameId);
+  @Override public void loadTaskListFromServer(int planningPokerId) throws RemoteException {
+    ArrayList<Task> taskList = server.getTaskList(planningPokerId);
     if(taskList != null) {
       // Fires a PropertyChange event with a Null value to absorb any similarities to the contents inside any of the already loaded taskList:
       propertyChangeSupport.firePropertyChange("receivedUpdatedTaskList", null, null);
@@ -219,33 +219,33 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     }
   }
 
-  @Override public void addTask(Task task, String gameId) {
+  @Override public void addTask(Task task, int planningPokerId) {
     try {
-      this.addTaskToServer(task, gameId);
+      this.addTaskToServer(task, planningPokerId);
     } catch (RemoteException e) {
       throw new RuntimeException();
     }
   }
 
-  @Override public boolean removeTask(Task task, String gameId) {
+  @Override public boolean removeTask(Task task, int planningPokerId) {
     try {
-      return this.removeTaskFromServer(task, gameId);
+      return this.removeTaskFromServer(task, planningPokerId);
     } catch (RemoteException e) {
       throw new RuntimeException();
     }
   }
 
-  @Override public boolean editTask(Task oldTask, Task newTask, String gameId) {
+  @Override public boolean editTask(Task oldTask, Task newTask, int planningPokerId) {
     try {
-      return this.editTaskOnServer(oldTask, newTask, gameId);
+      return this.editTaskOnServer(oldTask, newTask, planningPokerId);
     } catch (RemoteException e) {
       throw new RuntimeException();
     }
   }
 
-  @Override public void skipTasks(ArrayList<Task> skippedTasksList, String gameId) {
+  @Override public void skipTasks(ArrayList<Task> skippedTasksList, int planningPokerId) {
     try {
-      this.broadcastSkipTasksOnServer(skippedTasksList, gameId);
+      this.broadcastSkipTasksOnServer(skippedTasksList, planningPokerId);
     } catch (RemoteException e) {
       throw new RuntimeException(e);
     }
@@ -303,21 +303,21 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
         }
   }
 
-  @Override public void addTaskToServer(Task task, String gameId) throws RemoteException {
-      server.addTask(task, gameId);
+  @Override public void addTaskToServer(Task task, int planningPokerId) throws RemoteException {
+      server.addTask(task, planningPokerId);
     }
 
-  @Override public boolean removeTaskFromServer(Task task, String gameId) throws RemoteException {
-    return server.removeTask(task, gameId);
+  @Override public boolean removeTaskFromServer(Task task, int planningPokerId) throws RemoteException {
+    return server.removeTask(task, planningPokerId);
   }
 
-  @Override public boolean editTaskOnServer(Task oldTask, Task newTask, String gameId) throws RemoteException {
-    return server.editTask(oldTask, newTask, gameId);
+  @Override public boolean editTaskOnServer(Task oldTask, Task newTask, int planningPokerId) throws RemoteException {
+    return server.editTask(oldTask, newTask, planningPokerId);
   }
 
-  @Override public void broadcastSkipTasksOnServer(ArrayList<Task> skippedTasksList, String gameId) throws RemoteException
+  @Override public void broadcastSkipTasksOnServer(ArrayList<Task> skippedTasksList, int planningPokerId) throws RemoteException
   {
-    server.broadcastSkipTasks(skippedTasksList, gameId);
+    server.broadcastSkipTasks(skippedTasksList, planningPokerId);
   }
 
   @Override

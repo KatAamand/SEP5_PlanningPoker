@@ -3,10 +3,8 @@ package Model.MainView;
 import Application.ClientFactory;
 import Application.ModelFactory;
 import Application.Session;
-import DataTypes.PlanningPoker;
 import Networking.Client;
 
-import Util.PropertyChangeSubject;
 import javafx.application.Platform;
 
 import java.beans.PropertyChangeListener;
@@ -48,7 +46,7 @@ public class MainModelImpl implements MainModel
 
   }
 
-  @Override public void requestConnectPlanningPoker(String planningPokerID) throws RemoteException
+  @Override public void requestConnectPlanningPoker(int planningPokerID) throws RemoteException
   {
     if(clientConnection.validatePlanningPokerID(planningPokerID)) {
       ModelFactory.getInstance().getPlanningPokerModel().setActivePlanningPokerGame(clientConnection.loadPlanningPoker(planningPokerID));

@@ -17,10 +17,10 @@ public interface TaskClientInterface extends Remote
 
   void removePropertyChangeListener(String name, PropertyChangeListener listener) throws RemoteException;
 
-  void loadTaskListFromServer(String gameId) throws RemoteException;
-  void addTaskToServer(Task task, String gameId) throws RemoteException;
-  boolean removeTaskFromServer(Task task, String gameId) throws RemoteException;
-  boolean editTaskOnServer(Task oldTask, Task newTask, String gameId) throws RemoteException;
-  void broadcastSkipTasksOnServer(ArrayList<Task> skippedTasksList, String gameId) throws RemoteException;
+  void loadTaskListFromServer(int planningPokerId) throws RemoteException;
+  void addTaskToServer(Task task, int planningPokerId) throws RemoteException;
+  boolean removeTaskFromServer(Task task, int planningPokerId) throws RemoteException;
+  boolean editTaskOnServer(Task oldTask, Task newTask, int planningPokerId) throws RemoteException;
+  void broadcastSkipTasksOnServer(ArrayList<Task> skippedTasksList, int planningPokerId) throws RemoteException;
   void updateSkippedTaskList(ArrayList<Task> skippedTasksList) throws RemoteException;
 }

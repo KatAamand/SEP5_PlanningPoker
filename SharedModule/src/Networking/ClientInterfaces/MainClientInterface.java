@@ -7,7 +7,7 @@ import java.rmi.RemoteException;
 
 public interface MainClientInterface extends Remote {
 
-  boolean validatePlanningPokerID(String planningPokerID) throws RemoteException;
+  boolean validatePlanningPokerID(int planningPokerID) throws RemoteException;
   PlanningPoker createPlanningPoker() throws RemoteException;
   void addPropertyChangeListener(PropertyChangeListener listener) throws RemoteException;
 

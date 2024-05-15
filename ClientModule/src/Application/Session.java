@@ -4,10 +4,10 @@ import DataTypes.User;
 
 public class Session {
     private static User currentUser;
-    private static String connectedGameId; //Holds the connectionId for the game the user is currently connected to. Is "invalid", if user has not joined a game.
+    private static int connectedGameId; //Holds the connectionId for the game the user is currently connected to. Is "invalid", if user has not joined a game.
 
     public Session() {
-        connectedGameId = "invalid";
+        connectedGameId = 0;
     }
 
     public static User getCurrentUser() {
@@ -18,11 +18,11 @@ public class Session {
         Session.currentUser = currentUser;
     }
 
-    public static void setConnectedGameId(String gameId) {
-        connectedGameId = gameId;
+    public static void setConnectedGameId(int planningPokerId) {
+        connectedGameId = planningPokerId;
     }
 
-    public static String getConnectedGameId() {
+    public static int getConnectedGameId() {
         return connectedGameId;
     }
 }

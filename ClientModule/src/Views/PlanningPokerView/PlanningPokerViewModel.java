@@ -37,11 +37,11 @@ public class PlanningPokerViewModel
     taskViewModel.labelUserIdProperty().setValue(user);
 
     //Set the GameId in the TaskView:
-    String gameId = "ERROR";
-    if(Session.getConnectedGameId() != null) {
-      gameId = planningPokerModel.getActivePlanningPokerGame().getPlanningPokerID();
+    int planningPokerId = 0;
+    if(Session.getConnectedGameId() != 0) {
+      planningPokerId = planningPokerModel.getActivePlanningPokerGame().getPlanningPokerID();
     }
-    taskViewModel.sessionIdProperty().setValue(gameId);
+    taskViewModel.sessionIdProperty().setValue(String.valueOf(planningPokerId));
   }
 
   public void closePlanningPoker(Stage currentStage)

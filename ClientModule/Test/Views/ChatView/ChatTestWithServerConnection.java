@@ -260,7 +260,7 @@ class ChatTestWithServerConnection
     }
     runLaterExecuted = false;
 
-    String createdGameID;
+    int createdGameID;
     try {
       createdGameID = server.createPlanningPoker(client2).getPlanningPokerID();
     } catch (RemoteException e) {
@@ -270,7 +270,7 @@ class ChatTestWithServerConnection
     Platform.runLater(() -> {
       try {
         // Simulate user entering the created gameID to join:
-        mainViewController.planningPokerIdTextField.setText(createdGameID);
+        mainViewController.planningPokerIdTextField.setText(String.valueOf(createdGameID));
 
         // Simulate user pressing the 'Join Planning Poker' button:
         mainViewController.connectToPlanningPokerButton.fire();
@@ -389,7 +389,7 @@ class ChatTestWithServerConnection
     }
     runLaterExecuted = false;
 
-    String createdGameID;
+    int createdGameID;
     try {
       createdGameID = server.createPlanningPoker(client).getPlanningPokerID();
     } catch (RemoteException e) {
@@ -399,7 +399,7 @@ class ChatTestWithServerConnection
     Platform.runLater(() -> {
       try {
         // Simulate user entering the created gameID to join:
-        mainViewController.planningPokerIdTextField.setText(createdGameID);
+        mainViewController.planningPokerIdTextField.setText(String.valueOf(createdGameID));
 
         // Simulate user pressing the 'Join Planning Poker' button:
         mainViewController.connectToPlanningPokerButton.fire();
@@ -503,7 +503,7 @@ class ChatTestWithServerConnection
     }
     runLaterExecuted = false;
 
-    String createdGameID;
+    int createdGameID;
     try {
       createdGameID = server.createPlanningPoker(client2).getPlanningPokerID();
     } catch (RemoteException e) {
@@ -513,7 +513,7 @@ class ChatTestWithServerConnection
     Platform.runLater(() -> {
       try {
         // Simulate user entering the created gameID to join:
-        mainViewController.planningPokerIdTextField.setText(createdGameID);
+        mainViewController.planningPokerIdTextField.setText(String.valueOf(createdGameID));
 
         // Simulate user pressing the 'Join Planning Poker' button:
         mainViewController.connectToPlanningPokerButton.fire();
@@ -627,7 +627,7 @@ class ChatTestWithServerConnection
     }
     runLaterExecuted = false;
 
-    String createdGameID;
+    int createdGameID;
     try {
       createdGameID = server.createPlanningPoker(client2).getPlanningPokerID();
     } catch (RemoteException e) {
@@ -637,7 +637,7 @@ class ChatTestWithServerConnection
     Platform.runLater(() -> {
       try {
         // Simulate user entering the created gameID to join:
-        mainViewController.planningPokerIdTextField.setText(createdGameID);
+        mainViewController.planningPokerIdTextField.setText(String.valueOf(createdGameID));
 
         // Simulate user pressing the 'Join Planning Poker' button:
         mainViewController.connectToPlanningPokerButton.fire();
@@ -758,7 +758,7 @@ class ChatTestWithServerConnection
     }
     runLaterExecuted = false;
 
-    String createdGameID;
+    int createdGameID;
     try {
       createdGameID = server.createPlanningPoker(client2).getPlanningPokerID();
     } catch (RemoteException e) {
