@@ -3,6 +3,8 @@ package Model.MainView;
 import Application.ClientFactory;
 import Application.ModelFactory;
 import Application.Session;
+import DataTypes.PlanningPoker;
+import DataTypes.UserRoles.UserRole;
 import Networking.Client;
 
 import javafx.application.Platform;
@@ -33,17 +35,18 @@ public class MainModelImpl implements MainModel
 
   @Override public void init()
   {
-    //TODO Initialize relevant data that might affect the javaFx thread here.
-
     //Assign all PropertyChangeListeners:
     assignListeners();
   }
 
   @Override public void requestCreatePlanningPokerID() throws RemoteException
   {
+    // Attempt to create the planning poker instance
     ModelFactory.getInstance().getPlanningPokerModel().setActivePlanningPokerGame(clientConnection.createPlanningPoker());
     Session.getCurrentUser().setPlanningPoker(ModelFactory.getInstance().getPlanningPokerModel().getActivePlanningPokerGame());
 
+    // Attempt to set the creating user as the Scrum Master for the created game
+    clientConnection.setRoleInGame(UserRole.SCRUM_MASTER, Session.getConnectedGameId(), Session.getCurrentUser());
   }
 
   @Override public void requestConnectPlanningPoker(int planningPokerID) throws RemoteException
@@ -51,6 +54,9 @@ public class MainModelImpl implements MainModel
     if(clientConnection.validatePlanningPokerID(planningPokerID)) {
       ModelFactory.getInstance().getPlanningPokerModel().setActivePlanningPokerGame(clientConnection.loadPlanningPoker(planningPokerID));
       Session.getCurrentUser().setPlanningPoker(ModelFactory.getInstance().getPlanningPokerModel().getActivePlanningPokerGame());
+
+      // Attempt to set the joining user to initially be a developer in the joined game
+      clientConnection.setRoleInGame(UserRole.DEVELOPER, Session.getConnectedGameId(), Session.getCurrentUser());
     }
   }
 

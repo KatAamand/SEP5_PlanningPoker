@@ -5,7 +5,10 @@ import Application.Session;
 import Application.ViewModelFactory;
 import DataTypes.Effort;
 import DataTypes.Task;
+import DataTypes.User;
 import DataTypes.UserCardData;
+import DataTypes.UserRoles.UserPermission;
+import DataTypes.UserRoles.UserRole;
 import Model.Game.GameModel;
 import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
@@ -16,6 +19,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -41,6 +45,10 @@ public class GameViewModel
   @FXML public HBox placedCardsWrapper;
   public ArrayList<UserCardData> placedCards;
   private Button skipButtonRef;
+  private ChoiceBox finalEffortDropdownRef;
+  private Button setEffortButtonRef;
+  private Button clearCardsButtonRef;
+  private Button showCardsButtonRef;
   private boolean isGameStarted;
 
   public GameViewModel() throws RemoteException
@@ -71,51 +79,120 @@ public class GameViewModel
 
 
   public void refresh() {
+    // Disable UI elements that are not available to the user, based on the users role / permissions:
+    this.disableAllPermissionBasedUIInteractionElements();
+
+    // Enable specific UI elements based on user role:
+    this.enableSpecificUIPermissionBasedElements(Session.getCurrentUser());
+
+    // Determine which task to show in the Game UI for estimation:
     displayedTask = gameModel.nextTaskToEvaluate();
     if (displayedTask != null) {
         // Show the next non-skipped and non-estimated task in the game UI:
         taskHeaderPropertyProperty().setValue(displayedTask.getTaskHeader());
         taskDescPropertyProperty().setValue(displayedTask.getDescription());
         finalEffortLabelProperty().setValue(displayedTask.getFinalEffort());
-
-        // Disable the skip button, if this is the last non-estimated task in the list:
-        List<Task> taskList;
-        try {
-            taskList = ModelFactory.getInstance().getTaskModel().getTaskList();
-        } catch (RemoteException e) {
-            throw new RuntimeException();
-        }
-
-        // Count how many non-estimated tasks are still in the list:
-        int numberOfNonEstimatedTasks = 0;
-        if (taskList != null) {
-            for (Task task : taskList) {
-                if(task.getFinalEffort() != null && task.getFinalEffort().isEmpty()) {
-                    numberOfNonEstimatedTasks++;
-                }
-            }
-        }
-        // Disable the skip button if there is only 1 non-estimated task left:
-        if(numberOfNonEstimatedTasks == 1) {
-            disableSkipButton();
-        } else {
-            // Enable the skip button, if this is not the last non-estimated task in the list:
-            enableAndShowSkipButton();
-        }
     } else {
         // Shows if there are no more valid tasks left for estimation:
         taskHeaderPropertyProperty().setValue("No more tasks");
         taskDescPropertyProperty().setValue("No more tasks");
         finalEffortLabelProperty().setValue("");
-
-        // Disables the skip button when no further tasks are left for estimation:
-        disableSkipButton();
     }
     clearPlacedCards();
   }
 
-  public void skipTask() {
+  public void disableAllPermissionBasedUIInteractionElements() {
+    // Disable all Interaction based UI elements, in order to later re-enable them for each specific role:
+    this.disableAndHideSkipButton();
+    this.disableAndHidefinalEffortDropdown();
+    this.disableAndHideSetEffortButton();
+    this.disableAndHideClearCardsButton();
+    this.disableAndHideShowCardsButton();
+  }
+
+  /** Used for enabling specific UI elements and interactions based on the users permissions */
+  private void enableSpecificUIPermissionBasedElements(User user) {
+    // Enable Final Effort interactions, if proper user permissions exist:
+    if(user.getRole().getPermissions().contains(UserPermission.ASSIGN_FINAL_EFFORT)) {
+      this.enableAndShowfinalEffortDropdownRef();
+      this.enableAndShowSetEffortButton();
+    }
+
+    // Enable Skip Button interactions, if proper user permissions exist:
+    if(user.getRole().getPermissions().contains(UserPermission.SKIP_TASK)) {
+      if(checkIfSkipTaskBTNShouldBeEnabled()) {
+        this.enableAndShowSkipButton();
+      }
+    }
+
+    // Enable Reveal Efforts Button interactions, if proper user permissions exist:
+    if(user.getRole().getPermissions().contains(UserPermission.REVEAL_USER_EFFORTS)) {
+      this.enableAndShow_ShowCardsButton();
+    }
+
+    // Enable Clear Efforts Button interactions, if proper user permissions exist:
+    if(user.getRole().getPermissions().contains(UserPermission.CLEAR_USER_EFFORTS)) {
+      this.enableAndShowClearCardsButton();
+    }
+
+    // Enable permission to set a game password, if proper user permissions exists:
+    if(user.getRole().getPermissions().contains(UserPermission.SET_GAME_PASSWORD)) {
+      // TODO: Not implemented yet. This might not be the right class for this check. Maybe PlanningPokerViewModel is better?
+      //  Depends on where the UI button/dropdown/etc to set the game password will be located.
+    }
+
+    // Enable permission to assign roles, if proper user permission exists:
+    if(user.getRole().getPermissions().contains(UserPermission.ASSIGN_TEAM_ROLES)) {
+      // TODO: Not implemented yet. This might not be the right class for this check. Maybe PlanningPokerViewModel is better?
+      //  Depends on where the UI button/dropdown/etc to set the roles will be located.
+    }
+
+    // Enable permission to EXPORT a list of tasks, if proper user permission exists:
+    if(user.getRole().getPermissions().contains(UserPermission.EXPORT_TASKLIST)) {
+      // TODO: Not implemented yet. This might not be the right class for this check. Maybe PlanningPokerViewModel is better?
+      //  Depends on where the UI button/dropdown/etc to export will be located.
+    }
+
+    // Enable permission to IMPORT a list of tasks, if proper user permission exists:
+    if(user.getRole().getPermissions().contains(UserPermission.IMPORT_TASKLIST)) {
+      // TODO: Not implemented yet. This might not be the right class for this check. Maybe PlanningPokerViewModel is better?
+      //  Depends on where the UI button/dropdown/etc to import will be located.
+    }
+  }
+
+  /** Returns false if the skip button should be deactivated and true if it should be activated - based on the number of tasks remaining to be estimated on. */
+  private boolean checkIfSkipTaskBTNShouldBeEnabled() {
     if (displayedTask != null) {
+      List<Task> taskList;
+      try {
+        taskList = ModelFactory.getInstance().getTaskModel().getTaskList();
+      } catch (RemoteException e) {
+        throw new RuntimeException();
+      }
+      // Count how many non-estimated tasks are still in the list:
+      int numberOfNonEstimatedTasks = 0;
+      if (taskList != null) {
+        for (Task task : taskList) {
+          if(task.getFinalEffort() != null && task.getFinalEffort().isEmpty()) {
+            numberOfNonEstimatedTasks++;
+          }
+        }
+      }
+      // Disable the skip button if there is only 1 non-estimated task left:
+      if(numberOfNonEstimatedTasks == 1) {
+        return false;
+      } else {
+        // Enable the skip button, if this is not the last non-estimated task in the list:
+        return true;
+      }
+    } else {
+      // Disables the skip button when no further tasks are left for estimation:
+      return false;
+    }
+  }
+
+  public void skipTask() {
+    if (displayedTask != null && Session.getCurrentUser().getRole().getPermissions().contains(UserPermission.SKIP_TASK)) {
         gameModel.skipTask(displayedTask);
     }
     this.refresh();
@@ -142,13 +219,17 @@ public class GameViewModel
   }
 
   public void setFinalEffortLabel(String finalEffortvalue) {
-    Task nonEditedTask = displayedTask.copy();
-    displayedTask.setFinalEffort(finalEffortvalue);
-    try {
-      ModelFactory.getInstance().getTaskModel().editTask(nonEditedTask, displayedTask);
-      Platform.runLater(() -> gameModel.removeTaskFromSkippedList(displayedTask));
-    } catch (RemoteException e) {
-      throw new RuntimeException(e);
+    if(Session.getCurrentUser().getRole().getRole() == UserRole.SCRUM_MASTER) {
+      Task nonEditedTask = displayedTask.copy();
+      displayedTask.setFinalEffort(finalEffortvalue);
+      try {
+        ModelFactory.getInstance().getTaskModel().editTask(nonEditedTask, displayedTask);
+        Platform.runLater(() -> gameModel.removeTaskFromSkippedList(displayedTask));
+      } catch (RemoteException e) {
+        throw new RuntimeException(e);
+      }
+    } else {
+      System.out.println("GameViewModel: Local user attempted to set final effort. This action is reserved for the Scrum Master.");
     }
   }
 
@@ -157,6 +238,7 @@ public class GameViewModel
     this.effortList = gameModel.getEffortList();
   }
 
+  // Button related methods
   public void setSkipButtonRef(Button skipButtonRef) {
     this.skipButtonRef = skipButtonRef;
   }
@@ -186,6 +268,64 @@ public class GameViewModel
   public boolean getGameStartStatus() {
     return this.isGameStarted;
   }
+
+  public void setClearCardsButtonRef(Button clearCardsButtonRef) {
+    this.clearCardsButtonRef = clearCardsButtonRef;
+  }
+
+  public void disableAndHideClearCardsButton() {
+    this.clearCardsButtonRef.setDisable(true);
+    this.clearCardsButtonRef.setVisible(false);
+  }
+
+  public void enableAndShowClearCardsButton() {
+    this.clearCardsButtonRef.setDisable(false);
+    this.clearCardsButtonRef.setVisible(true);
+  }
+
+  public void setShowCardsButtonRef(Button showCardsButtonRef) {
+    this.showCardsButtonRef = showCardsButtonRef;
+  }
+
+  public void disableAndHideShowCardsButton() {
+    this.showCardsButtonRef.setDisable(true);
+    this.showCardsButtonRef.setVisible(false);
+  }
+
+  public void enableAndShow_ShowCardsButton() {
+    this.showCardsButtonRef.setDisable(false);
+    this.showCardsButtonRef.setVisible(true);
+  }
+
+  public void setFinalEffortDropdownRef(ChoiceBox finalEffortDropdownRef) {
+    this.finalEffortDropdownRef = finalEffortDropdownRef;
+  }
+
+  public void disableAndHidefinalEffortDropdown() {
+    this.finalEffortDropdownRef.setDisable(true);
+    this.finalEffortDropdownRef.setVisible(false);
+  }
+
+  public void enableAndShowfinalEffortDropdownRef() {
+    this.finalEffortDropdownRef.setDisable(false);
+    this.finalEffortDropdownRef.setVisible(true);
+  }
+
+  public void setEffortButtonRef(Button setEffortButtonRef) {
+    this.setEffortButtonRef = setEffortButtonRef;
+  }
+
+  public void disableAndHideSetEffortButton() {
+    this.setEffortButtonRef.setDisable(true);
+    this.setEffortButtonRef.setVisible(false);
+  }
+
+  public void enableAndShowSetEffortButton() {
+    this.setEffortButtonRef.setDisable(false);
+    this.setEffortButtonRef.setVisible(true);
+  }
+
+  // Effort and playing card methods:
 
   public ObservableList<String> getEffortObserverList()
   {
@@ -240,15 +380,18 @@ public class GameViewModel
         gameModel.requestPlacedCard(placedCardData);
     }
 
-    public void requestClearPlacedCards() {
-        gameModel.requestClearPlacedCards();
+  public void requestClearPlacedCards() {
+    if(Session.getCurrentUser().getRole().getPermissions().contains(UserPermission.CLEAR_USER_EFFORTS)) {
+      gameModel.requestClearPlacedCards();
     }
+  }
 
     public void showPlacedCards() {
-        Platform.runLater(() -> {
-            flipAllCards();
-            ifAllPlacedCardsAreAlike();
-        });
+    if(Session.getCurrentUser().getRole().getPermissions().contains(UserPermission.REVEAL_USER_EFFORTS)) {
+      Platform.runLater(() -> {
+        flipAllCards();
+        ifAllPlacedCardsAreAlike();
+      });}
     }
 
 

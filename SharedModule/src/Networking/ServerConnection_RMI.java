@@ -1,6 +1,8 @@
 package Networking;
 
 import DataTypes.*;
+import DataTypes.UserRoles.Role;
+import DataTypes.UserRoles.UserRole;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -30,4 +32,5 @@ public interface ServerConnection_RMI extends Remote {
     void removeUserFromSession(User user) throws RemoteException;
     void placeCard(UserCardData userCardData) throws RemoteException;
     void requestClearPlacedCards() throws RemoteException;
+    User setRoleInPlanningPokerGame(UserRole roleToApply, User userToReceiveRole, int planningPokerId) throws RemoteException;
 }

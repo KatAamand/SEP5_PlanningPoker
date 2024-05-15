@@ -2,6 +2,8 @@ package Views.TaskView;
 
 import Application.ModelFactory;
 import DataTypes.Task;
+import DataTypes.User;
+import DataTypes.UserRoles.UserPermission;
 import Model.Task.TaskModel;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
@@ -34,6 +36,25 @@ public class ManageSingleTaskViewModel
     this.deleteButtonRef = deleteButtonRef;
     disableSaveButton();
     validateData(isUserEditing);
+  }
+
+  /** Used for enabling specific UI elements and interactions based on the users permissions */
+  private void enableSpecificUIPermissionBasedElements(User user)
+  {
+    // Enable permission to CREATE tasks, if proper user permission exists:
+    if(user.getRole().getPermissions().contains(UserPermission.CREATE_TASK)) {
+      // TODO: Not implemented yet.
+    }
+
+    // Enable permission to EDIT tasks, if proper user permission exists:
+    if(user.getRole().getPermissions().contains(UserPermission.EDIT_TASK)) {
+      // TODO: Not implemented yet.
+    }
+
+    // Enable permission to DELETE tasks, if proper user permission exists:
+    if(user.getRole().getPermissions().contains(UserPermission.DELETE_TASK)) {
+      // TODO: Not implemented yet.
+    }
   }
 
   private void enableSaveButton()

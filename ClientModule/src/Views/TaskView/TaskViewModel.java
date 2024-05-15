@@ -3,6 +3,8 @@ package Views.TaskView;
 import Application.ModelFactory;
 import Application.ViewModelFactory;
 import DataTypes.Task;
+import DataTypes.User;
+import DataTypes.UserRoles.UserPermission;
 import Model.Task.TaskModel;
 import javafx.application.Platform;
 import javafx.beans.property.*;
@@ -55,6 +57,25 @@ public class TaskViewModel {
             Platform.runLater(this::refresh);
             // Add a listener to the taskModel to update the isTaskListEmptyProperty when the taskList is updated
             Platform.runLater(this::updateTaskListEmptyProperty);});
+    }
+
+    /** Used for enabling specific UI elements and interactions based on the users permissions */
+    private void enableSpecificUIPermissionBasedElements(User user)
+    {
+        // Enable permission to CREATE tasks, if proper user permission exists:
+        if(user.getRole().getPermissions().contains(UserPermission.CREATE_TASK)) {
+            // TODO: Not implemented yet.
+        }
+
+        // Enable permission to EDIT tasks, if proper user permission exists:
+        if(user.getRole().getPermissions().contains(UserPermission.EDIT_TASK)) {
+            // TODO: Not implemented yet.
+        }
+
+        // Enable permission to DELETE tasks, if proper user permission exists:
+        if(user.getRole().getPermissions().contains(UserPermission.DELETE_TASK)) {
+            // TODO: Not implemented yet.
+        }
     }
 
 

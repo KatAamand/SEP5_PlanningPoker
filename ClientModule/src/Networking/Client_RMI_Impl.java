@@ -2,6 +2,7 @@ package Networking;
 
 import Application.Session;
 import DataTypes.*;
+import DataTypes.UserRoles.UserRole;
 import javafx.application.Platform;
 
 import java.beans.PropertyChangeListener;
@@ -160,6 +161,13 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     return null;
   }
 
+  @Override public void updatePlanningPokerObj(int planningPokerId) throws RemoteException {
+    PlanningPoker serverAnswer = server.loadPlanningPokerGame(planningPokerId, this);
+    if(serverAnswer != null) {
+      propertyChangeSupport.firePropertyChange("PlanningPokerObjUpdated", null, serverAnswer);
+    }
+  }
+
   @Override public PlanningPoker loadPlanningPoker(int planningPokerId) {
       try {
         System.out.println("Client_RMI: trying to load PlanningPoker Game with ID " + planningPokerId);
@@ -206,6 +214,10 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
       PropertyChangeListener listener)
   {
     propertyChangeSupport.removePropertyChangeListener(name, listener);
+  }
+
+  @Override public User setRoleOnServer(UserRole roleToApply, int planningPokerId, User userToReceiveRole) throws RemoteException {
+    return server.setRoleInPlanningPokerGame(roleToApply, userToReceiveRole, planningPokerId);
   }
 
   @Override public void loadTaskListFromServer(int planningPokerId) throws RemoteException {
@@ -356,5 +368,21 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
   @Override
   public void clearPlacedCards() throws RemoteException {
     propertyChangeSupport.firePropertyChange("clearPlacedCards", null, null);
+  }
+
+  @Override public void setRoleInGame(UserRole role, int planningPokerId, User user) {
+    User serverAnswer;
+    try {
+      serverAnswer = this.setRoleOnServer(role, planningPokerId, user);
+    } catch (RemoteException e) {
+      throw new RuntimeException();
+    }
+
+    // Update the local user in the local Session with returned modified user including the added roles - if the returned user is also the local user:
+    if(serverAnswer != null && Session.getCurrentUser().getUsername().equals(serverAnswer.getUsername())) {
+      Session.setCurrentUser(serverAnswer);
+      System.out.println("Local user [" + Session.getCurrentUser().getUsername() + "] has become '" + Session.getCurrentUser().getRole().getRoleAsString() + "' in game [" + planningPokerId + "]");
+      propertyChangeSupport.firePropertyChange("UpdatedLocalUser", null, null);
+    }
   }
 }

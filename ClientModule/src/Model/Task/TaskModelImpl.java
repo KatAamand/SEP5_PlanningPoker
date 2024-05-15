@@ -20,7 +20,7 @@ public class TaskModelImpl extends PlanningPokerModelImpl implements TaskModel
    * which is run inside a Platform.runLater statement for increased thread safety while using javaFx. */
   public TaskModelImpl() throws RemoteException {
     super();
-    super.init();
+    super.initialize();
 
     //Assign the network connection:
     clientConnection = (Client) ClientFactory.getInstance().getClient();
