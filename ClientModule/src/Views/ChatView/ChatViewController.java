@@ -23,6 +23,7 @@ public class ChatViewController {
     @FXML TableColumn<User, String> userColumn;
     @FXML TableColumn<User, String> roleColumn;
     @FXML Button setPOButton;
+    @FXML Button setSMButton;
 
     public ChatViewController() {
         try {
@@ -69,6 +70,7 @@ public class ChatViewController {
             Platform.runLater(() -> {
                 userTableView.getItems().clear();
                 userTableView.getItems().addAll(users);
+                enableSpecificUIPermissionBasedElements();
             });
         }
     }
@@ -86,17 +88,24 @@ public class ChatViewController {
 
     public void onSetProductOwnerButtonPressed()
     {
-        System.out.println(userTableView.getSelectionModel().getSelectedItem().getUsername());
-        viewModel.setProductOwner(userTableView.getSelectionModel().getSelectedItem());
-        setPOButton.setVisible(false);
+        if (!userTableView.getSelectionModel().getSelectedItem().equals(Session.getCurrentUser())) {
+            viewModel.setProductOwner(userTableView.getSelectionModel().getSelectedItem());
+        }
+    }
+
+    public void onSetScrumMasterButtonPressed()
+    {
+        viewModel.setScrumMaster(userTableView.getSelectionModel().getSelectedItem());
     }
 
     private void enableSpecificUIPermissionBasedElements()
     {
         setPOButton.setVisible(false);
-        // Enable permission to CREATE tasks, if proper user permission exists:
+        setSMButton.setVisible(false);
+        // Enable permission to assign team roles, if proper user permission exists:
         if(Session.getCurrentUser().getRole().getPermissions().contains(UserPermission.ASSIGN_TEAM_ROLES)) {
             setPOButton.setVisible(true);
+            setSMButton.setVisible(true);
         }
     }
 }

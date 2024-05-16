@@ -69,6 +69,11 @@ public class ChatModelImpl extends PlanningPokerModelImpl implements ChatModel
     clientConnection.setRoleInGame(UserRole.PRODUCT_OWNER, Session.getConnectedGameId(), user);
   }
 
+  @Override
+  public void setScrumMaster(User user) {
+    clientConnection.setRoleInGame(UserRole.SCRUM_MASTER, Session.getConnectedGameId(), user);
+  }
+
 
   /** Assigns all the required listeners to the clientConnection allowing for Observable behavior betweeen these classes. */
   private void assignListeners()
