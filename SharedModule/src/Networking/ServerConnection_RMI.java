@@ -40,4 +40,6 @@ public interface ServerConnection_RMI extends Remote {
     void setProductOwner(User user) throws RemoteException;
 
     ArrayList<User> requestUserList() throws RemoteException;
+
+    void requestStartGame(int connectedGameId) throws RemoteException;
 }

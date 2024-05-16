@@ -20,4 +20,6 @@ public interface GameServerModel extends PropertyChangeSubject
     void clearPlacedCards(ArrayList<ClientConnection_RMI> connectedClients, Server_RMI serverRmi);
 
     void showCards(ArrayList<ClientConnection_RMI> connectedClients, Server_RMI serverRmi);
+
+    void requestStartGame(int connectedGameId, ArrayList<ClientConnection_RMI> connectedClients, Server_RMI serverRmi);
 }

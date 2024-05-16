@@ -4,7 +4,6 @@ import DataTypes.*;
 import DataTypes.UserRoles.UserRole;
 import Util.PropertyChangeSubject;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public interface Client extends PropertyChangeSubject {
@@ -36,4 +35,6 @@ public interface Client extends PropertyChangeSubject {
     void setProductOwner(User user);
     void setRoleInGame(UserRole userRole, int gameId, User user);
     void requestUserList();
+
+    void requestStartGame(int connectedGameId);
 }
