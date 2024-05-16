@@ -5,6 +5,7 @@ import DataTypes.PlanningPoker;
 import DataTypes.User;
 import Networking.ClientConnection_RMI;
 import Networking.ServerConnection_RMI;
+import org.postgresql.xml.NullErrorHandler;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -100,24 +101,29 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
   public void addUserToSession(User user, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) throws RemoteException {
 
     for (ClientConnection_RMI client : connectedClients) {
-      if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == user.getPlanningPoker().getPlanningPokerID())
-      {
-        // Added to only check users against their unique usernames, instead of the entire user object.
-        boolean userNotFound = true;
-        for (User existingUser : user.getPlanningPoker().getConnectedUsers()) {
-          if(existingUser.getUsername().equals(client.getCurrentUser().getUsername())) {
-            userNotFound = false;
+      try {
+        if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == user.getPlanningPoker().getPlanningPokerID()) {
+          // Added to only check users against their unique usernames, instead of the entire user object.
+          boolean userNotFound = true;
+          for (User existingUser : user.getPlanningPoker().getConnectedUsers()) {
+            if (existingUser.getUsername().equals(client.getCurrentUser().getUsername())) {
+              userNotFound = false;
+            }
           }
-        }
 
-        if(userNotFound) {
-          user.getPlanningPoker().getConnectedUsers().add(client.getCurrentUser());
-        }
+          if (userNotFound) {
+            user.getPlanningPoker().getConnectedUsers().add(client.getCurrentUser());
+          }
 
-        // Commented out below, and added above since the below would return different users despite the only difference being the role applied to the specific user.
+          // Commented out below, and added above since the below would return different users despite the only difference being the role applied to the specific user.
         /*if (!user.getPlanningPoker().getConnectedUsers().contains(client.getCurrentUser())) {
           user.getPlanningPoker().getConnectedUsers().add(client.getCurrentUser());
         }*/
+        }
+      }
+      catch (NullPointerException e)
+      {
+        continue;
       }
     }
     broadcastUsers(user, connectedClients, server, user.getPlanningPoker());
@@ -129,10 +135,15 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
     //planningPoker.getConnectedUsers().clear();
     for (ClientConnection_RMI client : connectedClients)
     {
+      try {
         if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == planningPoker.getPlanningPokerID()) {
           userList.add(client.getCurrentUser());
           //planningPoker.getConnectedUsers().add(client.getCurrentUser());
         }
+      } catch (NullPointerException e) {
+        System.out.println("ChatServerModelImpl: User found not ind game. Ignoring user.");
+        continue;
+      }
     }
     for (ClientConnection_RMI client : connectedClients) {
       Thread sendUserThread = new Thread(() -> {
@@ -154,7 +165,7 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
             //Error is something else:
             throw new RuntimeException();
           }
-        }
+        } catch (NullPointerException ignored) {}
       });
       sendUserThread.setDaemon(true);
       sendUserThread.start();
