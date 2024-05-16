@@ -23,9 +23,17 @@
                       <TableColumn fx:id="roleColumn" prefWidth="123.0" text="Role" />
                     </columns>
                   </TableView>
-                  <HBox alignment="CENTER" prefHeight="65.0" prefWidth="233.0">
+                  <HBox alignment="CENTER" prefHeight="65.0" prefWidth="233.0" spacing="10.0">
                      <children>
-                        <Button fx:id="setPOButton" mnemonicParsing="false" onAction="#onSetProductOwnerButtonPressed" text="Set Product Owner" />
+                        <Button fx:id="setSMButton" mnemonicParsing="false" onAction="#onSetScrumMasterButtonPressed" text="Set Scrum Master">
+                           <font>
+                              <Font size="11.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="setPOButton" mnemonicParsing="false" onAction="#onSetProductOwnerButtonPressed" text="Set Product Owner">
+                           <font>
+                              <Font size="11.0" />
+                           </font></Button>
                      </children>
                   </HBox>
                </children>

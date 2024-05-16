@@ -59,4 +59,7 @@ public class ChatViewModel extends ViewModel {
     }
 
 
+    public void setScrumMaster(User user) {
+        chatModel.setScrumMaster(user);
+    }
 }

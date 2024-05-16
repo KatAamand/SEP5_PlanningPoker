@@ -15,4 +15,6 @@ public interface ChatModel extends PropertyChangeSubject {
   void removeUserFromSession();
 
     void setProductOwner(User user);
+
+    void setScrumMaster(User user);
 }
