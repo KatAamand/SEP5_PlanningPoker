@@ -27,6 +27,7 @@ public class ScrumMaster implements Role
     permissions.add(UserPermission.ASSIGN_TEAM_ROLES);
     permissions.add(UserPermission.REVEAL_USER_EFFORTS);
     permissions.add(UserPermission.CLEAR_USER_EFFORTS);
+    permissions.add(UserPermission.START_PLANNINGPOKER_GAME);
   }
 
   @Override public List<UserPermission> getPermissions()

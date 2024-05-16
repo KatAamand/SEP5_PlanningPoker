@@ -1,6 +1,8 @@
 package Views.LobbyView;
 
+import Application.Session;
 import Application.ViewModelFactory;
+import DataTypes.UserRoles.UserPermission;
 import Views.PlanningPokerView.PlanningPokerViewController;
 import Views.TaskView.ManageSingleTaskViewController;
 import javafx.application.Platform;
@@ -49,9 +51,7 @@ public class LobbyViewController implements Initializable
 
   public void onStartGameButtonPressed() {
     if(parentController != null) {
-      parentController.onStartGameButtonPressed();
+        parentController.onStartGameButtonPressed();
     }
   }
-
-
 }

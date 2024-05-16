@@ -4,10 +4,13 @@ import Application.ModelFactory;
 import Application.Session;
 import Application.ViewFactory;
 import Application.ViewModelFactory;
+import DataTypes.RuleSet;
+import DataTypes.UserRoles.UserPermission;
 import Model.PlanningPoker.PlanningPokerModel;
 import Util.PropertyChangeSubject;
 import Views.TaskView.TaskViewModel;
 import javafx.application.Platform;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
 import java.awt.*;
@@ -109,7 +112,19 @@ public class PlanningPokerViewModel implements PropertyChangeSubject {
     }
 
     public void requestGameStart() {
-        planningPokerModel.requestStartGame();
+        if(Session.getCurrentUser().getRole().getPermissions().contains(UserPermission.START_PLANNINGPOKER_GAME)) {
+            planningPokerModel.requestStartGame();
+        } else {
+            this.showAlertBox();
+        }
+
+    }
+
+    private void showAlertBox() {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Invalid permission");
+        alert.setHeaderText("Only the Scrum Master may start the game");
+        alert.showAndWait();
     }
 
     @Override
