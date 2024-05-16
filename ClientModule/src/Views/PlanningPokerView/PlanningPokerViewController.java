@@ -43,15 +43,23 @@ public class PlanningPokerViewController
         Platform.runLater(() -> lobbyViewController.setParentController(this));
         Platform.runLater(() -> planningPokerViewModel.init());
         Platform.runLater(this::catchCloseRequests);
+
+        // Assign listeners
+        planningPokerViewModel.addPropertyChangeListener("gameStarted", evt -> Platform.runLater(this::openGame));
     }
 
     public void onStartGameButtonPressed()
     {
+        planningPokerViewModel.requestGameStart();
+    }
+
+    public void openGame() {
         lobbyView.setVisible(false);
         lobbyView.setManaged(false);
         gameView.setManaged(true);
         gameView.setVisible(true);
-        Platform.runLater(() -> gameViewController.initialize());
+
+        gameViewController.initialize();
         gameViewController.onGameStart();
     }
 

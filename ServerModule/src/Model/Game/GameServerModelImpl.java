@@ -179,6 +179,28 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
         }
     }
 
+    @Override
+    public void requestStartGame(int connectedGameId, ArrayList<ClientConnection_RMI> connectedClients, Server_RMI serverRmi) {
+        System.out.println("ServerModel: Starting game");
+        for (ClientConnection_RMI client : connectedClients) {
+            Thread startGameThread = new Thread(() -> {
+                try {
+                    client.startGame(connectedGameId);
+                } catch (Exception e) {
+                    if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
+                        //Unregisters clients from the Server, who have lost connection in order to avoid further server errors.
+                        serverRmi.unRegisterClient(client);
+                    } else {
+                        //Error is something else:
+                        throw new RuntimeException();
+                    }
+                }
+            });
+            startGameThread.setDaemon(true);
+            startGameThread.start();
+        }
+    }
+
     public void broadcastNewCard(UserCardData userCardData, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) {
         System.out.println("ServerModel: Broadcasting new card");
         for (ClientConnection_RMI client : connectedClients) {

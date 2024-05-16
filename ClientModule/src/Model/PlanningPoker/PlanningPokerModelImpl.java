@@ -68,6 +68,12 @@ public class PlanningPokerModelImpl implements PlanningPokerModel
     clientConnection.removeUserFromGame(Session.getConnectedGameId());
   }
 
+  @Override
+  public void requestStartGame() {
+    // Request the game to start
+    clientConnection.requestStartGame(Session.getConnectedGameId());
+  }
+
   public void setActivePlanningPokerGame(PlanningPoker activeGame) {
     this.activePlanningPokerGame = activeGame;
     Session.setConnectedGameId(activePlanningPokerGame.getPlanningPokerID());
@@ -86,6 +92,10 @@ public class PlanningPokerModelImpl implements PlanningPokerModel
 
   /** Assigns all the required listeners to the clientConnection allowing for Observable behavior between these classes. */
   private void assignListeners() throws RemoteException {
+    clientConnection.addPropertyChangeListener("gameStarted", evt -> {
+      propertyChangeSupport.firePropertyChange("gameStarted", null, null);
+    });
+
     ((Client) ClientFactory.getInstance().getClient()).addPropertyChangeListener("planningPokerIDValidatedSuccess", evt -> {
       //Does nothing at the moment.
     });
@@ -119,6 +129,7 @@ public class PlanningPokerModelImpl implements PlanningPokerModel
     ((Client) ClientFactory.getInstance().getClient()).addPropertyChangeListener("UpdatedLocalUser", evt -> {
       propertyChangeSupport.firePropertyChange("UpdatedLocalUser", null, null);
     });
+
   }
 
   public void confirmLocalUserHasProperRoleAndPermissions(PlanningPoker game) {

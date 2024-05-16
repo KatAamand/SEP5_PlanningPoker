@@ -368,6 +368,11 @@ public class Server_RMI implements ServerConnection_RMI {
     }
 
     @Override
+    public void requestStartGame(int connectedGameId) throws RemoteException {
+        gameServerModel.requestStartGame(connectedGameId, connectedClients, this);
+    }
+
+    @Override
     public ArrayList<Effort> getEffortList() throws RemoteException {
         return gameServerModel.getEffortList();
     }

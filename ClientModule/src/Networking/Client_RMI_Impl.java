@@ -443,5 +443,20 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
         }
     }
 
+    @Override
+    public void requestStartGame(int connectedGameId) {
+        try {
+            System.out.println("Client_RMI: Requesting game start");
+            server.requestStartGame(connectedGameId);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void startGame(int connectedGameId) {
+        System.out.println("Client_RMI: Game started");
+        propertyChangeSupport.firePropertyChange("gameStarted", null, connectedGameId);
+    }
 }
 
