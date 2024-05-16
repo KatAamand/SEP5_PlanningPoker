@@ -167,11 +167,16 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
     //planningPoker.getConnectedUsers().clear();
     for (ClientConnection_RMI client : connectedClients)
     {
+      try {
       if (!client.getCurrentUser().equals(removedUser)) {
         if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == planningPoker.getPlanningPokerID()) {
           userList.add(client.getCurrentUser());
           //planningPoker.getConnectedUsers().add(client.getCurrentUser());
         }
+      }
+      } catch (NullPointerException e) {
+        System.out.println("ChatServerModelImpl: User found not ind game. Ignoring user.");
+        continue;
       }
     }
     for (ClientConnection_RMI client : connectedClients) {
@@ -194,7 +199,7 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
             //Error is something else:
             throw new RuntimeException();
           }
-        }
+        } catch (NullPointerException ignored) {}
       });
       sendUserThread.setDaemon(true);
       sendUserThread.start();
