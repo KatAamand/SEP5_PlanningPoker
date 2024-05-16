@@ -112,7 +112,7 @@ public class ManageSingleTaskViewModel
     {
       // Also change the text to reflect that the current user cannot and should not be adding tasks in the lobby view:
       this.textFieldTaskHeaderProperty().setValue("Please stand by while the Product Owner adds Tasks to this game");
-      this.textAreaTaskDescriptionProperty().setValue("Please stand by\n\nDid you know that TYPEWRITER is the longest word you can type using only the letters on one row of the keyboard. (And no … QWERTYUIOP is not a word!)");
+      this.textAreaTaskDescriptionProperty().setValue("Did you know that TYPEWRITER is the longest word you can type using only the letters on one row of the keyboard. (And no … QWERTYUIOP is not a word!)");
     }
 
 
