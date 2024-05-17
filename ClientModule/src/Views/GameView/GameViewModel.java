@@ -232,6 +232,7 @@ public class GameViewModel
         ModelFactory.getInstance().getTaskModel().editTask(nonEditedTask, displayedTask);
         Platform.runLater(() -> gameModel.removeTaskFromSkippedList(displayedTask));
         finalEffortDropdownRef.setValue(null);
+        recommendedFinalEffortProperty.setValue("");
       } catch (RemoteException e) {
         throw new RuntimeException(e);
       }
