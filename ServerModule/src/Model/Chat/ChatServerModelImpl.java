@@ -109,12 +109,10 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
             for (User existingUser : user.getPlanningPoker().getConnectedUsers()) {
               if (existingUser.getUsername().equals(client.getCurrentUser().getUsername())) {
                 userNotFound.set(false);
-                System.out.println("------------------- USER FOUND");
               }
             }
 
             if (userNotFound.get()) {
-              System.out.println("------------------- USER NOT FOUND");
               user.getPlanningPoker().getConnectedUsers().add(client.getCurrentUser());
             }
          }
@@ -145,7 +143,6 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
     }
     // Only broadcast changed userlist if there were actually any changes made:
     if(!userNotFound.get()) {
-      System.out.println("------------------- BROADCASTING");
       broadcastUsers(user, connectedClients, server, user.getPlanningPoker());
     }
   }
