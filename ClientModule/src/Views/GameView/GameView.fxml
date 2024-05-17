@@ -50,16 +50,26 @@
                               </Label>
                               <HBox prefHeight="81.0" prefWidth="836.0" spacing="15.0">
                                  <children>
-                                    <Label fx:id="taskDescLabel" alignment="TOP_LEFT" prefHeight="69.0" prefWidth="694.0" text="lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." wrapText="true">
-                                       <HBox.margin>
-                                          <Insets top="5.0" />
-                                       </HBox.margin>
-                                    </Label>
+                                    <VBox prefHeight="112.0" prefWidth="690.0">
+                                       <children>
+                                          <Label fx:id="taskDescLabel" alignment="TOP_LEFT" prefHeight="87.0" prefWidth="690.0" text="lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." wrapText="true" />
+                                          <HBox>
+                                             <children>
+                                                <Label alignment="BOTTOM_LEFT" prefHeight="23.0" prefWidth="159.0" text="Recommended effort: " wrapText="true">
+                                                   <font>
+                                                      <Font name="System Italic" size="12.0" />
+                                                   </font>
+                                                </Label>
+                                                <Label fx:id="recommendedEffortLabel" alignment="BOTTOM_LEFT" prefHeight="26.0" prefWidth="75.0" wrapText="true" />
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </VBox>
                                     <VBox alignment="TOP_CENTER" prefHeight="102.0" prefWidth="105.0" spacing="15.0">
                                        <children>
-                                          <Button fx:id="skipButton" layoutX="13.0" layoutY="51.0" mnemonicParsing="false" onAction="#onSkipEffortButtonPressed" prefWidth="100.0" style="-fx-background-color: #fff; -fx-border-color: #ccc;" text="SKIP" />
-                                           <ChoiceBox fx:id="finalEffortDropdown" prefWidth="150.0" />
-                                                <Button fx:id="setEffortButton" mnemonicParsing="false" onAction="#onsetEffortButtonPressed" prefWidth="100.0" style="-fx-background-color: #fff; -fx-border-color: #ccc;" text="Set effort">
+                                          <Button fx:id="skipButton" layoutX="13.0" layoutY="51.0" mnemonicParsing="false" onAction="#onSkipEffortButtonPressed" prefWidth="100.0" style="-fx-background-color: #fff; -fx-border-color: #ccc;" text="Skip task" />
+                                           <ChoiceBox fx:id="finalEffortDropdown" prefWidth="100.0" style="-fx-background-color: #fff; -fx-border-color: #ccc;" />
+                                                <Button fx:id="setEffortButton" mnemonicParsing="false" onAction="#onsetEffortButtonPressed" prefWidth="100.0" style="-fx-background-color: #DAE8FC; -fx-border-color: #6C8EBF;" text="Set effort">
                                              <VBox.margin>
                                                 <Insets />
                                              </VBox.margin>

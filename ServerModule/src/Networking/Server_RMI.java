@@ -373,6 +373,11 @@ public class Server_RMI implements ServerConnection_RMI {
     }
 
     @Override
+    public void requestRecommendedEffort() throws RemoteException {
+        gameServerModel.getRecommendedEffort(connectedClients, this);
+    }
+
+    @Override
     public ArrayList<Effort> getEffortList() throws RemoteException {
         return gameServerModel.getEffortList();
     }

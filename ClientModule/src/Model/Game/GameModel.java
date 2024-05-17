@@ -31,4 +31,6 @@ public interface GameModel extends PropertyChangeSubject {
     void requestClearPlacedCards();
 
     void requestShowCards();
+
+    void requestRecommendedEffort();
 }

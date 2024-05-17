@@ -387,6 +387,11 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
         propertyChangeSupport.firePropertyChange("showCards", null, null);
     }
 
+    @Override
+    public void receiveRecommendedEffort(String recommendedEffort) {
+        propertyChangeSupport.firePropertyChange("recommendedEffortReceived", null, recommendedEffort);
+    }
+
     @Override public void setRoleInGame(UserRole role, int planningPokerId, User user) {
         // Check if the user already has this role, if yes - do not trouble the server:
         if(user.getRole().getUserRole() == role) {
@@ -448,6 +453,15 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
         try {
             System.out.println("Client_RMI: Requesting game start");
             server.requestStartGame(connectedGameId);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void requestRecommendedEffort() {
+        try {
+            server.requestRecommendedEffort();
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }

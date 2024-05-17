@@ -13,9 +13,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -87,11 +85,12 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
         }
     }
 
-    @Override public void broadcastListOfSkippedTasksToClients(Map<Integer, ArrayList<ClientConnection_RMI>> clientList, ArrayList<Task> skippedTaskList, int planningPokerId, ServerConnection_RMI server) {
+    @Override
+    public void broadcastListOfSkippedTasksToClients(Map<Integer, ArrayList<ClientConnection_RMI>> clientList, ArrayList<Task> skippedTaskList, int planningPokerId, ServerConnection_RMI server) {
         ArrayList<ClientConnection_RMI> receivingClients = clientList.get(planningPokerId);
-        if(receivingClients != null) {
+        if (receivingClients != null) {
             for (int i = 0; i < receivingClients.size(); i++) {
-                if(receivingClients.get(i) == null) {
+                if (receivingClients.get(i) == null) {
                     receivingClients.remove(i);
                     i--;
                 }
@@ -103,17 +102,15 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
                 Thread transmitThread = new Thread(() -> {
                     try {
                         client.updateSkippedTaskList(skippedTaskList);
-                    }
-                    catch (RemoteException e) {
-                        if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
+                    } catch (RemoteException e) {
+                        if (String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
                             //Unregisters clients from the Game Server, who have lost connection in order to avoid further server errors.
                             try {
                                 server.unRegisterClientFromGame(client, planningPokerId);
                             } catch (RemoteException ex) {
                                 throw new RuntimeException();
                             }
-                        }
-                        else {
+                        } else {
                             //Error is something else:
                             throw new RuntimeException();
                         }
@@ -143,7 +140,7 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
                 try {
                     client.clearPlacedCards();
                 } catch (Exception e) {
-                    if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
+                    if (String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
                         //Unregisters clients from the Server, who have lost connection in order to avoid further server errors.
                         serverRmi.unRegisterClient(client);
                     } else {
@@ -165,7 +162,7 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
                 try {
                     client.showCards();
                 } catch (Exception e) {
-                    if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
+                    if (String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
                         //Unregisters clients from the Server, who have lost connection in order to avoid further server errors.
                         serverRmi.unRegisterClient(client);
                     } else {
@@ -187,7 +184,7 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
                 try {
                     client.startGame(connectedGameId);
                 } catch (Exception e) {
-                    if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
+                    if (String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
                         //Unregisters clients from the Server, who have lost connection in order to avoid further server errors.
                         serverRmi.unRegisterClient(client);
                     } else {
@@ -201,6 +198,71 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
         }
     }
 
+    private String getMaxEffort(List<String> placedCards) {
+        List<Double> numericValues = new ArrayList<>();
+        for (String card : placedCards) {
+            if (card.equals("½")) {
+                numericValues.add(0.5);
+            } else {
+                numericValues.add(Double.parseDouble(card));
+            }
+        }
+
+        if (!numericValues.isEmpty()) {
+            Double max = Collections.max(numericValues);
+
+            if (max == 0.5) {
+                return "½";
+            } else if (max == 0.0) {
+                return "0";
+            } else {
+                int maxInt = max.intValue();
+                return String.valueOf(maxInt);
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public void getRecommendedEffort(ArrayList<ClientConnection_RMI> connectedClients, Server_RMI serverRmi) {
+        List<String> placedCards = new ArrayList<>();
+        String recommendedEffort;
+
+        for (Map.Entry<String, String> entry : clientCardMap.entrySet()) {
+            placedCards.add(entry.getValue());
+        }
+
+        if (placedCards.contains("?")) {
+            recommendedEffort = "?";
+        } else if (placedCards.contains("∞")) {
+            recommendedEffort = "∞";
+        } else if (placedCards.contains("0")) {
+            recommendedEffort = "0";
+        } else {
+            recommendedEffort = getMaxEffort(placedCards);
+        }
+
+        for (ClientConnection_RMI client : connectedClients) {
+            String finalRecommendedEffort = recommendedEffort;
+            Thread predictEffortThread = new Thread(() -> {
+                try {
+                    client.receiveRecommendedEffort(finalRecommendedEffort);
+                } catch (Exception e) {
+                    if (String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
+                        //Unregisters clients from the Server, who have lost connection in order to avoid further server errors.
+                        serverRmi.unRegisterClient(client);
+                    } else {
+                        //Error is something else:
+                        throw new RuntimeException();
+                    }
+                }
+            });
+            predictEffortThread.setDaemon(true);
+            predictEffortThread.start();
+        }
+    }
+
     public void broadcastNewCard(UserCardData userCardData, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) {
         System.out.println("ServerModel: Broadcasting new card");
         for (ClientConnection_RMI client : connectedClients) {
@@ -208,7 +270,7 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
                 try {
                     client.receivePlacedCard(userCardData);
                 } catch (Exception e) {
-                    if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
+                    if (String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
                         //Unregisters clients from the Server, who have lost connection in order to avoid further server errors.
                         try {
                             server.unRegisterClient(client);
@@ -225,4 +287,9 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
             sendCardsThread.start();
         }
     }
+
+    public Map<String, String> getClientCardMap() {
+        return clientCardMap;
+    }
+
 }
