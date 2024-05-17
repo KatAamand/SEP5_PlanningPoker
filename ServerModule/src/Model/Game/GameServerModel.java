@@ -22,5 +22,5 @@ public interface GameServerModel extends PropertyChangeSubject
     void showCards(ArrayList<ClientConnection_RMI> connectedClients, Server_RMI serverRmi);
 
     void requestStartGame(int connectedGameId, ArrayList<ClientConnection_RMI> connectedClients, Server_RMI serverRmi);
-    void getPredictedEffort(ArrayList<ClientConnection_RMI> connectedClients, Server_RMI serverRmi);
+    void getRecommendedEffort(ArrayList<ClientConnection_RMI> connectedClients, Server_RMI serverRmi);
 }

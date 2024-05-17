@@ -225,7 +225,7 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
     }
 
     @Override
-    public void getPredictedEffort(ArrayList<ClientConnection_RMI> connectedClients, Server_RMI serverRmi) {
+    public void getRecommendedEffort(ArrayList<ClientConnection_RMI> connectedClients, Server_RMI serverRmi) {
         List<String> placedCards = new ArrayList<>();
         String recommendedEffort;
 
@@ -286,6 +286,10 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
             sendCardsThread.setDaemon(true);
             sendCardsThread.start();
         }
+    }
+
+    public Map<String, String> getClientCardMap() {
+        return clientCardMap;
     }
 
 }
