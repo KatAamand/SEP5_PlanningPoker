@@ -94,7 +94,6 @@ public class PlanningPokerViewModel implements PropertyChangeSubject {
 
             // TODO: Implement at network call to tell all connected users that the current game has been closed, as described in Use Case #2, ALT0 Sequence.
 
-            // TODO: Implement user leaving connected list User story #11
             System.out.println("Closing planning poker window");
 
             // Reset the users permission level to simply be a developer, outside the game that is being closed:

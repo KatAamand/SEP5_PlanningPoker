@@ -5,6 +5,7 @@ import Application.ViewModelFactory;
 import DataTypes.Message;
 import DataTypes.User;
 import DataTypes.UserRoles.UserPermission;
+import Views.PlanningPokerView.PlanningPokerViewController;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -24,6 +25,7 @@ public class ChatViewController {
     @FXML TableColumn<User, String> roleColumn;
     @FXML Button setPOButton;
     @FXML Button setSMButton;
+    private PlanningPokerViewController parentController;
 
     public ChatViewController() {
         try {
@@ -49,6 +51,10 @@ public class ChatViewController {
         viewModel.loadUsers();
         });
         enableSpecificUIPermissionBasedElements();
+    }
+
+    public void setParentController(PlanningPokerViewController parentController) {
+        this.parentController = parentController;
     }
 
     public void onMessageRecieved(String message)

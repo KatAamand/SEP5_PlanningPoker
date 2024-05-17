@@ -2,6 +2,7 @@ package Views.TaskView;
 
 import Application.ModelFactory;
 import Application.Session;
+import Application.ViewFactory;
 import Application.ViewModelFactory;
 import DataTypes.RuleSet;
 import DataTypes.Task;
@@ -131,10 +132,15 @@ public class TaskViewModel {
                 getSingleTaskViewModelList().get(i).setTaskDesc(taskModel.getTaskList().get(i).getDescription());
                 getSingleTaskViewModelList().get(i).setEstimationLabel("");
                 getSingleTaskViewModelList().get(i).setFinalEffortLabel(taskModel.getTaskList().get(i).getFinalEffort());
+
+                // Check if this task is already selected. If yes, update the selected task:
+                if(this.getSelectedTask() != null && this.getSelectedTask().getTaskHeader().equals(taskModel.getTaskList().get(i).getTaskHeader())) {
+                    this.setSelectedTask(taskModel.getTaskList().get(i).getTaskHeader(), taskModel.getTaskList().get(i).getDescription());
+                }
             }
         }
 
-        //Refresh all the data in the nested viewControllers
+        // Refresh all the data in the nested viewControllers
         try {
             isTaskListEmptyProperty();
             taskWrapper.getChildren().clear();
@@ -142,6 +148,9 @@ public class TaskViewModel {
         } catch (IOException e) {
             throw new RuntimeException();
         }
+
+        // Refresh the game view, in the case where the user has manually selected another task from the list to view:
+        ViewFactory.getInstance().getPlanningPokerViewController().refreshDisplayedTaskInfo();
     }
 
 
@@ -173,8 +182,8 @@ public class TaskViewModel {
                     this.getSingleTaskViewModelList().get(i).reApplyApplicableStyle();
 
                     // If this task is currently being estimated on, apply a marker, so it is visually identified that this task is being estimated on:
-                    if((ViewModelFactory.getInstance().getGameViewModel().getDisplayedTask() != null)) {
-                        if(ViewModelFactory.getInstance().getGameViewModel().getDisplayedTask().getTaskHeader().equals(taskModel.getTaskList().get(i).getTaskHeader())) {
+                    if((ViewModelFactory.getInstance().getGameViewModel().getTaskBeingEstimated() != null)) {
+                        if(ViewModelFactory.getInstance().getGameViewModel().getTaskBeingEstimated().getTaskHeader().equals(taskModel.getTaskList().get(i).getTaskHeader())) {
                             this.getSingleTaskViewModelList().get(i).getEstimationLabel().setValue("-> ");
                         }
                     }
@@ -241,7 +250,7 @@ public class TaskViewModel {
         // Check if task exists in list, before setting:
         for (Task task : taskModel.getTaskList()) {
             if(task.getTaskHeader().equals(taskHeader) && task.getDescription().equals(taskDescription)) {
-                this.selectedTask = task;
+                this.selectedTask = task.copy();
                 this.enableEditButton();
                 return;
             }
@@ -256,11 +265,11 @@ public class TaskViewModel {
 
     public void resetTaskStyles() {
         for (SingleTaskListViewModel singleTaskListViewModel : singleTaskListViewModelList) {
-            if(selectedTask != null) {
+            if(this.getSelectedTask() != null) {
                 int index_of_added_char = singleTaskListViewModel.getTaskHeaderLabelProperty().getValue().indexOf(':');
                 String taskHeader = singleTaskListViewModel.getTaskHeaderLabelProperty().getValue().substring(index_of_added_char+2);
 
-                if(!taskHeader.equals(selectedTask.getTaskHeader())) {
+                if(!taskHeader.equals(this.getSelectedTask().getTaskHeader())) {
                     singleTaskListViewModel.resetStyle();
                 }
             } else {
@@ -307,8 +316,8 @@ public class TaskViewModel {
             stage.initModality(Modality.APPLICATION_MODAL);
 
             // Load task data into view:
-            ((ManageSingleTaskViewController) fxmlLoader.getController()).textFieldTaskHeader.setText(this.selectedTask.getTaskHeader());
-            ((ManageSingleTaskViewController) fxmlLoader.getController()).textAreaTaskDescription.setText(this.selectedTask.getDescription());
+            ((ManageSingleTaskViewController) fxmlLoader.getController()).textFieldTaskHeader.setText(this.getSelectedTask().getTaskHeader());
+            ((ManageSingleTaskViewController) fxmlLoader.getController()).textAreaTaskDescription.setText(this.getSelectedTask().getDescription());
 
             // Notify the controller that it is in "edit task" mode, and send along the current task which is requested to be edited:
             ((ManageSingleTaskViewController) fxmlLoader.getController()).isEditModeActive(true, this.getSelectedTask());
@@ -316,7 +325,7 @@ public class TaskViewModel {
             // Validate data:
             ((ManageSingleTaskViewController) fxmlLoader.getController()).validateData();
 
-            stage.setTitle("Edit task '" + this.selectedTask.getTaskHeader() + "'");
+            stage.setTitle("Edit task '" + this.getSelectedTask().getTaskHeader() + "'");
             stage.show();
         } catch (IOException e) {
             throw new RuntimeException();

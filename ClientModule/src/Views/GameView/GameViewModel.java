@@ -41,7 +41,7 @@ public class GameViewModel
   private Property<String> finalEffortLabelProperty;
   private Property<String> recommendedFinalEffortProperty;
   private ArrayList<Effort> effortList;
-  private Task displayedTask;
+  private Task taskBeingEstimated;
   @FXML public HBox placedCardsWrapper;
   public ArrayList<UserCardData> placedCards;
   private Button skipButtonRef;
@@ -92,17 +92,32 @@ public class GameViewModel
     this.enableSpecificUIPermissionBasedElements(Session.getCurrentUser());
 
     // Determine which task to show in the Game UI for estimation:
-    displayedTask = gameModel.nextTaskToEvaluate();
-    if (displayedTask != null) {
-        // Show the next non-skipped and non-estimated task in the game UI:
-        taskHeaderPropertyProperty().setValue(displayedTask.getTaskHeader());
-        taskDescPropertyProperty().setValue(displayedTask.getDescription());
-        finalEffortLabelProperty().setValue(displayedTask.getFinalEffort());
+    Task selectedTaskInTaskList = null;
+    taskBeingEstimated = gameModel.nextTaskToEvaluate();
+    try {
+      selectedTaskInTaskList = ViewModelFactory.getInstance().getTaskViewModel().getSelectedTask();
+    } catch (RemoteException e) {
+      throw new RuntimeException(e);
+    }
+    if(selectedTaskInTaskList != null) {
+      // Local user has manually selected another task. Continue to display this task.
+      taskHeaderPropertyProperty().setValue(selectedTaskInTaskList.getTaskHeader());
+      taskDescPropertyProperty().setValue(selectedTaskInTaskList.getDescription());
+      finalEffortLabelProperty().setValue(selectedTaskInTaskList.getFinalEffort());
+
     } else {
+      // Local user has NOT manually selected another task. Display the task that the team is currently estimating.
+      if (taskBeingEstimated != null) {
+        // Show the next non-skipped and non-estimated task in the game UI:
+        taskHeaderPropertyProperty().setValue(taskBeingEstimated.getTaskHeader());
+        taskDescPropertyProperty().setValue(taskBeingEstimated.getDescription());
+        finalEffortLabelProperty().setValue(taskBeingEstimated.getFinalEffort());
+      } else {
         // Shows if there are no more valid tasks left for estimation:
         taskHeaderPropertyProperty().setValue("No more tasks");
         taskDescPropertyProperty().setValue("No more tasks");
         finalEffortLabelProperty().setValue("");
+      }
     }
     clearPlacedCards();
   }
@@ -162,7 +177,7 @@ public class GameViewModel
 
   /** Returns false if the skip button should be deactivated and true if it should be activated - based on the number of tasks remaining to be estimated on. */
   private boolean checkIfSkipTaskBTNShouldBeEnabled() {
-    if (displayedTask != null) {
+    if (taskBeingEstimated != null) {
       List<Task> taskList;
       try {
         taskList = ModelFactory.getInstance().getTaskModel().getTaskList();
@@ -192,15 +207,15 @@ public class GameViewModel
   }
 
   public void skipTask() {
-    if (displayedTask != null && Session.getCurrentUser().getRole().getPermissions().contains(UserPermission.SKIP_TASK)) {
-        gameModel.skipTask(displayedTask);
+    if (taskBeingEstimated != null && Session.getCurrentUser().getRole().getPermissions().contains(UserPermission.SKIP_TASK)) {
+        gameModel.skipTask(taskBeingEstimated);
     }
     this.refresh();
     gameModel.refreshTaskList();
   }
 
-  public Task getDisplayedTask() {
-      return this.displayedTask;
+  public Task getTaskBeingEstimated() {
+      return this.taskBeingEstimated;
   }
 
   public Property<String> taskHeaderPropertyProperty()
@@ -220,11 +235,11 @@ public class GameViewModel
 
   public void setFinalEffortLabel(String finalEffortvalue) {
     if(Session.getCurrentUser().getRole().getUserRole() == UserRole.SCRUM_MASTER) {
-      Task nonEditedTask = displayedTask.copy();
-      displayedTask.setFinalEffort(finalEffortvalue);
+      Task nonEditedTask = taskBeingEstimated.copy();
+      taskBeingEstimated.setFinalEffort(finalEffortvalue);
       try {
-        ModelFactory.getInstance().getTaskModel().editTask(nonEditedTask, displayedTask);
-        Platform.runLater(() -> gameModel.removeTaskFromSkippedList(displayedTask));
+        ModelFactory.getInstance().getTaskModel().editTask(nonEditedTask, taskBeingEstimated);
+        Platform.runLater(() -> gameModel.removeTaskFromSkippedList(taskBeingEstimated));
         finalEffortDropdownRef.setValue(null);
       } catch (RemoteException e) {
         throw new RuntimeException(e);
