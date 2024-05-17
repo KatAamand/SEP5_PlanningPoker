@@ -272,7 +272,9 @@ public class ManageSingleTaskViewModel
       taskModel.addTask(new Task(textFieldTaskHeaderProperty().getValue(), textAreaTaskDescriptionProperty().getValue()));
       saveSuccessful = true;
     } else {
-      Task newTask = new Task(textFieldTaskHeaderProperty().getValue(), textAreaTaskDescriptionProperty().getValue());
+      Task newTask = uneditedTask.copy();
+      newTask.setTaskHeader(textFieldTaskHeaderProperty().getValue());
+      newTask.setDescription(textAreaTaskDescriptionProperty().getValue());
       saveSuccessful = taskModel.editTask(uneditedTask, newTask);
     }
 
