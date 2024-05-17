@@ -18,110 +18,129 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.List;
 
-public class TaskViewModel {
-    private TaskModel taskModel;
-    private Button btnEditTask;
-    private Button btnCreateTask;
-    private Button btnRuleSet;
-    private VBox taskWrapper;
-    private Property<String> sessionId;
-    private Property<String> labelUserId;
-    private ArrayList<SingleTaskListViewController> taskControllerList;
-    private ArrayList<SingleTaskListViewModel> singleTaskListViewModelList;
-    private BooleanProperty isTaskListEmpty;
-    private Task selectedTask; // Holds the currently selected task, or null if no task is selected.
+public class TaskViewModel
+{
+  private TaskModel taskModel;
+  private Button btnEditTask;
+  private Button btnCreateTask;
+  private Button btnExportTaskList;
+  private Button btnRuleSet;
+  private VBox taskWrapper;
+  private Property<String> sessionId;
+  private Property<String> labelUserId;
+  private ArrayList<SingleTaskListViewController> taskControllerList;
+  private ArrayList<SingleTaskListViewModel> singleTaskListViewModelList;
+  private BooleanProperty isTaskListEmpty;
+  private Task selectedTask; // Holds the currently selected task, or null if no task is selected.
 
+  public TaskViewModel() throws RemoteException
+  {
+    setSingleTaskViewModelList(new ArrayList<>());
+    taskControllerList = new ArrayList<>();
+    sessionId = new SimpleStringProperty("UNDEFINED");
+    labelUserId = new SimpleStringProperty("UNDEFINED");
+    this.taskModel = ModelFactory.getInstance().getTaskModel();
+    this.selectedTask = null;
 
-    public TaskViewModel() throws RemoteException {
-        setSingleTaskViewModelList(new ArrayList<>());
-        taskControllerList = new ArrayList<>();
-        sessionId = new SimpleStringProperty("UNDEFINED");
-        labelUserId = new SimpleStringProperty("UNDEFINED");
-        this.taskModel = ModelFactory.getInstance().getTaskModel();
-        this.selectedTask = null;
+    this.isTaskListEmpty = new SimpleBooleanProperty(true);
 
-        this.isTaskListEmpty = new SimpleBooleanProperty(true);
+    updateTaskListEmptyProperty(); // updates upon creation
+  }
 
-        updateTaskListEmptyProperty(); // updates upon creation
-    }
+  public void initialize(Button btnCreateTask, Button btnEditTask,
+      Button btnExportTaskList, Button btnRuleSet, VBox taskWrapper)
+  {
+    setButtonReferences(btnCreateTask, btnEditTask, btnExportTaskList,
+        btnRuleSet);
+    assignButtonMethods();
+    this.taskWrapper = taskWrapper;
+    disableEditButton();
+    Platform.runLater(this::refresh);
 
+    //Assign listeners:
+    taskModel.addPropertyChangeListener("taskListUpdated", evt -> {
+      Platform.runLater(this::refresh);
+      // Add a listener to the taskModel to update the isTaskListEmptyProperty when the taskList is updated
+      Platform.runLater(this::updateTaskListEmptyProperty);
+    });
 
-    public void initialize(Button btnCreateTask, Button btnEditTask,
-        Button btnRuleSet, VBox taskWrapper) {
-        setButtonReferences(btnCreateTask, btnEditTask, btnRuleSet);
-        assignButtonMethods();
-        this.taskWrapper = taskWrapper;
-        disableEditButton();
-        Platform.runLater(this::refresh);
-
-        //Assign listeners:
-        taskModel.addPropertyChangeListener("taskListUpdated", evt -> {
-            Platform.runLater(this::refresh);
-            // Add a listener to the taskModel to update the isTaskListEmptyProperty when the taskList is updated
-            Platform.runLater(this::updateTaskListEmptyProperty);
-        });
-
-        taskModel.addPropertyChangeListener("PlanningPokerObjUpdated", evt -> {
-            Platform.runLater(() -> {
-                this.disableAllPermissionBasedUIInteractionElements();
-                this.enableSpecificUIPermissionBasedElements(Session.getCurrentUser());
-            });
-        });
-    }
-
-    public void disableAllPermissionBasedUIInteractionElements() {
-        // Disable all Interaction based UI elements, in order to later re-enable them for each specific role:
-        this.disableAndHideCreateButton();
-    }
-
-    /** Used for enabling specific UI elements and interactions based on the users permissions */
-    private void enableSpecificUIPermissionBasedElements(User user)
-    {
-        // Enable permission to CREATE tasks, if proper user permission exists:
-        if(user.getRole().getPermissions().contains(UserPermission.CREATE_TASK)) {
-            this.enableAndShowCreateButton();
-        }
-
-        // Enable permission to EDIT tasks, if proper user permission exists:
-        if(user.getRole().getPermissions().contains(UserPermission.EDIT_TASK)) {
-            this.btnEditTask.setText("Edit Task");
-        } else {
-            //Change the EDIT button into a SHOW DETAILS button, so that connected users can read project descriptions, etc. for tasks.
-            this.btnEditTask.setText("Show Details");
-        }
-    }
-
-
-    // Makes sure to update isTaskListEmptyProperty when the taskList is updated
-    private void updateTaskListEmptyProperty() {
-        isTaskListEmpty.set(taskModel.getTaskList().isEmpty());
-    }
-
-    public ReadOnlyBooleanProperty isTaskListEmptyProperty() {
-        return isTaskListEmpty;
-    }
-
-
-    public void assignButtonMethods() {
-        btnEditTask.setOnAction(event -> {this.editTask();});
-        btnCreateTask.setOnAction(event -> {this.createTask();});
-        btnRuleSet.setOnAction(event -> this.showRuleSetBox());
-    }
-
-
-    public void refresh() {
-        // Disable UI elements that are not available to the user, based on the users role / permissions:
+    taskModel.addPropertyChangeListener("PlanningPokerObjUpdated", evt -> {
+      Platform.runLater(() -> {
         this.disableAllPermissionBasedUIInteractionElements();
-
-        // Enable specific UI elements based on user role:
         this.enableSpecificUIPermissionBasedElements(Session.getCurrentUser());
+      });
+    });
+  }
 
-        //Refresh the ViewModels inside the singleTaskListViewModelList
-        setSingleTaskViewModelList(new ArrayList<>());
+  public void disableAllPermissionBasedUIInteractionElements()
+  {
+    // Disable all Interaction based UI elements, in order to later re-enable them for each specific role:
+    this.disableAndHideCreateButton();
+  }
+
+  /** Used for enabling specific UI elements and interactions based on the users permissions */
+  private void enableSpecificUIPermissionBasedElements(User user)
+  {
+    // Enable permission to CREATE tasks, if proper user permission exists:
+    if (user.getRole().getPermissions().contains(UserPermission.CREATE_TASK))
+    {
+      this.enableAndShowCreateButton();
+    }
+
+    // Enable permission to EDIT tasks, if proper user permission exists:
+    if (user.getRole().getPermissions().contains(UserPermission.EDIT_TASK))
+    {
+      this.btnEditTask.setText("Edit Task");
+    }
+    else
+    {
+      //Change the EDIT button into a SHOW DETAILS button, so that connected users can read project descriptions, etc. for tasks.
+      this.btnEditTask.setText("Show Details");
+    }
+  }
+
+  // Makes sure to update isTaskListEmptyProperty when the taskList is updated
+  private void updateTaskListEmptyProperty()
+  {
+    isTaskListEmpty.set(taskModel.getTaskList().isEmpty());
+  }
+
+  public ReadOnlyBooleanProperty isTaskListEmptyProperty()
+  {
+    return isTaskListEmpty;
+  }
+
+  public void assignButtonMethods()
+  {
+    btnEditTask.setOnAction(event -> {
+      this.editTask();
+    });
+    btnCreateTask.setOnAction(event -> {
+      this.createTask();
+    });
+    btnRuleSet.setOnAction(event -> this.showRuleSetBox());
+    btnExportTaskList.setOnAction(event -> this.exportTaskList());
+
+  }
+
+  public void refresh()
+  {
+    // Disable UI elements that are not available to the user, based on the users role / permissions:
+    this.disableAllPermissionBasedUIInteractionElements();
+
+    // Enable specific UI elements based on user role:
+    this.enableSpecificUIPermissionBasedElements(Session.getCurrentUser());
+
+    //Refresh the ViewModels inside the singleTaskListViewModelList
+    setSingleTaskViewModelList(new ArrayList<>());
 
         if(taskModel.getTaskList() != null)
         {

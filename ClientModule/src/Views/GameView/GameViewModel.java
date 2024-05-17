@@ -241,6 +241,7 @@ public class GameViewModel
         ModelFactory.getInstance().getTaskModel().editTask(nonEditedTask, taskBeingEstimated);
         Platform.runLater(() -> gameModel.removeTaskFromSkippedList(taskBeingEstimated));
         finalEffortDropdownRef.setValue(null);
+        recommendedFinalEffortProperty.setValue("");
       } catch (RemoteException e) {
         throw new RuntimeException(e);
       }
