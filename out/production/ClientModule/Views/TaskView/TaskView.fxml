@@ -83,10 +83,11 @@
             </VBox>
          </content>
       </ScrollPane>
-      <VBox alignment="CENTER" prefHeight="74.0" spacing="10.0" style="-fx-border-color: #82B366; -fx-background-color: #D5E8D4;">
+      <VBox alignment="CENTER" prefHeight="156.0" prefWidth="215.0" spacing="10.0" style="-fx-border-color: #82B366; -fx-background-color: #D5E8D4;">
          <children>
             <Button fx:id="btnCreateTask" focusTraversable="false" mnemonicParsing="false" prefWidth="100.0" style="-fx-background-color: #fff; -fx-border-color: #222;" text="Opret task" />
             <Button fx:id="btnEditTask" focusTraversable="false" mnemonicParsing="false" prefWidth="100.0" style="-fx-background-color: #FFE6CC; -fx-border-color: #D79B00;" text="Rediger task" />
+            <Button fx:id="btnExportTaskList" focusTraversable="false" mnemonicParsing="false" prefHeight="53.0" prefWidth="100.0" style="-fx-background-color: F8CECC; -fx-border-color: #D79B00;" text="Export tasklist" />
          </children>
          <padding>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
