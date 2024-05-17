@@ -55,11 +55,8 @@ public class TaskViewModel
     updateTaskListEmptyProperty(); // updates upon creation
   }
 
-  public void initialize(Button btnCreateTask, Button btnEditTask,
-      Button btnExportTaskList, Button btnRuleSet, VBox taskWrapper)
-  {
-    setButtonReferences(btnCreateTask, btnEditTask, btnExportTaskList,
-        btnRuleSet);
+  public void initialize(Button btnCreateTask, Button btnEditTask, Button btnExportTaskList, Button btnRuleSet, VBox taskWrapper)  {
+    setButtonReferences(btnCreateTask, btnEditTask, btnExportTaskList, btnRuleSet);
     assignButtonMethods();
     this.taskWrapper = taskWrapper;
     disableEditButton();
@@ -232,12 +229,12 @@ public class TaskViewModel
     }
 
 
-    private void setButtonReferences(Button btnCreateTask, Button btnEditTask,
-        Button btnRuleSet) {
-        this.btnCreateTask = btnCreateTask;
-        this.btnEditTask = btnEditTask;
-        this.btnRuleSet = btnRuleSet;
-    }
+  private void setButtonReferences(Button btnCreateTask, Button btnEditTask, Button btnExportTaskList, Button btnRuleSet) {
+    this.btnCreateTask = btnCreateTask;
+    this.btnEditTask = btnEditTask;
+    this.btnExportTaskList = btnExportTaskList;
+    this.btnRuleSet = btnRuleSet;
+  }
 
 
     private void disableEditButton() {
@@ -361,6 +358,39 @@ public class TaskViewModel
         alert.showAndWait();
     }
 
+  public void exportTaskList()
+  {
+    List<Task> tasks = taskModel.getTaskList();
 
+    String fileName = "Tasklist.csv";
+
+    try (PrintWriter writer = new PrintWriter(new FileWriter(fileName)))
+    {
+      writer.println("Header,Description, Final effort");
+
+      for (Task task : tasks)
+      {
+        writer.println(task.getTaskHeader() + "," + task.getDescription() + ","
+            + task.getFinalEffort());
+      }
+      Alert alert = new Alert((Alert.AlertType.INFORMATION));
+      alert.setTitle("Export successful");
+      alert.setHeaderText(null);
+      alert.setContentText(
+          "Tasklist has been exported succesfully with filename: " + fileName);
+      alert.showAndWait();
+    }
+
+    catch (IOException e)
+    {
+      e.printStackTrace();
+      Alert alert = new Alert((Alert.AlertType.INFORMATION));
+      alert.setTitle("Export failed");
+      alert.setHeaderText(null);
+      alert.setContentText(
+          "Tasklist failed to export, please try again.");
+      alert.showAndWait();
+    }
+  }
 
 }
