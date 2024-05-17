@@ -20,6 +20,7 @@ public class TaskViewController implements Initializable
     @FXML private Button btnCreateTask;
     @FXML private Button btnEditTask;
     @FXML private Button btnRuleSet;
+    @FXML private Button btnExportTaskList;
     private TaskViewModel taskViewModel;
 
     public TaskViewController() throws RemoteException {
@@ -37,7 +38,7 @@ public class TaskViewController implements Initializable
     @Override public void initialize(URL location, ResourceBundle resources)
     {
         Platform.runLater(() -> {
-            taskViewModel.initialize(btnCreateTask, btnEditTask, btnRuleSet, taskWrapper);
+            taskViewModel.initialize(btnCreateTask, btnEditTask, btnExportTaskList, btnRuleSet, taskWrapper);
 
             //Apply Property Bindings:
             applyBindings();
