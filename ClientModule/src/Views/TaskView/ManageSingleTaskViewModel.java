@@ -260,7 +260,6 @@ public class ManageSingleTaskViewModel
     this.uneditedTask = task;
   }
 
-
   public Task getUneditedTask() {
     return this.uneditedTask;
   }
