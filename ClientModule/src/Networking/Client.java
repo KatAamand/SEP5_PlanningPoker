@@ -37,4 +37,6 @@ public interface Client extends PropertyChangeSubject {
     void requestUserList();
 
     void requestStartGame(int connectedGameId);
+
+    void requestRecommendedEffort();
 }

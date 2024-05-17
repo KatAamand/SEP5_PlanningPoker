@@ -16,6 +16,7 @@ public class GameViewController
 {
   @FXML public StackPane effortWrapper;
   @FXML public HBox placedCardsWrapper;
+  public Label recommendedEffortLabel;
   @FXML private Button clearCardsButton;
   @FXML private Button showCardsButton;
   @FXML private Button setEffortButton;
@@ -52,6 +53,7 @@ public class GameViewController
     taskHeaderLabel.textProperty().bindBidirectional(gameViewModel.taskHeaderPropertyProperty());
     taskDescLabel.textProperty().bindBidirectional(gameViewModel.taskDescPropertyProperty());
     finalEffortLabel.textProperty().bindBidirectional(gameViewModel.finalEffortLabelProperty());
+    recommendedEffortLabel.textProperty().bindBidirectional(gameViewModel.recommendedEffortProperty());
   }
 
   public void onGameStart() {

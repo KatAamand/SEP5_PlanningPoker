@@ -42,4 +42,6 @@ public interface ServerConnection_RMI extends Remote {
     ArrayList<User> requestUserList() throws RemoteException;
 
     void requestStartGame(int connectedGameId) throws RemoteException;
+
+    void requestRecommendedEffort() throws RemoteException;
 }

@@ -39,6 +39,7 @@ public class GameViewModel
   private Property<String> taskHeaderProperty;
   private Property<String> taskDescProperty;
   private Property<String> finalEffortLabelProperty;
+  private Property<String> recommendedFinalEffortProperty;
   private ArrayList<Effort> effortList;
   private Task displayedTask;
   @FXML public HBox placedCardsWrapper;
@@ -56,6 +57,8 @@ public class GameViewModel
     taskHeaderProperty = new SimpleStringProperty();
     taskDescProperty = new SimpleStringProperty();
     finalEffortLabelProperty = new SimpleStringProperty();
+    recommendedFinalEffortProperty = new SimpleStringProperty();
+
     effortList = new ArrayList<>();
     isGameStarted = false;
     getEffortList();
@@ -65,6 +68,7 @@ public class GameViewModel
     //Assign listeners:
     propertyChangeSupport = new PropertyChangeSupport(this);
     gameModel.addPropertyChangeListener("placedCardReceived",     evt -> updatePlacedCard((UserCardData) evt.getNewValue()));
+    gameModel.addPropertyChangeListener("recommendedEffortReceived", evt -> Platform.runLater(() -> showRecommendedEffort((String) evt.getNewValue())));
     gameModel.addPropertyChangeListener("receivedListOfTasksToSkip", evt -> Platform.runLater( () -> {
           this.refresh();
           try {
@@ -392,6 +396,16 @@ public class GameViewModel
     public void showPlacedCards() {
         flipAllCards();
         ifAllPlacedCardsAreAlike();
+        requestRecommendedEffort();
+    }
+
+    private void requestRecommendedEffort() {
+        gameModel.requestRecommendedEffort();
+    }
+
+    private void showRecommendedEffort(String value) {
+      recommendedFinalEffortProperty.setValue(value);
+      finalEffortDropdownRef.setValue(value);
     }
 
 
@@ -557,5 +571,9 @@ public class GameViewModel
 
     public void requestShowCards() {
       gameModel.requestShowCards();
+    }
+
+    public Property<String> recommendedEffortProperty() {
+        return recommendedFinalEffortProperty;
     }
 }
