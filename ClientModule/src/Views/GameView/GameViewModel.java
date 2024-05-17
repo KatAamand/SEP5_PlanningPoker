@@ -147,12 +147,6 @@ public class GameViewModel
       //  Depends on where the UI button/dropdown/etc to set the game password will be located.
     }
 
-    // Enable permission to assign roles, if proper user permission exists:
-    if(user.getRole().getPermissions().contains(UserPermission.ASSIGN_TEAM_ROLES)) {
-      // TODO: Not implemented yet. This might not be the right class for this check. Maybe PlanningPokerViewModel is better?
-      //  Depends on where the UI button/dropdown/etc to set the roles will be located.
-    }
-
     // Enable permission to EXPORT a list of tasks, if proper user permission exists:
     if(user.getRole().getPermissions().contains(UserPermission.EXPORT_TASKLIST)) {
       // TODO: Not implemented yet. This might not be the right class for this check. Maybe PlanningPokerViewModel is better?
@@ -232,6 +226,7 @@ public class GameViewModel
         ModelFactory.getInstance().getTaskModel().editTask(nonEditedTask, displayedTask);
         Platform.runLater(() -> gameModel.removeTaskFromSkippedList(displayedTask));
         finalEffortDropdownRef.setValue(null);
+        recommendedFinalEffortProperty.setValue("");
       } catch (RemoteException e) {
         throw new RuntimeException(e);
       }

@@ -96,7 +96,6 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
                 }
             }
 
-            System.out.println("Server: Broadcasting list of skipped tasks to players in game [" + planningPokerId + "]");
             for (ClientConnection_RMI client : receivingClients) {
                 //Create a new thread for each connected client, and then call the desired broadcast operation. This minimizes server lag/hanging due to clients who have connection issues.
                 Thread transmitThread = new Thread(() -> {
@@ -124,7 +123,6 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
 
     @Override
     public void placeCard(UserCardData userCardData, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) {
-        System.out.println("ServerModel: Placing card");
         clientCardMap.remove(userCardData.getUsername());
         clientCardMap.put(userCardData.getUsername(), userCardData.getPlacedCard());
 
@@ -133,7 +131,6 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
 
     @Override
     public void clearPlacedCards(ArrayList<ClientConnection_RMI> connectedClients, Server_RMI serverRmi) {
-        System.out.println("ServerModel: Clearing placed cards");
         clientCardMap.clear();
         for (ClientConnection_RMI client : connectedClients) {
             Thread clearCardsThread = new Thread(() -> {
@@ -156,7 +153,6 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
 
     @Override
     public void showCards(ArrayList<ClientConnection_RMI> connectedClients, Server_RMI serverRmi) {
-        System.out.println("ServerModel: Showing cards");
         for (ClientConnection_RMI client : connectedClients) {
             Thread showCardsThread = new Thread(() -> {
                 try {
@@ -225,7 +221,7 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
     }
 
     @Override
-    public void getPredictedEffort(ArrayList<ClientConnection_RMI> connectedClients, Server_RMI serverRmi) {
+    public void getRecommendedEffort(ArrayList<ClientConnection_RMI> connectedClients, Server_RMI serverRmi) {
         List<String> placedCards = new ArrayList<>();
         String recommendedEffort;
 
@@ -264,7 +260,6 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
     }
 
     public void broadcastNewCard(UserCardData userCardData, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) {
-        System.out.println("ServerModel: Broadcasting new card");
         for (ClientConnection_RMI client : connectedClients) {
             Thread sendCardsThread = new Thread(() -> {
                 try {
@@ -286,6 +281,10 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
             sendCardsThread.setDaemon(true);
             sendCardsThread.start();
         }
+    }
+
+    public Map<String, String> getClientCardMap() {
+        return clientCardMap;
     }
 
 }

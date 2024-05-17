@@ -5,13 +5,13 @@ import DataTypes.PlanningPoker;
 import DataTypes.User;
 import Networking.ClientConnection_RMI;
 import Networking.ServerConnection_RMI;
-import org.postgresql.xml.NullErrorHandler;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.lang.reflect.Array;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -99,6 +99,56 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
 
   @Override
   public void addUserToSession(User user, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) throws RemoteException {
+    List<Thread> threadList = new ArrayList<>();
+    AtomicBoolean userNotFound = new AtomicBoolean(true);
+
+    for (ClientConnection_RMI client : connectedClients) {
+      Thread addUserThread = new Thread(() -> {
+        try {
+          if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == user.getPlanningPoker().getPlanningPokerID()) {
+            for (User existingUser : user.getPlanningPoker().getConnectedUsers()) {
+              if (existingUser.getUsername().equals(client.getCurrentUser().getUsername())) {
+                userNotFound.set(false);
+              }
+            }
+
+            if (userNotFound.get()) {
+              user.getPlanningPoker().getConnectedUsers().add(client.getCurrentUser());
+            }
+         }
+        } catch (RemoteException e) {
+          if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
+            //Unregisters clients from the Server, who have lost connection in order to avoid further server errors.
+            try {
+              server.unRegisterClient(client);
+            } catch (RemoteException ex) {
+              throw new RuntimeException();
+            }
+          } else {
+            //Error is something else:
+            throw new RuntimeException();
+          }
+        } catch (NullPointerException ignored) {
+        }
+      });
+      addUserThread.setDaemon(true);
+      threadList.add(addUserThread);
+      addUserThread.start();
+    }
+    // Wait for the created threads to finish their evaluations.
+    for (Thread thread : threadList) {
+      try {
+        thread.join();
+      } catch (InterruptedException ignored) {}
+    }
+    // Only broadcast changed userlist if there were actually any changes made:
+    if(!userNotFound.get()) {
+      broadcastUsers(user, connectedClients, server, user.getPlanningPoker());
+    }
+  }
+
+  /*@Override
+  public void addUserToSession(User user, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) throws RemoteException {
 
     for (ClientConnection_RMI client : connectedClients) {
       try {
@@ -114,12 +164,12 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
           if (userNotFound) {
             user.getPlanningPoker().getConnectedUsers().add(client.getCurrentUser());
           }
-
+*/
           // Commented out below, and added above since the below would return different users despite the only difference being the role applied to the specific user.
         /*if (!user.getPlanningPoker().getConnectedUsers().contains(client.getCurrentUser())) {
           user.getPlanningPoker().getConnectedUsers().add(client.getCurrentUser());
         }*/
-        }
+        /*}
       }
       catch (NullPointerException e)
       {
@@ -127,7 +177,7 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
       }
     }
     broadcastUsers(user, connectedClients, server, user.getPlanningPoker());
-  }
+  }*/
 
   @Override
   public void broadcastUsers(User user, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server, PlanningPoker planningPoker) throws RemoteException {

@@ -374,7 +374,7 @@ public class Server_RMI implements ServerConnection_RMI {
 
     @Override
     public void requestRecommendedEffort() throws RemoteException {
-        gameServerModel.getPredictedEffort(connectedClients, this);
+        gameServerModel.getRecommendedEffort(connectedClients, this);
     }
 
     @Override
