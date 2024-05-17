@@ -2,6 +2,7 @@ package Views.TaskView;
 
 import Application.ModelFactory;
 import Application.Session;
+import Application.ViewModelFactory;
 import DataTypes.Task;
 import DataTypes.User;
 import DataTypes.UserRoles.UserPermission;
@@ -276,6 +277,15 @@ public class ManageSingleTaskViewModel
       newTask.setTaskHeader(textFieldTaskHeaderProperty().getValue());
       newTask.setDescription(textAreaTaskDescriptionProperty().getValue());
       saveSuccessful = taskModel.editTask(uneditedTask, newTask);
+
+      // De-select the selected task from the task list, after edit:
+      if(saveSuccessful) {
+        try {
+          ViewModelFactory.getInstance().getTaskViewModel().setSelectedTask(null, null);
+        } catch (RemoteException e) {
+          throw new RuntimeException(e);
+        }
+      }
     }
 
     //Close the popup window after adding the task to the system:
