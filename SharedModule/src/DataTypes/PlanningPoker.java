@@ -12,6 +12,7 @@ public class PlanningPoker implements Serializable
   private List<Task> taskList;
   private User scrumMaster;
   private User productOwner;
+  private boolean voiceChatIsRunning;
 
   public PlanningPoker(int planningPokerId)
   {
@@ -21,6 +22,17 @@ public class PlanningPoker implements Serializable
     setPlanningPokerID(planningPokerId);
     setScrumMaster(null);
     setProductOwner(null);
+    voiceChatIsRunning = false;
+  }
+
+  public boolean isVoiceChatIsRunning()
+  {
+    return voiceChatIsRunning;
+  }
+
+  public void setVoiceChatIsRunning()
+  {
+    voiceChatIsRunning = true;
   }
 
   public Chat getChat()

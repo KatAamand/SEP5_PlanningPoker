@@ -17,4 +17,8 @@ public interface ChatModel extends PropertyChangeSubject {
     void setProductOwner(User user);
 
     void setScrumMaster(User user);
+
+    void startVoiceCall();
+
+  void endVoiceCall();
 }

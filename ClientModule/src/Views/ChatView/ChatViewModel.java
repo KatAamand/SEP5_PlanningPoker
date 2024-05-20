@@ -62,4 +62,12 @@ public class ChatViewModel extends ViewModel {
     public void setScrumMaster(User user) {
         chatModel.setScrumMaster(user);
     }
+
+    public void startVoiceCall() {
+        chatModel.startVoiceCall();
+    }
+
+    public void endVoiceCall() {
+        chatModel.endVoiceCall();
+    }
 }

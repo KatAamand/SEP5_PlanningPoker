@@ -108,4 +108,14 @@ public class ChatViewController {
             setSMButton.setVisible(true);
         }
     }
+
+    public void onStartCallButtonPressed()
+    {
+        viewModel.startVoiceCall();
+    }
+
+    public void onEndCallButtonPressed()
+    {
+        viewModel.endVoiceCall();
+    }
 }

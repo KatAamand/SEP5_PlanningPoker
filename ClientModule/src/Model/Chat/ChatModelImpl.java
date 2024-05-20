@@ -7,6 +7,7 @@ import DataTypes.User;
 import DataTypes.UserRoles.UserRole;
 import Model.PlanningPoker.PlanningPokerModelImpl;
 import Networking.Client;
+import Networking.VoiceChat.VoiceChatClient;
 import javafx.application.Platform;
 
 import java.beans.PropertyChangeListener;
@@ -18,6 +19,7 @@ public class ChatModelImpl extends PlanningPokerModelImpl implements ChatModel
 {
   private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
   private Client clientConnection;
+  private VoiceChatClient voiceChat;
 
 
 
@@ -72,6 +74,18 @@ public class ChatModelImpl extends PlanningPokerModelImpl implements ChatModel
   @Override
   public void setScrumMaster(User user) {
     clientConnection.setRoleInGame(UserRole.SCRUM_MASTER, Session.getConnectedGameId(), user);
+  }
+
+  @Override
+  public void startVoiceCall() {
+    this.voiceChat = VoiceChatClient.getInstance((Session.getConnectedGameId() + 5000));
+    voiceChat.start();
+  }
+
+  @Override
+  public void endVoiceCall() {
+    voiceChat.stop();
+    this.voiceChat = null;
   }
 
 

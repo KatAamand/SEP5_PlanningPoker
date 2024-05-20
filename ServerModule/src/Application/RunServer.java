@@ -2,6 +2,7 @@ package Application;
 
 import Networking.ServerConnection_RMI;
 import Networking.Server_RMI;
+import Networking.VoiceChatServer;
 
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
@@ -17,6 +18,13 @@ public class RunServer {
         } catch (RemoteException | AlreadyBoundException e) {
             throw new RuntimeException(e);
         }
+        /*
+        VoiceChatServer voiceServer = new VoiceChatServer();
+        Thread serverThread = new Thread(voiceServer);
+        serverThread.start();
+        System.out.println("Voice chat server is started");
+
+         */
 
         System.out.println("Server is started");
     }

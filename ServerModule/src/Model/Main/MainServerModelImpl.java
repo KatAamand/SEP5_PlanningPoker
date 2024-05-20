@@ -12,6 +12,7 @@ import Database.PlanningPoker.PlanningPokerDAOImpl;
 import Networking.ClientConnection_RMI;
 import Networking.ServerConnection_RMI;
 import Networking.Server_RMI;
+import Networking.VoiceChatServer;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -60,7 +61,11 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
         }
 
         System.out.println("Creating planningPokerID: " + planningPoker.getPlanningPokerID());
-
+        VoiceChatServer voiceChatServer = new VoiceChatServer((planningPoker.getPlanningPokerID() + 5000));
+        Thread voiceChatServerThread = new Thread(voiceChatServer);
+        voiceChatServerThread.start();
+        planningPoker.setVoiceChatIsRunning();
+        System.out.println("Voice chat server for planning poker id: " + planningPoker.getPlanningPokerID() + " is started");
         planningPokerGames.add(planningPoker);
         return planningPoker;
     }
@@ -70,6 +75,13 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
         if (validatePlanningPoker(planningPokerId)) {
             for (PlanningPoker planningPoker : planningPokerGames) {
                 if (planningPoker.getPlanningPokerID() == planningPokerId) {
+                    if (!planningPoker.isVoiceChatIsRunning())
+                    {
+                        VoiceChatServer voiceChatServer = new VoiceChatServer((planningPoker.getPlanningPokerID() + 5000));
+                        Thread voiceChatServerThread = new Thread(voiceChatServer);
+                        voiceChatServerThread.start();
+                        planningPoker.setVoiceChatIsRunning();
+                    }
                     return planningPoker;
                 }
             }
