@@ -30,18 +30,18 @@ public interface ServerConnection_RMI extends Remote {
     ArrayList<Effort> getEffortList() throws RemoteException;
     void removeUserFromSession(User user) throws RemoteException;
     void removeUserFromGame(User user, int planningPokerId) throws RemoteException;
-    void placeCard(UserCardData userCardData) throws RemoteException;
-    void requestClearPlacedCards() throws RemoteException;
+    void placeCard(UserCardData userCardData, int planningPokerId) throws RemoteException;
+    void requestClearPlacedCards(int planningPokerId) throws RemoteException;
     User setRoleInPlanningPokerGame(UserRole roleToApply, User userToReceiveRole, int planningPokerId) throws RemoteException;
 
-    void requestShowCards() throws RemoteException;
+    void requestShowCards(int planningPokerId) throws RemoteException;
     void broadcastUserInSession(User user) throws RemoteException;
 
     void setProductOwner(User user) throws RemoteException;
 
     ArrayList<User> requestUserList() throws RemoteException;
 
-    void requestStartGame(int connectedGameId) throws RemoteException;
+    void requestStartGame(int planningPokerId) throws RemoteException;
 
-    void requestRecommendedEffort() throws RemoteException;
+    void requestRecommendedEffort(int planningPokerId) throws RemoteException;
 }

@@ -305,7 +305,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     public void placeCard(UserCardData userCardData) {
         try {
             System.out.println("Client_RMI: Requesting placed card");
-            server.placeCard(userCardData);
+            server.placeCard(userCardData, Session.getConnectedGameId());
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -314,7 +314,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     @Override
     public void requestClearPlacedCards() {
         try {
-            server.requestClearPlacedCards();
+            server.requestClearPlacedCards(Session.getConnectedGameId());
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -418,7 +418,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     @Override
     public void requestShowCards() {
         try {
-            server.requestShowCards();
+            server.requestShowCards(Session.getConnectedGameId());
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -451,7 +451,6 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     @Override
     public void requestStartGame(int connectedGameId) {
         try {
-            System.out.println("Client_RMI: Requesting game start");
             server.requestStartGame(connectedGameId);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
@@ -461,7 +460,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     @Override
     public void requestRecommendedEffort() {
         try {
-            server.requestRecommendedEffort();
+            server.requestRecommendedEffort(Session.getConnectedGameId());
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
