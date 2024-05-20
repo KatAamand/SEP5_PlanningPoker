@@ -11,4 +11,6 @@ public interface GameClientInterface extends Remote {
     void clearPlacedCards() throws RemoteException;
 
     void showCards() throws RemoteException;
+
+    void receiveRecommendedEffort(String recommendedEffort) throws RemoteException;
 }

@@ -41,11 +41,19 @@ public class PlanningPokerViewController
         lobbyView.setManaged(true);
         lobbyView.setVisible(true);
         Platform.runLater(() -> lobbyViewController.setParentController(this));
+        Platform.runLater(() -> taskViewController.setParentController(this));
+        Platform.runLater(() -> chatViewController.setParentController(this));
+        Platform.runLater(() -> gameViewController.setParentController(this));
         Platform.runLater(() -> planningPokerViewModel.init());
         Platform.runLater(this::catchCloseRequests);
 
         // Assign listeners
         planningPokerViewModel.addPropertyChangeListener("gameStarted", evt -> Platform.runLater(this::openGame));
+    }
+
+    public void refreshDisplayedTaskInfo() {
+        // Refresh the game view, in the case where the user has manually selected another task from the list to view:
+        gameViewController.refresh();
     }
 
     public void onStartGameButtonPressed()
@@ -68,6 +76,7 @@ public class PlanningPokerViewController
         Stage thisStage = (Stage) taskView.getScene().getWindow();
         planningPokerViewModel.closePlanningPoker(thisStage);
     }
+
 
     public TaskViewController getTaskViewController() {
         return this.taskViewController;

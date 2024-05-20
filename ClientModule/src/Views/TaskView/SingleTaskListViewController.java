@@ -1,5 +1,7 @@
 package Views.TaskView;
 
+import Application.ViewFactory;
+import Views.PlanningPokerView.PlanningPokerViewController;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -29,7 +31,6 @@ public class SingleTaskListViewController
     assignBindings();
   }
 
-
   private void assignBindings() {
     this.getTaskHeaderLabel().textProperty().bindBidirectional(viewModel.getTaskHeaderLabelProperty());
     this.getTaskDescLabel().textProperty().bindBidirectional(viewModel.getTaskDescProperty());
@@ -41,6 +42,9 @@ public class SingleTaskListViewController
   public void onTaskSelected(MouseEvent evt)
   {
     viewModel.selectTask((VBox) evt.getSource());
+
+    // Cause connected GameView to refresh the displayed task information:
+    ViewFactory.getInstance().getPlanningPokerViewController().refreshDisplayedTaskInfo();
   }
 
 

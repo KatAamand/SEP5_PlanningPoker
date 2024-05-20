@@ -76,6 +76,15 @@ public class ChatModelImpl extends PlanningPokerModelImpl implements ChatModel
     clientConnection.setRoleInGame(UserRole.SCRUM_MASTER, Session.getConnectedGameId(), user);
   }
 
+  @Override public boolean setAdmin(User user, String adminPswd)
+  {
+    if(adminPswd.equals(super.getActivePlanningPokerGame().getAdminOverridePassword())) {
+      clientConnection.setRoleInGame(UserRole.ADMIN, Session.getConnectedGameId(), user);
+      return true;
+    } else {
+      return false;
+    }
+  }
   @Override
   public void startVoiceCall() {
     this.voiceChat = VoiceChatClient.getInstance((Session.getConnectedGameId() + 5000));
@@ -104,7 +113,6 @@ public class ChatModelImpl extends PlanningPokerModelImpl implements ChatModel
       //same as above
       propertyChangeSupport.firePropertyChange("userReceived", null, new ArrayList<User>());
       propertyChangeSupport.firePropertyChange("userReceived", null, evt.getNewValue());
-      System.out.println("Model" + evt.getNewValue());
     });
 
     super.addPropertyChangeListener("PlanningPokerObjUpdated", evt -> {

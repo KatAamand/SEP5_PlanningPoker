@@ -62,6 +62,10 @@ public class PlanningPokerModelImpl implements PlanningPokerModel
   @Override public void resetUserPermissionUponLeavingGame() {
     // Reset user permission
     clientConnection.setRoleInGame(UserRole.DEVELOPER, Session.getConnectedGameId(), Session.getCurrentUser());
+    if(Session.getCurrentUser().getAdmin() != null) {
+      // When this method is called on a user who already has admin privileges, the server will remove the admin role from the user.
+      clientConnection.setRoleInGame(UserRole.ADMIN, Session.getConnectedGameId(), Session.getCurrentUser());
+    }
 
     // Remove the user from the session and the game
     this.removeUserFromSession();

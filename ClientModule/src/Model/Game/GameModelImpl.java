@@ -113,6 +113,11 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
     clientConnection.requestShowCards();
   }
 
+  @Override
+  public void requestRecommendedEffort() {
+    clientConnection.requestRecommendedEffort();
+  }
+
   @Override public void requestPlacedCard(UserCardData userCardData)
   {
     System.out.println("Model: Requesting placed card");
@@ -152,6 +157,11 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
   {
     clientConnection.addPropertyChangeListener("placedCardReceived",
         this::updatePlacedCardMap);
+
+    clientConnection.addPropertyChangeListener("recommendedEffortReceived",
+        evt -> propertyChangeSupport.firePropertyChange("recommendedEffortReceived",
+            null, evt.getNewValue()));
+
     clientConnection.addPropertyChangeListener("clearPlacedCards",
         evt -> propertyChangeSupport.firePropertyChange("clearPlacedCards",
             null, null));

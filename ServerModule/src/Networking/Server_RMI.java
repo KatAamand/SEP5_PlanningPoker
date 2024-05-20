@@ -60,6 +60,7 @@ public class Server_RMI implements ServerConnection_RMI {
     }
 
 
+    // Registering/Unregistering Clients
     @Override
     public void registerClient(ClientConnection_RMI client) {
         connectedClients.add(client);
@@ -115,6 +116,8 @@ public class Server_RMI implements ServerConnection_RMI {
         }
     }
 
+    // Chat related requests
+
     @Override
     public void sendMessage(Message message, User sender) {
         try {
@@ -125,7 +128,7 @@ public class Server_RMI implements ServerConnection_RMI {
     }
 
 
-    // Requests for login
+    // Requests for login and create user
     @Override
     public void validateUser(String username, String password, ClientConnection_RMI client) {
         try {
@@ -192,6 +195,16 @@ public class Server_RMI implements ServerConnection_RMI {
         listeners.put(client, listener);
     }
 
+
+    @Override
+    public void unRegisterClientListener(ClientConnection_RMI client) throws RemoteException {
+        listeners.remove(client);
+    }
+
+
+
+    // Task related requests
+
     /** Responsible for broadcasting taskListUpdates ONLY to the clients connected to the Game with the provided gameId */
     private void broadcastTaskListUpdate(int planningPokerId) {
         taskServerModel.broadcastTaskListUpdate(clientsInEachGame, this, planningPokerId);
@@ -216,15 +229,6 @@ public class Server_RMI implements ServerConnection_RMI {
         }
     }
 
-    @Override
-    public void unRegisterClientListener(ClientConnection_RMI client) throws RemoteException {
-        PropertyChangeListener listener = listeners.get(client);
-
-        listeners.remove(client);
-    }
-
-
-    //Task related requests
     @Override public ArrayList<Task> getTaskList(int planningPokerId) throws RemoteException
     {
         return taskServerModel.getTaskList(planningPokerId);
@@ -267,6 +271,9 @@ public class Server_RMI implements ServerConnection_RMI {
         gameServerModel.broadcastListOfSkippedTasksToClients(clientsInEachGame, skippedTasksList, planningPokerId, this);
     }
 
+
+
+
     // MainView related requests
     @Override public boolean validatePlanningPokerID(int planningPokerID)
     {
@@ -298,6 +305,46 @@ public class Server_RMI implements ServerConnection_RMI {
     }
 
     @Override
+    public void placeCard(UserCardData userCardData, int planningPokerId) throws RemoteException {
+        System.out.println("Server_RMI: Requesting placed card");
+        gameServerModel.placeCard(userCardData, clientsInEachGame.get(planningPokerId), this);
+    }
+
+    @Override
+    public void requestClearPlacedCards(int planningPokerId) throws RemoteException {
+        gameServerModel.clearPlacedCards(clientsInEachGame.get(planningPokerId), this);
+    }
+
+    @Override
+    public void requestShowCards(int planningPokerId) throws RemoteException {
+        gameServerModel.showCards(clientsInEachGame.get(planningPokerId), this);
+    }
+
+    @Override
+    public void requestStartGame(int planningPokerId) throws RemoteException {
+        gameServerModel.requestStartGame(planningPokerId, clientsInEachGame.get(planningPokerId), this);
+    }
+
+    @Override
+    public void requestRecommendedEffort(int planningPokerId) throws RemoteException {
+        gameServerModel.getRecommendedEffort(clientsInEachGame.get(planningPokerId), this);
+    }
+
+    @Override
+    public ArrayList<Effort> getEffortList() throws RemoteException {
+        return gameServerModel.getEffortList();
+    }
+
+    public int numOfClientsInGame(int planningPokerId) {
+        ArrayList<ClientConnection_RMI> clientsInGame = clientsInEachGame.get(planningPokerId);
+
+        return clientsInGame.size();
+    }
+
+
+    // User related requests
+
+    @Override
     public void addConnectedUserToSession(User user) throws RemoteException {
         chatServerModel.addUserToSession(user, connectedClients, this);
     }
@@ -315,16 +362,9 @@ public class Server_RMI implements ServerConnection_RMI {
         }
     }
 
-    @Override
-    public void placeCard(UserCardData userCardData) throws RemoteException {
-        System.out.println("Server_RMI: Requesting placed card");
-        gameServerModel.placeCard(userCardData, connectedClients, this);
-    }
 
-    @Override
-    public void requestClearPlacedCards() throws RemoteException {
-        gameServerModel.clearPlacedCards(connectedClients, this);
-    }
+
+    // Roles in game related requests
 
     /** These roles are set from the following client classes:<br>
      - Scrum Master is set on game creation of a Planning Poker game. The call cascades from MainModelImpl and down to the server connection. <br>
@@ -347,11 +387,6 @@ public class Server_RMI implements ServerConnection_RMI {
     }
 
     @Override
-    public void requestShowCards() throws RemoteException {
-        gameServerModel.showCards(connectedClients, this);
-    }
-
-    @Override
     public void broadcastUserInSession(User user) throws RemoteException {
         chatServerModel.broadcastUsers(user, connectedClients, this, user.getPlanningPoker());
     }
@@ -367,13 +402,4 @@ public class Server_RMI implements ServerConnection_RMI {
         return loginServerModel.requestUserList();
     }
 
-    @Override
-    public void requestStartGame(int connectedGameId) throws RemoteException {
-        gameServerModel.requestStartGame(connectedGameId, connectedClients, this);
-    }
-
-    @Override
-    public ArrayList<Effort> getEffortList() throws RemoteException {
-        return gameServerModel.getEffortList();
-    }
 }

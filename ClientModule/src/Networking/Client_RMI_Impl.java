@@ -28,7 +28,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
             server = (ServerConnection_RMI) registry.lookup("Model");
             server.registerClient(this);
             server.registerClientListener(this);
-            System.out.println("user is connected");
+            System.out.println("Client_RMI: Connection to server established");
 
         } catch (RemoteException | NotBoundException e) {
             throw new RuntimeException(e);
@@ -305,7 +305,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     public void placeCard(UserCardData userCardData) {
         try {
             System.out.println("Client_RMI: Requesting placed card");
-            server.placeCard(userCardData);
+            server.placeCard(userCardData, Session.getConnectedGameId());
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -314,7 +314,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     @Override
     public void requestClearPlacedCards() {
         try {
-            server.requestClearPlacedCards();
+            server.requestClearPlacedCards(Session.getConnectedGameId());
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -363,7 +363,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     @Override
     public void receiveUser(ArrayList<User> users) throws RemoteException {
         Platform.runLater(() -> {
-            System.out.println("Client receiving user" + users);
+            //System.out.println("Client receiving user" + users);
             propertyChangeSupport.firePropertyChange("userReceived", null, users);
             propertyChangeSupport.firePropertyChange("UpdatedLocalUser", null, null);
         });
@@ -385,6 +385,11 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     @Override
     public void showCards() {
         propertyChangeSupport.firePropertyChange("showCards", null, null);
+    }
+
+    @Override
+    public void receiveRecommendedEffort(String recommendedEffort) {
+        propertyChangeSupport.firePropertyChange("recommendedEffortReceived", null, recommendedEffort);
     }
 
     @Override public void setRoleInGame(UserRole role, int planningPokerId, User user) {
@@ -413,7 +418,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     @Override
     public void requestShowCards() {
         try {
-            server.requestShowCards();
+            server.requestShowCards(Session.getConnectedGameId());
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -446,8 +451,16 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     @Override
     public void requestStartGame(int connectedGameId) {
         try {
-            System.out.println("Client_RMI: Requesting game start");
             server.requestStartGame(connectedGameId);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void requestRecommendedEffort() {
+        try {
+            server.requestRecommendedEffort(Session.getConnectedGameId());
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }

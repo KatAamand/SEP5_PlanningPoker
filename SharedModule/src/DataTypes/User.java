@@ -1,5 +1,6 @@
 package DataTypes;
 
+import DataTypes.UserRoles.ConcreteRoles.Admin;
 import DataTypes.UserRoles.ConcreteRoles.Developer;
 import DataTypes.UserRoles.Role;
 
@@ -11,21 +12,20 @@ public class User implements Serializable
   private String password;
   private PlanningPoker planningPoker;
   private Role role;
+  private Role adminRole; // Is null, if the user is not an Admin - otherwise is the UserRole 'Admin' if the user is an admin.
 
-  public User(String username, String password)
-  {
+  public User(String username, String password) {
     setUsername(username);
     setPassword(password);
     setRole(new Developer());
+    adminRole = null;
   }
 
-  public void setUsername(String userName)
-  {
+  public void setUsername(String userName) {
     this.username = userName;
   }
 
-  public String getUsername()
-  {
+  public String getUsername() {
     return this.username;
   }
 
@@ -44,7 +44,6 @@ public class User implements Serializable
   public void setPlanningPoker(PlanningPoker planningPoker) {
     this.planningPoker = planningPoker;
 
-    // Added to only check users against their unique usernames, instead of the entire user object.
     boolean userNotFound = true;
     for (User user : planningPoker.getConnectedUsers()) {
       if(user.getUsername().equals(this.getUsername())) {
@@ -55,10 +54,6 @@ public class User implements Serializable
     if(userNotFound) {
       planningPoker.addUserToSession(this);
     }
-    // Commented out below, and added above since the below would return different users despite the only difference being the role applied to the specific user.
-    /*if (planningPoker != null && !planningPoker.getConnectedUsers().contains(this)) {
-      planningPoker.addUserToSession(this);
-    }*/
   }
 
   public Role getRole() {
@@ -73,9 +68,16 @@ public class User implements Serializable
     }
   }
 
-  public String getRoleAsString()
-  {
+  public String getRoleAsString() {
     return role.getRoleAsString();
+  }
+
+  public Role getAdmin() {
+    return this.adminRole;
+  }
+
+  public void setAdmin(Role adminRole) {
+    this.adminRole = adminRole;
   }
 
   @Override public boolean equals(Object obj) {
@@ -84,14 +86,24 @@ public class User implements Serializable
       return false;
     }
     User user = (User) obj;
-    return (this.getUsername().equals(user.getUsername())
-        && this.getPassword().equals(user.getPassword())
-        && this.getRole().equals(user.getRole()));
+    if(this.getAdmin() != null && user.getAdmin() != null) {
+      return (this.getUsername().equals(user.getUsername())
+          && this.getPassword().equals(user.getPassword())
+          && this.getRole().equals(user.getRole())
+          && this.getAdmin().equals(user.getAdmin()));
+    } else if ((this.getAdmin() == null && user.getAdmin() != null) || this.getAdmin() != null && user.getAdmin() == null)
+      return false;
+    else {
+      return (this.getUsername().equals(user.getUsername())
+          && this.getPassword().equals(user.getPassword())
+          && this.getRole().equals(user.getRole()));
+    }
   }
 
   public User copy() {
     User newUser = new User(this.getUsername(), this.getPassword());
     newUser.setRole(this.getRole());
+    newUser.setAdmin(this.getAdmin());
     return newUser;
   }
 }

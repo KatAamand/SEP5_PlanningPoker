@@ -13,6 +13,7 @@ public class PlanningPoker implements Serializable
   private User scrumMaster;
   private User productOwner;
   private boolean voiceChatIsRunning;
+  private String adminOverridePassword;
 
   public PlanningPoker(int planningPokerId)
   {
@@ -33,6 +34,7 @@ public class PlanningPoker implements Serializable
   public void setVoiceChatIsRunning()
   {
     voiceChatIsRunning = true;
+    setAdminOverridePassword("admin"); // TODO: Implement more security around this, and enable the Scrum Master to set a custom password on game creation.
   }
 
   public Chat getChat()
@@ -89,6 +91,14 @@ public class PlanningPoker implements Serializable
   public void setProductOwner(User productOwner)
   {
     this.productOwner = productOwner;
+  }
+
+  public String getAdminOverridePassword() {
+    return this.adminOverridePassword;
+  }
+
+  public void setAdminOverridePassword(String pswd) {
+    this.adminOverridePassword = pswd;
   }
 
   //TODO: Do we need a removeUser method here?

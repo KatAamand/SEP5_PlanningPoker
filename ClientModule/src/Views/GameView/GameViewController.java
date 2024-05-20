@@ -1,6 +1,7 @@
 package Views.GameView;
 
 import Application.ViewModelFactory;
+import Views.PlanningPokerView.PlanningPokerViewController;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -16,6 +17,7 @@ public class GameViewController
 {
   @FXML public StackPane effortWrapper;
   @FXML public HBox placedCardsWrapper;
+  public Label recommendedEffortLabel;
   @FXML private Button clearCardsButton;
   @FXML private Button showCardsButton;
   @FXML private Button setEffortButton;
@@ -24,6 +26,7 @@ public class GameViewController
   @FXML private Label taskDescLabel;
   @FXML private ChoiceBox finalEffortDropdown;
   @FXML private Label finalEffortLabel;
+  private PlanningPokerViewController parentController;
   private GameViewModel gameViewModel;
 
   public GameViewController() throws RemoteException
@@ -52,6 +55,15 @@ public class GameViewController
     taskHeaderLabel.textProperty().bindBidirectional(gameViewModel.taskHeaderPropertyProperty());
     taskDescLabel.textProperty().bindBidirectional(gameViewModel.taskDescPropertyProperty());
     finalEffortLabel.textProperty().bindBidirectional(gameViewModel.finalEffortLabelProperty());
+    recommendedEffortLabel.textProperty().bindBidirectional(gameViewModel.recommendedEffortProperty());
+  }
+
+  public void refresh(){
+    gameViewModel.refresh();
+  }
+
+  public void setParentController(PlanningPokerViewController parentController) {
+    this.parentController = parentController;
   }
 
   public void onGameStart() {
@@ -88,6 +100,5 @@ public class GameViewController
   {
     finalEffortDropdown.setItems(gameViewModel.getEffortObserverList());
   }
-
 
 }

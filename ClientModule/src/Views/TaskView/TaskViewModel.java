@@ -2,6 +2,7 @@ package Views.TaskView;
 
 import Application.ModelFactory;
 import Application.Session;
+import Application.ViewFactory;
 import Application.ViewModelFactory;
 import DataTypes.RuleSet;
 import DataTypes.Task;
@@ -17,110 +18,126 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.List;
 
-public class TaskViewModel {
-    private TaskModel taskModel;
-    private Button btnEditTask;
-    private Button btnCreateTask;
-    private Button btnRuleSet;
-    private VBox taskWrapper;
-    private Property<String> sessionId;
-    private Property<String> labelUserId;
-    private ArrayList<SingleTaskListViewController> taskControllerList;
-    private ArrayList<SingleTaskListViewModel> singleTaskListViewModelList;
-    private BooleanProperty isTaskListEmpty;
-    private Task selectedTask; // Holds the currently selected task, or null if no task is selected.
+public class TaskViewModel
+{
+  private TaskModel taskModel;
+  private Button btnEditTask;
+  private Button btnCreateTask;
+  private Button btnExportTaskList;
+  private Button btnRuleSet;
+  private VBox taskWrapper;
+  private Property<String> sessionId;
+  private Property<String> labelUserId;
+  private ArrayList<SingleTaskListViewController> taskControllerList;
+  private ArrayList<SingleTaskListViewModel> singleTaskListViewModelList;
+  private BooleanProperty isTaskListEmpty;
+  private Task selectedTask; // Holds the currently selected task, or null if no task is selected.
 
+  public TaskViewModel() throws RemoteException
+  {
+    setSingleTaskViewModelList(new ArrayList<>());
+    taskControllerList = new ArrayList<>();
+    sessionId = new SimpleStringProperty("UNDEFINED");
+    labelUserId = new SimpleStringProperty("UNDEFINED");
+    this.taskModel = ModelFactory.getInstance().getTaskModel();
+    this.selectedTask = null;
 
-    public TaskViewModel() throws RemoteException {
-        setSingleTaskViewModelList(new ArrayList<>());
-        taskControllerList = new ArrayList<>();
-        sessionId = new SimpleStringProperty("UNDEFINED");
-        labelUserId = new SimpleStringProperty("UNDEFINED");
-        this.taskModel = ModelFactory.getInstance().getTaskModel();
-        this.selectedTask = null;
+    this.isTaskListEmpty = new SimpleBooleanProperty(true);
 
-        this.isTaskListEmpty = new SimpleBooleanProperty(true);
+    updateTaskListEmptyProperty(); // updates upon creation
+  }
 
-        updateTaskListEmptyProperty(); // updates upon creation
-    }
+  public void initialize(Button btnCreateTask, Button btnEditTask, Button btnExportTaskList, Button btnRuleSet, VBox taskWrapper)  {
+    setButtonReferences(btnCreateTask, btnEditTask, btnExportTaskList, btnRuleSet);
+    assignButtonMethods();
+    this.taskWrapper = taskWrapper;
+    disableEditButton();
+    Platform.runLater(this::refresh);
 
+    //Assign listeners:
+    taskModel.addPropertyChangeListener("taskListUpdated", evt -> {
+      Platform.runLater(this::refresh);
+      // Add a listener to the taskModel to update the isTaskListEmptyProperty when the taskList is updated
+      Platform.runLater(this::updateTaskListEmptyProperty);
+    });
 
-    public void initialize(Button btnCreateTask, Button btnEditTask,
-        Button btnRuleSet, VBox taskWrapper) {
-        setButtonReferences(btnCreateTask, btnEditTask, btnRuleSet);
-        assignButtonMethods();
-        this.taskWrapper = taskWrapper;
-        disableEditButton();
-        Platform.runLater(this::refresh);
-
-        //Assign listeners:
-        taskModel.addPropertyChangeListener("taskListUpdated", evt -> {
-            Platform.runLater(this::refresh);
-            // Add a listener to the taskModel to update the isTaskListEmptyProperty when the taskList is updated
-            Platform.runLater(this::updateTaskListEmptyProperty);
-        });
-
-        taskModel.addPropertyChangeListener("PlanningPokerObjUpdated", evt -> {
-            Platform.runLater(() -> {
-                this.disableAllPermissionBasedUIInteractionElements();
-                this.enableSpecificUIPermissionBasedElements(Session.getCurrentUser());
-            });
-        });
-    }
-
-    public void disableAllPermissionBasedUIInteractionElements() {
-        // Disable all Interaction based UI elements, in order to later re-enable them for each specific role:
-        this.disableAndHideCreateButton();
-    }
-
-    /** Used for enabling specific UI elements and interactions based on the users permissions */
-    private void enableSpecificUIPermissionBasedElements(User user)
-    {
-        // Enable permission to CREATE tasks, if proper user permission exists:
-        if(user.getRole().getPermissions().contains(UserPermission.CREATE_TASK)) {
-            this.enableAndShowCreateButton();
-        }
-
-        // Enable permission to EDIT tasks, if proper user permission exists:
-        if(user.getRole().getPermissions().contains(UserPermission.EDIT_TASK)) {
-            this.btnEditTask.setText("Edit Task");
-        } else {
-            //Change the EDIT button into a SHOW DETAILS button, so that connected users can read project descriptions, etc. for tasks.
-            this.btnEditTask.setText("Show Details");
-        }
-    }
-
-
-    // Makes sure to update isTaskListEmptyProperty when the taskList is updated
-    private void updateTaskListEmptyProperty() {
-        isTaskListEmpty.set(taskModel.getTaskList().isEmpty());
-    }
-
-    public ReadOnlyBooleanProperty isTaskListEmptyProperty() {
-        return isTaskListEmpty;
-    }
-
-
-    public void assignButtonMethods() {
-        btnEditTask.setOnAction(event -> {this.editTask();});
-        btnCreateTask.setOnAction(event -> {this.createTask();});
-        btnRuleSet.setOnAction(event -> this.showRuleSetBox());
-    }
-
-
-    public void refresh() {
-        // Disable UI elements that are not available to the user, based on the users role / permissions:
+    taskModel.addPropertyChangeListener("PlanningPokerObjUpdated", evt -> {
+      Platform.runLater(() -> {
         this.disableAllPermissionBasedUIInteractionElements();
-
-        // Enable specific UI elements based on user role:
         this.enableSpecificUIPermissionBasedElements(Session.getCurrentUser());
+      });
+    });
+  }
 
-        //Refresh the ViewModels inside the singleTaskListViewModelList
-        setSingleTaskViewModelList(new ArrayList<>());
+  public void disableAllPermissionBasedUIInteractionElements()
+  {
+    // Disable all Interaction based UI elements, in order to later re-enable them for each specific role:
+    this.disableAndHideCreateButton();
+  }
+
+  /** Used for enabling specific UI elements and interactions based on the users permissions */
+  private void enableSpecificUIPermissionBasedElements(User user)
+  {
+    // Enable permission to CREATE tasks, if proper user permission exists:
+    if (user.getRole().getPermissions().contains(UserPermission.CREATE_TASK))
+    {
+      this.enableAndShowCreateButton();
+    }
+
+    // Enable permission to EDIT tasks, if proper user permission exists:
+    if (user.getRole().getPermissions().contains(UserPermission.EDIT_TASK))
+    {
+      this.btnEditTask.setText("Edit Task");
+    }
+    else
+    {
+      //Change the EDIT button into a SHOW DETAILS button, so that connected users can read project descriptions, etc. for tasks.
+      this.btnEditTask.setText("Show Details");
+    }
+  }
+
+  // Makes sure to update isTaskListEmptyProperty when the taskList is updated
+  private void updateTaskListEmptyProperty()
+  {
+    isTaskListEmpty.set(taskModel.getTaskList().isEmpty());
+  }
+
+  public ReadOnlyBooleanProperty isTaskListEmptyProperty()
+  {
+    return isTaskListEmpty;
+  }
+
+  public void assignButtonMethods()
+  {
+    btnEditTask.setOnAction(event -> {
+      this.editTask();
+    });
+    btnCreateTask.setOnAction(event -> {
+      this.createTask();
+    });
+    btnRuleSet.setOnAction(event -> this.showRuleSetBox());
+    btnExportTaskList.setOnAction(event -> this.exportTaskList());
+
+  }
+
+  public void refresh()
+  {
+    // Disable UI elements that are not available to the user, based on the users role / permissions:
+    this.disableAllPermissionBasedUIInteractionElements();
+
+    // Enable specific UI elements based on user role:
+    this.enableSpecificUIPermissionBasedElements(Session.getCurrentUser());
+
+    //Refresh the ViewModels inside the singleTaskListViewModelList
+    setSingleTaskViewModelList(new ArrayList<>());
 
         if(taskModel.getTaskList() != null)
         {
@@ -131,10 +148,15 @@ public class TaskViewModel {
                 getSingleTaskViewModelList().get(i).setTaskDesc(taskModel.getTaskList().get(i).getDescription());
                 getSingleTaskViewModelList().get(i).setEstimationLabel("");
                 getSingleTaskViewModelList().get(i).setFinalEffortLabel(taskModel.getTaskList().get(i).getFinalEffort());
+
+                // Check if this task is already selected. If yes, update the selected task:
+                if(this.getSelectedTask() != null && this.getSelectedTask().getTaskHeader().equals(taskModel.getTaskList().get(i).getTaskHeader())) {
+                    this.setSelectedTask(taskModel.getTaskList().get(i).getTaskHeader(), taskModel.getTaskList().get(i).getDescription());
+                }
             }
         }
 
-        //Refresh all the data in the nested viewControllers
+        // Refresh all the data in the nested viewControllers
         try {
             isTaskListEmptyProperty();
             taskWrapper.getChildren().clear();
@@ -142,6 +164,9 @@ public class TaskViewModel {
         } catch (IOException e) {
             throw new RuntimeException();
         }
+
+        // Refresh the game view, in the case where the user has manually selected another task from the list to view:
+        ViewFactory.getInstance().getPlanningPokerViewController().refreshDisplayedTaskInfo();
     }
 
 
@@ -173,8 +198,8 @@ public class TaskViewModel {
                     this.getSingleTaskViewModelList().get(i).reApplyApplicableStyle();
 
                     // If this task is currently being estimated on, apply a marker, so it is visually identified that this task is being estimated on:
-                    if((ViewModelFactory.getInstance().getGameViewModel().getDisplayedTask() != null)) {
-                        if(ViewModelFactory.getInstance().getGameViewModel().getDisplayedTask().getTaskHeader().equals(taskModel.getTaskList().get(i).getTaskHeader())) {
+                    if((ViewModelFactory.getInstance().getGameViewModel().getTaskBeingEstimated() != null)) {
+                        if(ViewModelFactory.getInstance().getGameViewModel().getTaskBeingEstimated().getTaskHeader().equals(taskModel.getTaskList().get(i).getTaskHeader())) {
                             this.getSingleTaskViewModelList().get(i).getEstimationLabel().setValue("-> ");
                         }
                     }
@@ -204,12 +229,12 @@ public class TaskViewModel {
     }
 
 
-    private void setButtonReferences(Button btnCreateTask, Button btnEditTask,
-        Button btnRuleSet) {
-        this.btnCreateTask = btnCreateTask;
-        this.btnEditTask = btnEditTask;
-        this.btnRuleSet = btnRuleSet;
-    }
+  private void setButtonReferences(Button btnCreateTask, Button btnEditTask, Button btnExportTaskList, Button btnRuleSet) {
+    this.btnCreateTask = btnCreateTask;
+    this.btnEditTask = btnEditTask;
+    this.btnExportTaskList = btnExportTaskList;
+    this.btnRuleSet = btnRuleSet;
+  }
 
 
     private void disableEditButton() {
@@ -241,7 +266,7 @@ public class TaskViewModel {
         // Check if task exists in list, before setting:
         for (Task task : taskModel.getTaskList()) {
             if(task.getTaskHeader().equals(taskHeader) && task.getDescription().equals(taskDescription)) {
-                this.selectedTask = task;
+                this.selectedTask = task.copy();
                 this.enableEditButton();
                 return;
             }
@@ -256,11 +281,11 @@ public class TaskViewModel {
 
     public void resetTaskStyles() {
         for (SingleTaskListViewModel singleTaskListViewModel : singleTaskListViewModelList) {
-            if(selectedTask != null) {
+            if(this.getSelectedTask() != null) {
                 int index_of_added_char = singleTaskListViewModel.getTaskHeaderLabelProperty().getValue().indexOf(':');
                 String taskHeader = singleTaskListViewModel.getTaskHeaderLabelProperty().getValue().substring(index_of_added_char+2);
 
-                if(!taskHeader.equals(selectedTask.getTaskHeader())) {
+                if(!taskHeader.equals(this.getSelectedTask().getTaskHeader())) {
                     singleTaskListViewModel.resetStyle();
                 }
             } else {
@@ -307,8 +332,8 @@ public class TaskViewModel {
             stage.initModality(Modality.APPLICATION_MODAL);
 
             // Load task data into view:
-            ((ManageSingleTaskViewController) fxmlLoader.getController()).textFieldTaskHeader.setText(this.selectedTask.getTaskHeader());
-            ((ManageSingleTaskViewController) fxmlLoader.getController()).textAreaTaskDescription.setText(this.selectedTask.getDescription());
+            ((ManageSingleTaskViewController) fxmlLoader.getController()).textFieldTaskHeader.setText(this.getSelectedTask().getTaskHeader());
+            ((ManageSingleTaskViewController) fxmlLoader.getController()).textAreaTaskDescription.setText(this.getSelectedTask().getDescription());
 
             // Notify the controller that it is in "edit task" mode, and send along the current task which is requested to be edited:
             ((ManageSingleTaskViewController) fxmlLoader.getController()).isEditModeActive(true, this.getSelectedTask());
@@ -316,7 +341,7 @@ public class TaskViewModel {
             // Validate data:
             ((ManageSingleTaskViewController) fxmlLoader.getController()).validateData();
 
-            stage.setTitle("Edit task '" + this.selectedTask.getTaskHeader() + "'");
+            stage.setTitle("Edit task '" + this.getSelectedTask().getTaskHeader() + "'");
             stage.show();
         } catch (IOException e) {
             throw new RuntimeException();
@@ -333,6 +358,39 @@ public class TaskViewModel {
         alert.showAndWait();
     }
 
+  public void exportTaskList()
+  {
+    List<Task> tasks = taskModel.getTaskList();
 
+    String fileName = "Tasklist.csv";
+
+    try (PrintWriter writer = new PrintWriter(new FileWriter(fileName)))
+    {
+      writer.println("Header,Description, Final effort");
+
+      for (Task task : tasks)
+      {
+        writer.println(task.getTaskHeader() + "," + task.getDescription() + ","
+            + task.getFinalEffort());
+      }
+      Alert alert = new Alert((Alert.AlertType.INFORMATION));
+      alert.setTitle("Export successful");
+      alert.setHeaderText(null);
+      alert.setContentText(
+          "Tasklist has been exported succesfully with filename: " + fileName);
+      alert.showAndWait();
+    }
+
+    catch (IOException e)
+    {
+      e.printStackTrace();
+      Alert alert = new Alert((Alert.AlertType.INFORMATION));
+      alert.setTitle("Export failed");
+      alert.setHeaderText(null);
+      alert.setContentText(
+          "Tasklist failed to export, please try again.");
+      alert.showAndWait();
+    }
+  }
 
 }

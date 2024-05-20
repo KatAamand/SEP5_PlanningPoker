@@ -2,6 +2,7 @@ package Model.Main;
 
 import DataTypes.PlanningPoker;
 import DataTypes.User;
+import DataTypes.UserRoles.ConcreteRoles.Admin;
 import DataTypes.UserRoles.ConcreteRoles.Developer;
 import DataTypes.UserRoles.ConcreteRoles.ProductOwner;
 import DataTypes.UserRoles.ConcreteRoles.ScrumMaster;
@@ -116,6 +117,10 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
                 returnUser = this.setScrumMaster(user, planningPokerId);
                 break;
 
+            case ADMIN:
+                returnUser = this.setAdmin(user, planningPokerId);
+                break;
+
             default:
                 returnUser = null;
                 break;
@@ -191,6 +196,29 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
                 user.setRole(new ProductOwner());
                 System.out.println("MainServerModelImpl: ProductOwner is now [" + user.getUsername() + "] in game [" + planningPokerId + "]");
                 return user;
+            }
+        }
+        return null;
+    }
+
+    private User setAdmin(User user, int planningPokerId) {
+        // Find the Planning Poker game in the Array:
+        for (int i = 0; i < planningPokerGames.size(); i++) {
+            if(planningPokerGames.get(i).getPlanningPokerID() == (planningPokerId)) {
+
+                // Check if the user is already an admin. If so, we unassign the user their admin privileges:
+                if(user.getAdmin() != null) {
+                    user.getRole().getPermissions().removeAll(user.getAdmin().getPermissions());
+                    user.setAdmin(null);
+                    System.out.println("MainServerModelImpl: [" + user.getUsername() + "] is no longer a ADMIN in game [" + planningPokerId + "]");
+                    return user;
+                } else {
+                    // Assign the new ADMIN role to the user, without changing applied game roles
+                    user.setAdmin(new Admin());
+                    user.getRole().copyAndApplyPermissionsFrom(user.getAdmin());
+                    System.out.println("MainServerModelImpl: [" + user.getUsername() + "] is now a ADMIN in game [" + planningPokerId + "]");
+                    return user;
+                }
             }
         }
         return null;

@@ -5,6 +5,7 @@ import Application.ViewModelFactory;
 import DataTypes.Message;
 import DataTypes.User;
 import DataTypes.UserRoles.UserPermission;
+import Views.PlanningPokerView.PlanningPokerViewController;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -24,6 +25,8 @@ public class ChatViewController {
     @FXML TableColumn<User, String> roleColumn;
     @FXML Button setPOButton;
     @FXML Button setSMButton;
+    @FXML private Button setAdminBtn;
+    private PlanningPokerViewController parentController;
 
     public ChatViewController() {
         try {
@@ -51,6 +54,10 @@ public class ChatViewController {
         enableSpecificUIPermissionBasedElements();
     }
 
+    public void setParentController(PlanningPokerViewController parentController) {
+        this.parentController = parentController;
+    }
+
     public void onMessageRecieved(String message)
     {
         //Handle the empty message, so empty messages doesnt get added to the chat, also fixes bug where the same message couldn't be sent twice in a row
@@ -65,7 +72,7 @@ public class ChatViewController {
     {
         if (!users.isEmpty()) {
             for (User user : users) {
-                System.out.println(user.getRoleAsString());
+                //System.out.println(user.getRoleAsString());
             }
             Platform.runLater(() -> {
                 userTableView.getItems().clear();
@@ -96,6 +103,10 @@ public class ChatViewController {
     public void onSetScrumMasterButtonPressed()
     {
         viewModel.setScrumMaster(userTableView.getSelectionModel().getSelectedItem());
+    }
+
+    public void onSetAdminButtonPressed() {
+        viewModel.setAdminOverride();
     }
 
     private void enableSpecificUIPermissionBasedElements()

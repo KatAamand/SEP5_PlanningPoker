@@ -1,5 +1,6 @@
 package Views.TaskView;
 
+import Application.ViewFactory;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.layout.VBox;
@@ -80,11 +81,13 @@ public class SingleTaskListViewModel
     if (parentViewModel.getSelectedTask() != null && parentViewModel.getSelectedTask().getTaskHeader().equals(taskHeader)) {
       parentViewModel.setSelectedTask(null, null);
       source.setStyle("-fx-background-color:  #C2D8C8; -fx-border-color:  #82B366;");
+      ViewFactory.getInstance().getPlanningPokerViewController().refreshDisplayedTaskInfo();
     } else {
       parentViewModel.setSelectedTask(taskHeader, taskDescLabel.getValue());
       source.setStyle("-fx-background-color:  #82B366; -fx-border-color:  #82B366;");
       parentViewModel.resetTaskStyles();
     }
+
   }
 
 

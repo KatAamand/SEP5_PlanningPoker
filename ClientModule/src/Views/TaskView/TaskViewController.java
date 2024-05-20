@@ -1,6 +1,7 @@
 package Views.TaskView;
 
 import Application.ViewModelFactory;
+import Views.PlanningPokerView.PlanningPokerViewController;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -20,12 +21,17 @@ public class TaskViewController implements Initializable
     @FXML private Button btnCreateTask;
     @FXML private Button btnEditTask;
     @FXML private Button btnRuleSet;
+    @FXML private Button btnExportTaskList;
     private TaskViewModel taskViewModel;
+    private PlanningPokerViewController parentController;
 
     public TaskViewController() throws RemoteException {
         this.taskViewModel = ViewModelFactory.getInstance().getTaskViewModel();
     }
 
+    public void setParentController(PlanningPokerViewController parentController) {
+        this.parentController = parentController;
+    }
 
     private void applyBindings()
     {
@@ -37,7 +43,7 @@ public class TaskViewController implements Initializable
     @Override public void initialize(URL location, ResourceBundle resources)
     {
         Platform.runLater(() -> {
-            taskViewModel.initialize(btnCreateTask, btnEditTask, btnRuleSet, taskWrapper);
+            taskViewModel.initialize(btnCreateTask, btnEditTask, btnExportTaskList, btnRuleSet, taskWrapper);
 
             //Apply Property Bindings:
             applyBindings();

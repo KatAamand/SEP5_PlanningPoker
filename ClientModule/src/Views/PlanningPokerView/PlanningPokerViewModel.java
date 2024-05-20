@@ -57,12 +57,14 @@ public class PlanningPokerViewModel implements PropertyChangeSubject {
         if (Session.getCurrentUser() != null) {
             user = Session.getCurrentUser().getUsername();
             role = Session.getCurrentUser().getRole().getRoleAsString();
+
+            if(Session.getCurrentUser().getAdmin() != null) {
+                role += " / " + Session.getCurrentUser().getAdmin().getRoleAsString();
+            }
         }
         String finalRole = role;
         String finalUser = user;
-        Platform.runLater(() -> {
-            taskViewModel.labelUserIdProperty().setValue(finalUser + " [" + finalRole + "]");
-        });
+        Platform.runLater(() -> {taskViewModel.labelUserIdProperty().setValue(finalUser + " [" + finalRole + "]");});
 
         //Set the GameId in the TaskView:
         int planningPokerId = 0;
@@ -94,7 +96,6 @@ public class PlanningPokerViewModel implements PropertyChangeSubject {
 
             // TODO: Implement at network call to tell all connected users that the current game has been closed, as described in Use Case #2, ALT0 Sequence.
 
-            // TODO: Implement user leaving connected list User story #11
             System.out.println("Closing planning poker window");
 
             // Reset the users permission level to simply be a developer, outside the game that is being closed:
