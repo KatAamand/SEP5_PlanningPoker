@@ -57,12 +57,14 @@ public class PlanningPokerViewModel implements PropertyChangeSubject {
         if (Session.getCurrentUser() != null) {
             user = Session.getCurrentUser().getUsername();
             role = Session.getCurrentUser().getRole().getRoleAsString();
+
+            if(Session.getCurrentUser().getAdmin() != null) {
+                role += " / " + Session.getCurrentUser().getAdmin().getRoleAsString();
+            }
         }
         String finalRole = role;
         String finalUser = user;
-        Platform.runLater(() -> {
-            taskViewModel.labelUserIdProperty().setValue(finalUser + " [" + finalRole + "]");
-        });
+        Platform.runLater(() -> {taskViewModel.labelUserIdProperty().setValue(finalUser + " [" + finalRole + "]");});
 
         //Set the GameId in the TaskView:
         int planningPokerId = 0;

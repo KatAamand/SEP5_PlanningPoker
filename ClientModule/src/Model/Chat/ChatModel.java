@@ -9,12 +9,9 @@ public interface ChatModel extends PropertyChangeSubject {
    * Platform.runLater() method to ensure increase thread safety with javaFx.*/
   void init();
   void sendMessage(Message message, User sender);
-
-    void loadUsers();
-
+  void loadUsers();
   void removeUserFromSession();
-
-    void setProductOwner(User user);
-
-    void setScrumMaster(User user);
+  void setProductOwner(User user);
+  void setScrumMaster(User user);
+  boolean setAdmin(User user, String adminPswd);
 }

@@ -28,7 +28,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
             server = (ServerConnection_RMI) registry.lookup("Model");
             server.registerClient(this);
             server.registerClientListener(this);
-            System.out.println("user is connected");
+            System.out.println("Client_RMI: Connection to server established");
 
         } catch (RemoteException | NotBoundException e) {
             throw new RuntimeException(e);
@@ -363,7 +363,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     @Override
     public void receiveUser(ArrayList<User> users) throws RemoteException {
         Platform.runLater(() -> {
-            System.out.println("Client receiving user" + users);
+            //System.out.println("Client receiving user" + users);
             propertyChangeSupport.firePropertyChange("userReceived", null, users);
             propertyChangeSupport.firePropertyChange("UpdatedLocalUser", null, null);
         });

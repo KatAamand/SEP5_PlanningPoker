@@ -12,6 +12,7 @@ public class PlanningPoker implements Serializable
   private List<Task> taskList;
   private User scrumMaster;
   private User productOwner;
+  private String adminOverridePassword;
 
   public PlanningPoker(int planningPokerId)
   {
@@ -21,6 +22,7 @@ public class PlanningPoker implements Serializable
     setPlanningPokerID(planningPokerId);
     setScrumMaster(null);
     setProductOwner(null);
+    setAdminOverridePassword("admin"); // TODO: Implement more security around this, and enable the Scrum Master to set a custom password on game creation.
   }
 
   public Chat getChat()
@@ -40,7 +42,6 @@ public class PlanningPoker implements Serializable
       throw new NullPointerException();
     }
 
-    // Added to only check users against their unique usernames, instead of the entire user object.
     boolean userNotFound = true;
     for (User existingUser : connectedUsers) {
       if(existingUser.getUsername().equals(user.getUsername())) {
@@ -52,11 +53,6 @@ public class PlanningPoker implements Serializable
     if(userNotFound) {
       connectedUsers.add(user);
     }
-
-    // Commented out below, and added above since the below would return different users despite the only difference being the role applied to the specific user.
-    /*if (!connectedUsers.contains(user)) {
-      connectedUsers.add(user);
-    }*/
   }
 
   public User getScrumMaster()
@@ -77,6 +73,14 @@ public class PlanningPoker implements Serializable
   public void setProductOwner(User productOwner)
   {
     this.productOwner = productOwner;
+  }
+
+  public String getAdminOverridePassword() {
+    return this.adminOverridePassword;
+  }
+
+  public void setAdminOverridePassword(String pswd) {
+    this.adminOverridePassword = pswd;
   }
 
   //TODO: Do we need a removeUser method here?

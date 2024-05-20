@@ -9,6 +9,18 @@ import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.util.ArrayList;
 
@@ -30,7 +42,7 @@ public class ChatViewModel extends ViewModel {
 
         chatModel.addPropertyChangeListener("userReceived", evt -> {
             ArrayList<User> users = (ArrayList<User>) evt.getNewValue();
-            System.out.println("Viewmodel" + users);
+            //System.out.println("Viewmodel" + users);
             ObservableList<User> observableList = FXCollections.observableArrayList(users);
             userProperty().set(observableList);
         });
@@ -58,8 +70,70 @@ public class ChatViewModel extends ViewModel {
         chatModel.sendMessage(new Message(Session.getCurrentUser().getUsername() + ": " + message), session.getCurrentUser());
     }
 
-
     public void setScrumMaster(User user) {
         chatModel.setScrumMaster(user);
+    }
+
+    public void setAdminOverride() {
+        // Check if the user is already an admin:
+        if(Session.getCurrentUser().getAdmin() != null) {
+            // Local user is already an admin. Show an error.
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("You are already an ADMIN");
+            alert.showAndWait();
+
+        } else {
+            // Local user is not an admin
+            // Create a popup window for the user to enter the admin override password
+            Stage popupStage = new Stage();
+            popupStage.initModality(Modality.APPLICATION_MODAL);
+            popupStage.setTitle("Admin Override");
+
+            Label passwordLabel = new Label("Enter Override Password:");
+            Label errorLabel = new Label("");
+            PasswordField passwordField = new PasswordField();
+            Button enterButton = new Button("Enter");
+            Button cancelButton = new Button("Cancel");
+            passwordField.setText("admin");
+
+            enterButton.setOnAction(e -> {
+                String password = passwordField.getText();
+                System.out.println("Admin Override password entered: " + password);
+                // Attempt to set the local user as admin:
+                if(chatModel.setAdmin(Session.getCurrentUser(), password)) {
+                    // Close the window, the action was successful.
+                    errorLabel.textProperty().setValue("");
+                    popupStage.close();
+                } else {
+                    // Show an error.
+                    errorLabel.textProperty().setValue("Incorrect override password");
+                }
+            });
+
+            cancelButton.setOnAction(e -> popupStage.close());
+
+            VBox mainVBox = new VBox();
+            HBox passwordHBox = new HBox();
+            passwordHBox.setAlignment(Pos.CENTER);
+            passwordHBox.getChildren().add(passwordLabel);
+            passwordHBox.getChildren().add(passwordField);
+            HBox.setMargin(passwordLabel, new Insets(2.5, 2.5, 5, 5));
+            HBox.setMargin(passwordField, new Insets(2.5, 5, 5, 2.5));
+            mainVBox.getChildren().add(passwordHBox);
+
+            mainVBox.getChildren().add(errorLabel);
+
+            HBox buttonHBox = new HBox();
+            buttonHBox.setAlignment(Pos.CENTER);
+            buttonHBox.getChildren().add(enterButton);
+            buttonHBox.getChildren().add(cancelButton);
+            HBox.setMargin(enterButton, new Insets(2.5, 5, 5, 10));
+            HBox.setMargin(cancelButton, new Insets(2.5, 10, 5, 5));
+            mainVBox.getChildren().add(buttonHBox);
+
+            Scene popupScene = new Scene(mainVBox, 300, 100);
+            popupStage.setScene(popupScene);
+            popupStage.showAndWait();
+        }
     }
 }

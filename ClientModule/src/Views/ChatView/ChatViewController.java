@@ -25,6 +25,7 @@ public class ChatViewController {
     @FXML TableColumn<User, String> roleColumn;
     @FXML Button setPOButton;
     @FXML Button setSMButton;
+    @FXML private Button setAdminBtn;
     private PlanningPokerViewController parentController;
 
     public ChatViewController() {
@@ -71,7 +72,7 @@ public class ChatViewController {
     {
         if (!users.isEmpty()) {
             for (User user : users) {
-                System.out.println(user.getRoleAsString());
+                //System.out.println(user.getRoleAsString());
             }
             Platform.runLater(() -> {
                 userTableView.getItems().clear();
@@ -102,6 +103,10 @@ public class ChatViewController {
     public void onSetScrumMasterButtonPressed()
     {
         viewModel.setScrumMaster(userTableView.getSelectionModel().getSelectedItem());
+    }
+
+    public void onSetAdminButtonPressed() {
+        viewModel.setAdminOverride();
     }
 
     private void enableSpecificUIPermissionBasedElements()
