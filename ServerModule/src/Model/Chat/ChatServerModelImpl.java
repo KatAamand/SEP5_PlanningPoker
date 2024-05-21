@@ -227,24 +227,49 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
   }
 
   @Override
-  public void broadcastUsersWithException(User removedUser, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server, PlanningPoker planningPoker) throws RemoteException {
+  public synchronized void broadcastUsersWithException(User removedUser, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server, PlanningPoker planningPoker) throws RemoteException {
     ArrayList<User> userList = new ArrayList<>();
+    ArrayList<ClientConnection_RMI> clientList = new ArrayList<>(connectedClients);
+    ArrayList<Thread> threadList = new ArrayList<>();
     //planningPoker.getConnectedUsers().clear();
-    for (ClientConnection_RMI client : connectedClients)
-    {
-      try {
-      if (!client.getCurrentUser().equals(removedUser)) {
-        if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == planningPoker.getPlanningPokerID()) {
-          userList.add(client.getCurrentUser());
-          //planningPoker.getConnectedUsers().add(client.getCurrentUser());
+    for (ClientConnection_RMI client : clientList) {
+      Thread userListThread = new Thread (() -> {
+        try {
+          if (!client.getCurrentUser().equals(removedUser)) {
+            if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == planningPoker.getPlanningPokerID()) {
+              userList.add(client.getCurrentUser());
+              //planningPoker.getConnectedUsers().add(client.getCurrentUser());
+            }
+          }
+        } catch (NullPointerException ignored) {
+          System.out.println("ChatServerModelImpl: User found not ind game. Ignoring user.");
+        } catch (RemoteException e) {
+          if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
+            //Unregisters clients from the Server, who have lost connection in order to avoid further server errors.
+            try {
+              server.unRegisterClient(client);
+            } catch (RemoteException ex) {
+              throw new RuntimeException();
+            }
+          } else {
+            //Error is something else:
+            throw new RuntimeException();
+          }
         }
-      }
-      } catch (NullPointerException e) {
-        System.out.println("ChatServerModelImpl: User found not ind game. Ignoring user.");
-        continue;
-      }
+      });
+      userListThread.setDaemon(true);
+      threadList.add(userListThread);
+      userListThread.start();
     }
-    for (ClientConnection_RMI client : connectedClients) {
+    // Wait for all threads to finish executing:
+    for (Thread thread : threadList) {
+      try {
+        thread.join();
+      } catch (InterruptedException ignored) {}
+    }
+
+    // Start sending clients
+    for (ClientConnection_RMI client : clientList) {
       Thread sendUserThread = new Thread(() -> {
         try {
           if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == planningPoker.getPlanningPokerID()) {
