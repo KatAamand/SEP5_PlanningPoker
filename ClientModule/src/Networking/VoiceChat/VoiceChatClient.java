@@ -147,13 +147,7 @@ public class VoiceChatClient {
         try {
             microphone = AudioUtils.getTargetDataLine();
             speakers = AudioUtils.getSourceDataLine();
-            clientSocket = new DatagramSocket();
-        }
-        catch (LineUnavailableException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
-        catch (Exception e) {
+        } catch (LineUnavailableException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
@@ -173,6 +167,18 @@ public class VoiceChatClient {
         return instance;
     }
 
+    private void initializeSocket() {
+        try {
+            if (clientSocket != null && !clientSocket.isClosed()) {
+                clientSocket.close();
+            }
+            clientSocket = new DatagramSocket();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to initialize DatagramSocket");
+        }
+    }
+
     public void start() {
         if (running) return;
 
@@ -185,6 +191,8 @@ public class VoiceChatClient {
         } catch (LineUnavailableException e) {
             throw new RuntimeException(e);
         }
+
+        initializeSocket();
 
         sendThread = new Thread(() -> {
             try {
@@ -199,7 +207,9 @@ public class VoiceChatClient {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                if (running) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -217,7 +227,9 @@ public class VoiceChatClient {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                if (running) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -227,6 +239,7 @@ public class VoiceChatClient {
 
     public void stop() {
         running = false;
+
         try {
             if (sendThread != null) {
                 sendThread.join();
@@ -251,3 +264,4 @@ public class VoiceChatClient {
         }
     }
 }
+
