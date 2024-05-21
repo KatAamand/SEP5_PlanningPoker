@@ -10,7 +10,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class VoiceChatClient {
-    private static final String SERVER_ADDRESS = "localhost";  // Skift til serverens IP-adresse
+    private static final String SERVER_ADDRESS = "192.168.1.166";  // Skift til serverens IP-adresse
     private static int serverPort;
     private DatagramSocket clientSocket;
     private Thread sendThread;
