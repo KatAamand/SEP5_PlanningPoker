@@ -366,7 +366,7 @@ public class TaskViewModel
 
     try (PrintWriter writer = new PrintWriter(new FileWriter(fileName)))
     {
-      writer.println("Header,Description, Final effort");
+      writer.println("Header, Description, Final effort");
 
       for (Task task : tasks)
       {

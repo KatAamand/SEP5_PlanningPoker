@@ -91,6 +91,10 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
             throw new RuntimeException();
           }
         }
+        catch (NullPointerException ignored)
+        {
+
+        }
       });
       sendMessageThread.setDaemon(true);
       sendMessageThread.start();

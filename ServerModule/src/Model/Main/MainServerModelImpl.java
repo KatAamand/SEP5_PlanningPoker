@@ -62,7 +62,8 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
         }
 
         System.out.println("Creating planningPokerID: " + planningPoker.getPlanningPokerID());
-        VoiceChatServer voiceChatServer = new VoiceChatServer((planningPoker.getPlanningPokerID() + 5000));
+        //VoiceChatServer voiceChatServer = new VoiceChatServer((planningPoker.getPlanningPokerID() + 5000));
+        VoiceChatServer voiceChatServer = new VoiceChatServer( 5000);
         Thread voiceChatServerThread = new Thread(voiceChatServer);
         voiceChatServerThread.start();
         planningPoker.setVoiceChatIsRunning();
