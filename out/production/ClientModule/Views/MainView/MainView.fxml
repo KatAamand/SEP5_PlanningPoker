@@ -46,7 +46,7 @@
                      </image>
                   </ImageView>
                   <TextField fx:id="planningPokerIdTextField" alignment="CENTER_RIGHT" prefHeight="28.0" prefWidth="106.0" promptText="PlanningPoker id" style="-fx-border-color: #222;" />
-                  <Button fx:id="connectToPlanningPokerButton" mnemonicParsing="false" onAction="#onConnectToPlanningPokerPressed" prefHeight="28.0" prefWidth="138.0" style="-fx-border-color: #222; -fx-background-color: #fff;" text="Tilslut planningPoker">
+                  <Button fx:id="connectToPlanningPokerButton" defaultButton="true" mnemonicParsing="false" onAction="#onConnectToPlanningPokerPressed" prefHeight="28.0" prefWidth="138.0" style="-fx-border-color: #222; -fx-background-color: #fff;" text="Tilslut planningPoker">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor></Button>
