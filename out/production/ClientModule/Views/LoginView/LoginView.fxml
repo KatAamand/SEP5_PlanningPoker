@@ -52,7 +52,7 @@
                   </Label>
                </children>
             </VBox>
-            <Button fx:id="loginButton" mnemonicParsing="false" onAction="#onLoginButtonPressed" prefWidth="100.0" style="-fx-background-color: #fff; -fx-border-color: #222;" text="Login">
+            <Button fx:id="loginButton" defaultButton="true" mnemonicParsing="false" onAction="#onLoginButtonPressed" prefWidth="100.0" style="-fx-background-color: #fff; -fx-border-color: #222;" text="Login">
                <HBox.margin>
                   <Insets bottom="20.0" />
                </HBox.margin>

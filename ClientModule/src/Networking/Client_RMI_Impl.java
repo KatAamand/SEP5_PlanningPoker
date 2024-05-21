@@ -173,6 +173,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
             try {
                 server.addConnectedUserToSession(Session.getCurrentUser());
             } catch (RemoteException e) {
+                e.printStackTrace();
                 throw new RuntimeException();
             }
         });
