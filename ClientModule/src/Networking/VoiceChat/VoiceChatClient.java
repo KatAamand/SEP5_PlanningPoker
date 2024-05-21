@@ -140,16 +140,20 @@ public class VoiceChatClient {
     private static VoiceChatClient instance;
     private static final Lock lock = new ReentrantLock();
 
+    private final Object sendLock = new Object();
+    private final Object receiveLock = new Object();
+
     private VoiceChatClient(int serverPort) {
         try {
             microphone = AudioUtils.getTargetDataLine();
             speakers = AudioUtils.getSourceDataLine();
             clientSocket = new DatagramSocket();
-        } catch (LineUnavailableException e)
-        {
+        }
+        catch (LineUnavailableException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
@@ -190,7 +194,9 @@ public class VoiceChatClient {
                 while (running) {
                     int bytesRead = microphone.read(buffer, 0, buffer.length);
                     DatagramPacket sendPacket = new DatagramPacket(buffer, bytesRead, serverAddress, serverPort);
-                    clientSocket.send(sendPacket);
+                    synchronized (sendLock) {
+                        clientSocket.send(sendPacket);
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -203,8 +209,12 @@ public class VoiceChatClient {
 
                 while (running) {
                     DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
-                    clientSocket.receive(receivePacket);
-                    speakers.write(receivePacket.getData(), 0, receivePacket.getLength());
+                    synchronized (receiveLock) {
+                        clientSocket.receive(receivePacket);
+                    }
+                    synchronized (speakers) {
+                        speakers.write(receivePacket.getData(), 0, receivePacket.getLength());
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
