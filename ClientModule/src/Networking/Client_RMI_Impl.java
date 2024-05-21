@@ -175,6 +175,9 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
             } catch (RemoteException e) {
                 throw new RuntimeException();
             }
+            catch (NullPointerException e)
+            {
+            }
         });
     }
 

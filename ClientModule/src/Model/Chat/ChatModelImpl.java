@@ -87,7 +87,8 @@ public class ChatModelImpl extends PlanningPokerModelImpl implements ChatModel
   }
   @Override
   public void startVoiceCall() {
-    this.voiceChat = VoiceChatClient.getInstance((Session.getConnectedGameId() + 5000));
+    //this.voiceChat = VoiceChatClient.getInstance((Session.getConnectedGameId() + 5000));
+    this.voiceChat = VoiceChatClient.getInstance(5000);
     voiceChat.start();
   }
 
