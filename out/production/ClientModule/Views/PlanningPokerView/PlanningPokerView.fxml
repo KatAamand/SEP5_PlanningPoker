@@ -3,17 +3,15 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="740.0"
-      prefWidth="1350.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="Views.PlanningPokerView.PlanningPokerViewController">
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="760.0" prefWidth="1400.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Views.PlanningPokerView.PlanningPokerViewController">
     <children>
-        <fx:include fx:id="taskView" source="../TaskView/TaskView.fxml"/>
+        <fx:include fx:id="taskView" source="../TaskView/TaskView.fxml" />
         <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="770.0" prefWidth="890.0">
             <children>
-                <fx:include fx:id="lobbyView" source="../LobbyView/LobbyView.fxml"/>
-                <fx:include fx:id="gameView" source="../GameView/GameView.fxml"/>
+                <fx:include fx:id="lobbyView" source="../LobbyView/LobbyView.fxml" />
+                <fx:include fx:id="gameView" source="../GameView/GameView.fxml" />
             </children>
         </VBox>
-        <fx:include fx:id="chatView" source="../ChatView/ChatView.fxml"/>
+        <fx:include fx:id="chatView" source="../ChatView/ChatView.fxml" />
     </children>
 </HBox>
