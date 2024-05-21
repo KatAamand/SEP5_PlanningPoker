@@ -185,9 +185,9 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable {
     }
 
 
-    @Override
-    public void broadcastTaskListUpdate(Map<Integer, ArrayList<ClientConnection_RMI>> clientList, ServerConnection_RMI server, int planningPokerId) {
-        ArrayList<ClientConnection_RMI> receivingClients = clientList.get(planningPokerId);
+    @Override public synchronized void broadcastTaskListUpdate(Map<Integer, ArrayList<ClientConnection_RMI>> clientList, ServerConnection_RMI server, int planningPokerId) {
+        //ArrayList<ClientConnection_RMI> receivingClients = clientList.get(planningPokerId);
+        ArrayList<ClientConnection_RMI> receivingClients = new ArrayList<>(clientList.get(planningPokerId));
         if (receivingClients != null) {
             for (int i = 0; i < receivingClients.size(); i++) {
                 if (receivingClients.get(i) == null) {

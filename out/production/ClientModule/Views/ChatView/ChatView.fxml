@@ -78,7 +78,7 @@
       <HBox alignment="CENTER" prefHeight="60.0" style="-fx-background-color: #fff; -fx-border-color: #222;">
          <children>
             <TextField fx:id="messageInputTextField" prefHeight="30.0" prefWidth="168.0" style="-fx-border-color: #222;" />
-            <Button mnemonicParsing="false" onAction="#onMessageSendButtonPressed" prefHeight="30.0" style="-fx-background-color: #fff; -fx-border-color: #222;" text="Send">
+            <Button defaultButton="true" mnemonicParsing="false" onAction="#onMessageSendButtonPressed" prefHeight="30.0" style="-fx-background-color: #fff; -fx-border-color: #222;" text="Send">
                <font>
                   <Font size="10.0" />
                </font>
