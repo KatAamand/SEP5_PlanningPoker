@@ -32,15 +32,7 @@
                         </VBox>
                         <VBox prefHeight="125.0" prefWidth="890.0" style="-fx-background-color: #D2ECC3;">
                            <children>
-                              <HBox>
-                                 <children>
-                                    <Label fx:id="finalEffortLabel" prefHeight="27.0" prefWidth="101.0">
-                                       <font>
-                                          <Font name="System Bold" size="18.0" />
-                                       </font>
-                                    </Label>
-                                 </children>
-                              </HBox>
+                              <HBox />
                               <Label fx:id="taskHeaderLabel" prefHeight="27.0" prefWidth="713.0" text="Task header">
                                  <font>
                                     <Font name="System Bold" size="18.0" />
@@ -54,6 +46,11 @@
                                     <VBox prefHeight="112.0" prefWidth="690.0">
                                        <children>
                                           <Label fx:id="taskDescLabel" alignment="TOP_LEFT" prefHeight="87.0" prefWidth="690.0" text="lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." wrapText="true" />
+                                          <Label fx:id="finalEffortLabel" prefHeight="27.0" prefWidth="430.0">
+                                             <font>
+                                                <Font name="System Bold Italic" size="13.0" />
+                                             </font>
+                                          </Label>
                                           <HBox>
                                              <children>
                                                 <Label alignment="BOTTOM_LEFT" prefHeight="23.0" prefWidth="159.0" text="Recommended effort: " wrapText="true">

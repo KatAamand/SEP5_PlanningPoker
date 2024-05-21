@@ -103,7 +103,12 @@ public class GameViewModel
       // Local user has manually selected another task. Continue to display this task.
       taskHeaderPropertyProperty().setValue(selectedTaskInTaskList.getTaskHeader());
       taskDescPropertyProperty().setValue(selectedTaskInTaskList.getDescription());
-      finalEffortLabelProperty().setValue(selectedTaskInTaskList.getFinalEffort());
+      if(selectedTaskInTaskList.getFinalEffort() != null && !selectedTaskInTaskList.getFinalEffort().isBlank()) {
+        finalEffortLabelProperty().setValue("Final Effort: " + selectedTaskInTaskList.getFinalEffort());
+      } else {
+        finalEffortLabelProperty().setValue(selectedTaskInTaskList.getFinalEffort());
+      }
+      recommendedEffortProperty().setValue("");
 
     } else {
       // Local user has NOT manually selected another task. Display the task that the team is currently estimating.
@@ -112,11 +117,14 @@ public class GameViewModel
         taskHeaderPropertyProperty().setValue(taskBeingEstimated.getTaskHeader());
         taskDescPropertyProperty().setValue(taskBeingEstimated.getDescription());
         finalEffortLabelProperty().setValue(taskBeingEstimated.getFinalEffort());
+        recommendedEffortProperty().setValue("");
+        finalEffortLabelProperty().setValue("");
       } else {
         // Shows if there are no more valid tasks left for estimation:
         taskHeaderPropertyProperty().setValue("No more tasks");
         taskDescPropertyProperty().setValue("No more tasks");
         finalEffortLabelProperty().setValue("");
+        recommendedEffortProperty().setValue("");
       }
     }
     clearPlacedCards();
