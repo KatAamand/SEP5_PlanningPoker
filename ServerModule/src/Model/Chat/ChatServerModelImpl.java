@@ -9,6 +9,8 @@ import Networking.ServerConnection_RMI;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -65,7 +67,7 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
 
   @Override
   public void receiveAndBroadcastMessage(Message message, User sender, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) throws RemoteException {
-    System.out.println(connectedClients);
+    //System.out.println(connectedClients);
     sender.getPlanningPoker().getChat().addMessage(message);
 
     for (ClientConnection_RMI client : connectedClients)
@@ -76,7 +78,7 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
           if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == sender.getPlanningPoker().getPlanningPokerID())
           {
             client.receiveMessage(message);
-            System.out.println("Sending message to: " + client);
+            System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", ChatServerModelImpl: Sending message to: " + client.hashCode());
           }
         } catch (RemoteException e) {
           if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
@@ -151,61 +153,44 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
     }
   }
 
-  /*@Override
-  public void addUserToSession(User user, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) throws RemoteException {
-
-    for (ClientConnection_RMI client : connectedClients) {
-      try {
-        if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == user.getPlanningPoker().getPlanningPokerID()) {
-          // Added to only check users against their unique usernames, instead of the entire user object.
-          boolean userNotFound = true;
-          for (User existingUser : user.getPlanningPoker().getConnectedUsers()) {
-            if (existingUser.getUsername().equals(client.getCurrentUser().getUsername())) {
-              userNotFound = false;
-            }
-          }
-
-          if (userNotFound) {
-            user.getPlanningPoker().getConnectedUsers().add(client.getCurrentUser());
-          }
-*/
-          // Commented out below, and added above since the below would return different users despite the only difference being the role applied to the specific user.
-        /*if (!user.getPlanningPoker().getConnectedUsers().contains(client.getCurrentUser())) {
-          user.getPlanningPoker().getConnectedUsers().add(client.getCurrentUser());
-        }*/
-        /*}
-      }
-      catch (NullPointerException e)
-      {
-        continue;
-      }
-    }
-    broadcastUsers(user, connectedClients, server, user.getPlanningPoker());
-  }*/
-
   @Override
   public void broadcastUsers(User user, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server, PlanningPoker planningPoker) throws RemoteException {
     ArrayList<User> userList = new ArrayList<>();
-    //planningPoker.getConnectedUsers().clear();
+    ArrayList<Thread> threadList = new ArrayList<>();
+
+    //Check which clients are connected to the current game:
     for (ClientConnection_RMI client : connectedClients)
     {
-      try {
-        if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == planningPoker.getPlanningPokerID()) {
-          userList.add(client.getCurrentUser());
-          //planningPoker.getConnectedUsers().add(client.getCurrentUser());
+      Thread newThread = new Thread(() -> {
+        try {
+          if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == planningPoker.getPlanningPokerID()) {
+            userList.add(client.getCurrentUser());
+          }
+        } catch (NullPointerException | RemoteException e) {
+          System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", ChatServerModelImpl: User not found in game. Ignoring user.");
         }
-      } catch (NullPointerException e) {
-        System.out.println("ChatServerModelImpl: User found not ind game. Ignoring user.");
-        continue;
+      });
+      newThread.setDaemon(true);
+      threadList.add(newThread);
+      newThread.start();
+    }
+
+    // Wait for all spawned threads to finish executing:
+    for (Thread thread : threadList) {
+      try {
+        thread.join();
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
       }
     }
+
+    // Broadcast to the remaining clients:
     for (ClientConnection_RMI client : connectedClients) {
       Thread sendUserThread = new Thread(() -> {
         try {
             if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == planningPoker.getPlanningPokerID()) {
-              System.out.println("Sending user to client");
+              System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", ChatServerModelImpl: Sending user to client");
               client.receiveUser(userList);
-              //client.receiveUser(planningPoker.getConnectedUsers());
             }
         } catch (RemoteException e) {
           if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
@@ -242,7 +227,7 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
             }
           }
         } catch (NullPointerException ignored) {
-          System.out.println("ChatServerModelImpl: User found not ind game. Ignoring user.");
+          System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", ChatServerModelImpl: User found not ind game. Ignoring user.");
         } catch (RemoteException e) {
           if(String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
             //Unregisters clients from the Server, who have lost connection in order to avoid further server errors.
@@ -273,7 +258,7 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
       Thread sendUserThread = new Thread(() -> {
         try {
           if (client.getCurrentUser().getPlanningPoker().getPlanningPokerID() == planningPoker.getPlanningPokerID()) {
-            System.out.println("Sending user to client");
+            System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", ChatServerModelImpl: Sending user to client");
             client.receiveUser(userList);
             //client.receiveUser(planningPoker.getConnectedUsers());
           }
@@ -299,7 +284,6 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
   @Override
   public void removeUserFromSession(User user, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) throws RemoteException {
 
-    // Added to only check users against their unique usernames, instead of the entire user object.
     boolean userFound = false;
     for (User existingUser : user.getPlanningPoker().getConnectedUsers()) {
       if(existingUser.getUsername().equals(user.getUsername())) {
@@ -308,7 +292,7 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
     }
 
     if(userFound) {
-      System.out.println("Removing user from session");
+      System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", ChatServerModelImpl: Removing user from session");
       PlanningPoker temp = user.getPlanningPoker();
       temp.getConnectedUsers().remove(user);
       for (int i = 0; i < temp.getConnectedUsers().size(); i++) {
@@ -319,24 +303,6 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
       }
       broadcastUsersWithException(user, connectedClients, server, temp);
     }
-
-    // Commented out below, and added above since the below would return different users despite the only difference being the role applied to the specific user.
-    /*if (user.getPlanningPoker().getConnectedUsers().contains(user)) {
-      System.out.println("Removing user from session");
-      PlanningPoker temp = user.getPlanningPoker();
-      temp.getConnectedUsers().remove(user);
-      for (ClientConnection_RMI client : connectedClients)
-      {
-        if (client.getCurrentUser().equals(user))
-        {
-          client.getCurrentUser().setPlanningPoker(null);
-          System.out.println(client.getCurrentUser().getPlanningPoker());
-        }
-      }
-      broadcastUsers(user, connectedClients, server, temp);
-    }*/
-
   }
-
 
 }

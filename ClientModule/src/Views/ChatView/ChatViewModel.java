@@ -5,7 +5,6 @@ import DataTypes.Message;
 import DataTypes.User;
 import Model.Chat.ChatModel;
 import Views.ViewModel;
-import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,12 +15,13 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class ChatViewModel extends ViewModel {
@@ -75,13 +75,13 @@ public class ChatViewModel extends ViewModel {
     }
 
     public void setAdminOverride() {
-        // Check if the user is already an admin:
-        if(Session.getCurrentUser().getAdmin() != null) {
-            // Local user is already an admin. Show an error.
+        // Check if the user is already an admin and still has all the proper admin privileges:
+        if(Session.getCurrentUser().getAdmin() != null && Session.getCurrentUser().getRole().getPermissions().containsAll(Session.getCurrentUser().getAdmin().getPermissions())) {
+            // Local user is already an admin, and has the proper permissions. Show an error.
+            // User has all the proper permissions. Show an error
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText("You are already an ADMIN");
             alert.showAndWait();
-
         } else {
             // Local user is not an admin
             // Create a popup window for the user to enter the admin override password
@@ -98,7 +98,7 @@ public class ChatViewModel extends ViewModel {
 
             enterButton.setOnAction(e -> {
                 String password = passwordField.getText();
-                System.out.println("Admin Override password entered: " + password);
+                System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", ChatViewModel: Admin Override password entered: " + password);
                 // Attempt to set the local user as admin:
                 if(chatModel.setAdmin(Session.getCurrentUser(), password)) {
                     // Close the window, the action was successful.

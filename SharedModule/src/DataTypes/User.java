@@ -42,17 +42,19 @@ public class User implements Serializable
   }
 
   public void setPlanningPoker(PlanningPoker planningPoker) {
-    this.planningPoker = planningPoker;
+    if(planningPoker != null) {
+      this.planningPoker = planningPoker;
 
-    boolean userNotFound = true;
-    for (User user : planningPoker.getConnectedUsers()) {
-      if(user.getUsername().equals(this.getUsername())) {
-        userNotFound = false;
+      boolean userNotFound = true;
+      for (User user : planningPoker.getConnectedUsers()) {
+        if(user.getUsername().equals(this.getUsername())) {
+          userNotFound = false;
+        }
       }
-    }
 
-    if(userNotFound) {
-      planningPoker.addUserToSession(this);
+      if(userNotFound) {
+        planningPoker.addUserToSession(this);
+      }
     }
   }
 

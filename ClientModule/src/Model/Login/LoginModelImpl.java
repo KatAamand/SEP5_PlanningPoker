@@ -9,6 +9,8 @@ import javafx.application.Platform;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 /**
@@ -47,17 +49,17 @@ public class LoginModelImpl implements LoginModel {
 
     @Override
     public void requestLogin(String username, String password) {
-        System.out.println("Model: Validating user");
+        System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", LoginModelImpl: Validating user");
         clientConnection.validateUser(username, password);
     }
 
     @Override
     public void requestCreateUser(String username, String password) {
         if (usernameAlreadyExists(username)) {
-            System.out.println("Model: User already exists");
+            System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", LoginModelImpl: User already exists");
             support.firePropertyChange("userAlreadyExists", null, true);
         } else {
-            System.out.println("Model: Creating user");
+            System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", LoginModelImpl: Creating user");
             clientConnection.createUser(username, password);
         }
     }
@@ -112,14 +114,14 @@ public class LoginModelImpl implements LoginModel {
 
         clientConnection.addPropertyChangeListener("userLoginSuccess", evt -> {
             Platform.runLater(() -> {
-                System.out.println("Model: User logged ind successfully");
+                System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", LoginModelImpl: User logged ind successfully");
                 support.firePropertyChange("userLoginSuccess", null, evt.getNewValue());
             });
         });
 
         clientConnection.addPropertyChangeListener("userCreatedSuccess", evt -> {
             Platform.runLater(() -> {
-                System.out.println("Model: User created successfully");
+                System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", LoginModelImpl: User created successfully");
                 support.firePropertyChange("userCreatedSuccess", null, null);
             });
         });

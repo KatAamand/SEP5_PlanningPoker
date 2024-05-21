@@ -8,6 +8,8 @@ import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 public class RunServer {
     public static void main(String[] args) {
@@ -26,6 +28,6 @@ public class RunServer {
 
          */
 
-        System.out.println("Server is started");
+        System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ": Server is started");
     }
 }

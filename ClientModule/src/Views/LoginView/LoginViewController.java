@@ -11,6 +11,8 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 public class LoginViewController {
     @FXML public TextField usernameTextField;
@@ -61,7 +63,7 @@ public class LoginViewController {
 
     public void onUserCreatedResult(Boolean success) {
         Platform.runLater(() -> {
-            System.out.println("Controller: User created: " + success);
+            System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", LoginViewController: User created: " + success);
             if (success) {
                 // Create alert that lets the user know that the user has been created
                 loginViewModel.showDialogBox("Bruger oprettet", "Din bruger er nu oprettet og du kan logge ind");

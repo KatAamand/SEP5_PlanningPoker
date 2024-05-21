@@ -16,6 +16,8 @@ import Model.Task.TaskServerModelImpl;
 import java.beans.PropertyChangeListener;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,15 +36,15 @@ public class Server_RMI implements ServerConnection_RMI {
         UnicastRemoteObject.exportObject(this, 0);
 
         connectedClients = new ArrayList<>();
-        System.out.print("\nServer_RMI: Initializing Chat data. Please wait!");
+        System.out.print("\n" + LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Server_RMI: Initializing Chat data. Please wait!");
         chatServerModel = ChatServerModelImpl.getInstance();
-        System.out.print(" Chat data ready.\nServer_RMI: Initializing Login data. Please wait!");
+        System.out.print(" Chat data ready.\n" + LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Server_RMI: Initializing Login data. Please wait!");
         loginServerModel = LoginServerModelImpl.getInstance();
-        System.out.print(" Login data ready.\nServer_RMI: Initializing Task data. Please wait!");
+        System.out.print(" Login data ready.\n" + LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Server_RMI: Initializing Task data. Please wait!");
         taskServerModel = TaskServerModelImpl.getInstance();
-        System.out.print(" Task data ready.\nServer_RMI: Initializing Game data. Please wait!");
+        System.out.print(" Task data ready.\n" + LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Server_RMI: Initializing Game data. Please wait!");
         gameServerModel = GameServerModelImpl.getInstance();
-        System.out.print(" Game data ready.\nServer_RMI: Initializing Other data. Please wait!");
+        System.out.print(" Game data ready.\n" + LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Server_RMI: Initializing Other data. Please wait!");
         mainServerModel = MainServerModelImpl.getInstance();
         System.out.print(" Other data ready.\n");
 
@@ -132,7 +134,7 @@ public class Server_RMI implements ServerConnection_RMI {
     @Override
     public void validateUser(String username, String password, ClientConnection_RMI client) {
         try {
-            System.out.println("Server_RMI: user trying to validate");
+            System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Server_RMI: Trying to validate user");
             User user = loginServerModel.validateUser(username, password);
 
             if (user == null) {
@@ -155,7 +157,7 @@ public class Server_RMI implements ServerConnection_RMI {
     @Override
     public void createUser(String username, String password, ClientConnection_RMI client) {
         try {
-            System.out.println("Server trying to create user");
+            System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Server_RMI: Trying to create user");
             Boolean isLoginCreated;
 
             isLoginCreated = loginServerModel.createUser(username, password);
@@ -176,7 +178,7 @@ public class Server_RMI implements ServerConnection_RMI {
     @Override public void logoutUser(String username, String password) throws RemoteException
     {
         //TODO: This feature is not implemented yet.
-        System.out.println("Server_RMI: Logging out user " + username);
+        System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Server_RMI: Logging out user " + username);
         loginServerModel.logoutUser(username, password);
     }
 
@@ -187,7 +189,7 @@ public class Server_RMI implements ServerConnection_RMI {
              switch (event.getPropertyName()) {
 
                 default:
-                    System.out.println("Unrecognized event: " + event.getPropertyName());
+                    System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Server_RMI: Unrecognized event: " + event.getPropertyName());
                     break;
             }
         };
@@ -214,16 +216,16 @@ public class Server_RMI implements ServerConnection_RMI {
         try {
             updateAction.run();
         } catch (Exception e) {
-            System.out.println("Failed to send update to client, trying again..");
+            System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Server_RMI: Failed to send update to client, trying again..");
             try {
                 Thread.sleep(1000);
                 updateAction.run();
             } catch(InterruptedException e2) {
-                System.out.println("Failed to send update to client second time, unregistering client");
+                System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Server_RMI: Failed to send update to client second time, unregistering client");
                 try {
                     unRegisterClientListener(client);
                 } catch (RemoteException e3) {
-                    System.out.println("Failed to unregister client");
+                    System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Server_RMI: Failed to unregister client");
                 }
             }
         }
@@ -277,13 +279,13 @@ public class Server_RMI implements ServerConnection_RMI {
     // MainView related requests
     @Override public boolean validatePlanningPokerID(int planningPokerID)
     {
-      System.out.println("Server_RMI: planningPokerID [" + planningPokerID + "] trying to validate");
+      System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Server_RMI: Validating Planning Poker Game [" + planningPokerID + "]");
       return mainServerModel.validatePlanningPoker(planningPokerID);
     }
 
     @Override public PlanningPoker createPlanningPoker(ClientConnection_RMI client) throws RemoteException
     {
-      System.out.println("Server_RMI: trying to create planningPokerID");
+      System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Server_RMI: Trying to create planningPokerID");
       PlanningPoker planningPoker = mainServerModel.createPlanningPoker();
 
       if(planningPoker != null) {
@@ -293,20 +295,23 @@ public class Server_RMI implements ServerConnection_RMI {
       return planningPoker;
     }
 
-    @Override public PlanningPoker loadPlanningPokerGame(int planningPokerId, ClientConnection_RMI client) throws RemoteException {
-        System.out.println("Server_RMI: planningPokerID trying to validate");
+    /** addClientToGame: True, the method will add the client to the game when loading. False, the method will simply return the planning poker object without adding the local client / local user to the game */
+    @Override public PlanningPoker loadPlanningPokerGame(int planningPokerId, ClientConnection_RMI client, boolean addClientToGame) throws RemoteException {
+        System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Server_RMI: Loading Planning Poker Game [" + planningPokerId + "] for Client [" + client.hashCode() + "]");
         PlanningPoker planningPoker = mainServerModel.getPlanningPokerGame(planningPokerId);
 
-        if(planningPoker != null) {
-            this.registerClientToGame(client, planningPokerId);
-            this.mainServerModel.getPlanningPokerGame(planningPoker.getPlanningPokerID()).addUserToSession(client.getCurrentUser());
+        if(planningPoker != null && client.getCurrentUser() != null && addClientToGame) {
+            if(client.getCurrentUser().getPlanningPoker() == null || client.getCurrentUser().getPlanningPoker().getPlanningPokerID() != planningPoker.getPlanningPokerID()) {
+                this.registerClientToGame(client, planningPokerId);
+                this.mainServerModel.getPlanningPokerGame(planningPoker.getPlanningPokerID()).addUserToSession(client.getCurrentUser());
+            }
         }
         return planningPoker;
     }
 
     @Override
     public void placeCard(UserCardData userCardData, int planningPokerId) throws RemoteException {
-        System.out.println("Server_RMI: Requesting placed card");
+        System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Server_RMI: Requesting placed card");
         gameServerModel.placeCard(userCardData, clientsInEachGame.get(planningPokerId), this);
     }
 
@@ -354,9 +359,12 @@ public class Server_RMI implements ServerConnection_RMI {
         chatServerModel.removeUserFromSession(user, connectedClients, this);
     }
 
-    @Override public void removeUserFromGame(User user, int planningPokerId) throws RemoteException {
+    @Override public void removeUserFromGame(ClientConnection_RMI localClient, User user, int planningPokerId) throws RemoteException {
         boolean userRemoved = mainServerModel.removeUserFromGame(user, planningPokerId);
         if(userRemoved) {
+            // Remove the client from the connected clients list:
+            this.unRegisterClientFromGame(localClient, planningPokerId);
+
             //Broadcast the changed planning poker object to connected clients:
             mainServerModel.broadcastPlanningPokerObjUpdate(clientsInEachGame, this, planningPokerId);
         }
@@ -381,7 +389,7 @@ public class Server_RMI implements ServerConnection_RMI {
             return returnedUser;
         } else {
             // Failed to set the role. Do nothing further.
-            System.out.println("Server_RMI: Failed to set the Role [" + roleToApply + "] to user [" + userToReceiveRole.getUsername() + "]");
+            System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Server_RMI: Failed to set the Role [" + roleToApply + "] to user [" + userToReceiveRole.getUsername() + "]");
             return null;
         }
     }

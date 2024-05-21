@@ -8,6 +8,8 @@ import javafx.stage.Stage;
 
 import java.beans.PropertyChangeEvent;
 import java.rmi.RemoteException;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.function.Consumer;
 
 public class MainViewModel  {
@@ -31,7 +33,7 @@ public class MainViewModel  {
 
     private void planningPokerIDCreated(PropertyChangeEvent event) {
         Platform.runLater(() -> {
-            System.out.println("VM: PlanningPoker created: " + event.getNewValue() + " with ID: " + Session.getConnectedGameId());
+            System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", MainViewModel: PlanningPoker created: " + event.getNewValue() + " with ID: " + Session.getConnectedGameId());
             onPlanningPokerIDCreatedResult.accept(true);
         });
     }

@@ -9,6 +9,8 @@ import Networking.Server_RMI;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.sql.SQLException;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -50,10 +52,10 @@ public class LoginServerModelImpl implements LoginServerModel, Runnable {
 
     @Override
     public User validateUser(String username, String password) {
-        System.out.println("Validating user: " + username + " " + password);
+        System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", LoginServerModelImpl: Validating user: " + username + " " + password);
         for (User user : users) {
             if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
-                System.out.println("user found, now logging user in...");
+                System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", LoginServerModelImpl: User found, now logging user in...");
                 return user;
             }
         }
@@ -62,7 +64,7 @@ public class LoginServerModelImpl implements LoginServerModel, Runnable {
 
     @Override
     public Boolean createUser(String username, String password) {
-        System.out.println("Creating user: " + username + " " + password);
+        System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", LoginServerModelImpl: Creating user: " + username + " " + password);
         User newUser = new User(username, password);
         users.add(newUser);
 

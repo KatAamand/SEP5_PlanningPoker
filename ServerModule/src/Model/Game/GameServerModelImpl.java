@@ -13,6 +13,8 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -174,7 +176,7 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
 
     @Override
     public void requestStartGame(int connectedGameId, ArrayList<ClientConnection_RMI> connectedClients, Server_RMI serverRmi) {
-        System.out.println("ServerModel: Starting game");
+        System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", GameServerModelImpl: Starting game");
         for (ClientConnection_RMI client : connectedClients) {
             Thread startGameThread = new Thread(() -> {
                 try {

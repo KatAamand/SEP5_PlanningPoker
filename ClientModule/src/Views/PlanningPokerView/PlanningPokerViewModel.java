@@ -4,7 +4,6 @@ import Application.ModelFactory;
 import Application.Session;
 import Application.ViewFactory;
 import Application.ViewModelFactory;
-import DataTypes.RuleSet;
 import DataTypes.UserRoles.UserPermission;
 import Model.PlanningPoker.PlanningPokerModel;
 import Util.PropertyChangeSubject;
@@ -13,10 +12,11 @@ import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
-import java.awt.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 public class PlanningPokerViewModel implements PropertyChangeSubject {
     private TaskViewModel taskViewModel;
@@ -84,31 +84,35 @@ public class PlanningPokerViewModel implements PropertyChangeSubject {
             // Consume the event to prevent the default close behavior:
             event.consume();
 
-            // Reset the UI elements:
+            // Try to close the window
             try {
-                // This list must be reset upon exiting the shown Planning Poker view in order to avoid tasks from the previous game mistakenly being added when using the skip functionality:
-                ModelFactory.getInstance().getGameModel().getSkippedTaskList().clear();
-            } catch (RemoteException e) {
-                throw new RuntimeException();
+                // Reset the UI elements:
+                try {
+                    // This list must be reset upon exiting the shown Planning Poker view in order to avoid tasks from the previous game mistakenly being added when using the skip functionality:
+                    ModelFactory.getInstance().getGameModel().getSkippedTaskList().clear();
+                } catch (RemoteException e) {
+                    throw new RuntimeException();
+                }
+
+                // TODO: Implement the functionality to delete the currently active PlanningPoker game, as described in Use Case #2, ALT0 sequence.
+
+                System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", PlanningPokerViewModel: Closing planning poker window");
+
+                // Reset the users permission level to simply be a developer, outside the game that is being closed:
+                // Also removes the user from the current session, before closing it
+                planningPokerModel.resetUserPermissionUponLeavingGame();
+
+
+                // Redirect the local user to the main view:
+                Platform.runLater(() -> {
+                    ViewFactory.getInstance().getMainViewStage().show();
+                    ViewFactory.getInstance().resetPlanningPokerViewController();
+                    currentStage.close();
+                });
+            } catch (RuntimeException e) {
+                // Error occurred. Close the entire application. Likely cause is that the server has shut down / connection has been lost.
+                Platform.exit();
             }
-
-            // TODO: Implement the functionality to delete the currently active PlanningPoker game, as described in Use Case #2, ALT0 sequence.
-
-            // TODO: Implement at network call to tell all connected users that the current game has been closed, as described in Use Case #2, ALT0 Sequence.
-
-            System.out.println("Closing planning poker window");
-
-            // Reset the users permission level to simply be a developer, outside the game that is being closed:
-            // Also removes the user from the current session, before closing it
-            planningPokerModel.resetUserPermissionUponLeavingGame();
-
-
-            // Redirect the local user to the main view:
-            Platform.runLater(() -> {
-                ViewFactory.getInstance().getMainViewStage().show();
-                ViewFactory.getInstance().resetPlanningPokerViewController();
-                currentStage.close();
-            });
         });
     }
 

@@ -12,6 +12,8 @@ import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
 import java.beans.PropertyChangeEvent;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.function.Consumer;
 
 public class LoginViewModel extends ViewModel {
@@ -125,7 +127,7 @@ public class LoginViewModel extends ViewModel {
 
     private void userCreated(PropertyChangeEvent event) {
         Platform.runLater(() -> {
-            System.out.println("VM: User created: " + event.getNewValue());
+            System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", LoginViewModel: User created: " + event.getNewValue());
             onUserCreatedResult.accept(true);
         });
     }

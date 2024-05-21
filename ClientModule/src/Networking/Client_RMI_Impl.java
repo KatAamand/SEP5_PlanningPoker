@@ -13,6 +13,8 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializable {
@@ -28,7 +30,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
             server = (ServerConnection_RMI) registry.lookup("Model");
             server.registerClient(this);
             server.registerClientListener(this);
-            System.out.println("Client_RMI: Connection to server established");
+            System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Client_RMI: Connection to server established");
 
         } catch (RemoteException | NotBoundException e) {
             throw new RuntimeException(e);
@@ -43,7 +45,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("Client_RMI: user trying to validate");
+        System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Client_RMI: User trying to validate");
     }
 
     @Override
@@ -53,20 +55,20 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("Client_RMI: user trying to create user");
+        System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Client_RMI: User trying to create user");
         // Requests for Login
     }
 
     @Override
     public boolean validatePlanningPokerID(int planningPokerID) {
         try {
-            System.out.println("Client_RMI: planningPokerID trying to validate");
+            System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Client_RMI: Trying to validate planningPokerID");
             boolean serverAnswer = server.validatePlanningPokerID(planningPokerID);
             if (serverAnswer) {
-                System.out.println("Opdatering fra server: planningPokerID is validated");
+                System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Client_RMI: PlanningPokerID is validated");
                 propertyChangeSupport.firePropertyChange("planningPokerIDValidatedSuccess", null, planningPokerID);
             } else {
-                System.out.println("Client_RMI: planningPokerID validation failed");
+                System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Client_RMI: planningPokerID validation failed");
             }
             return serverAnswer;
         } catch (RemoteException e) {
@@ -75,23 +77,23 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     }
 
     @Override public void updatePlanningPokerObj(int planningPokerId) throws RemoteException {
-        PlanningPoker serverAnswer = server.loadPlanningPokerGame(planningPokerId, this);
-        System.out.println("Client_RMI: Received updated Planning Poker Object from server");
+        PlanningPoker serverAnswer = server.loadPlanningPokerGame(planningPokerId, this, false);
+        System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Client_RMI: Received updated Planning Poker Object from server");
         if (serverAnswer != null) {
-            propertyChangeSupport.firePropertyChange("PlanningPokerObjUpdated", null, serverAnswer);
+            Platform.runLater(() -> propertyChangeSupport.firePropertyChange("PlanningPokerObjUpdated", null, serverAnswer));
         }
     }
 
     @Override
     public PlanningPoker loadPlanningPoker(int planningPokerId) {
         try {
-            System.out.println("Client_RMI: trying to load PlanningPoker Game with ID " + planningPokerId);
-            PlanningPoker serverAnswer = server.loadPlanningPokerGame(planningPokerId, this);
+            System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Client_RMI: Trying to load PlanningPoker Game with ID " + planningPokerId);
+            PlanningPoker serverAnswer = server.loadPlanningPokerGame(planningPokerId, this, true);
 
             if (serverAnswer != null) {
                 //PlanningPoker loaded successfully
                 Session.getCurrentUser().setPlanningPoker(serverAnswer);
-                System.out.println("Opdatering fra server: PlanningPoker game has been loaded successfully");
+                System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Client_RMI: PlanningPoker game has been loaded successfully");
                 return serverAnswer;
             }
         } catch (RemoteException e) {
@@ -209,7 +211,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
             // Unexport the client from the RMI:
             UnicastRemoteObject.unexportObject(this, true);
 
-            System.out.println("Client_RMI: Local Client is disconnected");
+            System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Client_RMI: Local Client is disconnected");
         } catch (RemoteException e) {
             throw new RuntimeException();
         }
@@ -231,25 +233,25 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
 
     @Override
     public void userCreatedSuccessfully() {
-        System.out.println("Opdatering fra server: user is created successfully");
+        System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Client_RMI: User is created successfully");
         propertyChangeSupport.firePropertyChange("userCreatedSuccess", null, null);
     }
 
     @Override
     public void updateUser(User user) {
-        System.out.println("Opdatering fra server: user is logged in successfully");
+        System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Client_RMI: User is logged in successfully");
         propertyChangeSupport.firePropertyChange("userLoginSuccess", null, user);
     }
 
     @Override
     public PlanningPoker createPlanningPoker() {
         try {
-            System.out.println("Client_RMI: user trying to create planningPoker");
+            System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Client_RMI: User trying to create planningPoker");
             PlanningPoker serverAnswer = server.createPlanningPoker(this);
 
             if (serverAnswer != null) {
                 //PlanningPoker created successfully
-                System.out.println("Opdatering fra server: planningPokerID is created successfully");
+                System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Client_RMI: PlanningPokerID is created successfully");
                 Session.getCurrentUser().setPlanningPoker(serverAnswer);
                 propertyChangeSupport.firePropertyChange("planningPokerCreatedSuccess", null, serverAnswer);
                 return serverAnswer;
@@ -290,7 +292,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
 
     @Override public void removeUserFromGame(int planningPokerId) {
         try {
-            server.removeUserFromGame(Session.getCurrentUser(), planningPokerId);
+            server.removeUserFromGame(this, Session.getCurrentUser(), planningPokerId);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
@@ -308,7 +310,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     @Override
     public void placeCard(UserCardData userCardData) {
         try {
-            System.out.println("Client_RMI: Requesting placed card");
+            System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Client_RMI: Requesting placed card");
             server.placeCard(userCardData, Session.getConnectedGameId());
         } catch (RemoteException e) {
             throw new RuntimeException(e);
@@ -356,7 +358,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     @Override
     public void receiveMessage(Message message) {
         propertyChangeSupport.firePropertyChange("messageReceived", null, message);
-        System.out.println("Client_RMI: " + message.getMessage());
+        System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Client_RMI: " + message.getMessage());
     }
 
     @Override
@@ -377,7 +379,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
 
     @Override
     public void receivePlacedCard(UserCardData userCardData) {
-        System.out.println("Client_RMI: Received placed card " + userCardData.getUsername() + " " + userCardData.getPlacedCard());
+        System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Client_RMI: Received placed card " + userCardData.getUsername() + " " + userCardData.getPlacedCard());
         propertyChangeSupport.firePropertyChange("placedCardReceived", null, userCardData);
     }
 
@@ -398,7 +400,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
 
     @Override public void setRoleInGame(UserRole role, int planningPokerId, User user) {
         // Check if the user already has this role, if yes - do not trouble the server:
-        if(user.getRole().getUserRole() == role) {
+        if(user.getRole() != null && user.getRole().getUserRole() == role) {
             // User already has this role assigned. Do nothing.
             return;
         }
@@ -413,7 +415,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
         // Update the local user in the local Session with returned modified user including the added roles - if the returned user is also the local user:
         if (serverAnswer != null && Session.getCurrentUser().getUsername().equals(serverAnswer.getUsername())) {
             Session.setCurrentUser(serverAnswer);
-            System.out.println("Local user [" + Session.getCurrentUser().getUsername() + "] has become '" + Session.getCurrentUser().getRole().getRoleAsString() + "' in game [" + planningPokerId + "]");
+            System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Client_RMI: Local user [" + Session.getCurrentUser().getUsername() + "] has become '" + Session.getCurrentUser().getRole().getRoleAsString() + "' in game [" + planningPokerId + "]");
             propertyChangeSupport.firePropertyChange("UpdatedLocalUser", null, null);
 
         }
@@ -472,7 +474,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
 
     @Override
     public void startGame(int connectedGameId) {
-        System.out.println("Client_RMI: Game started");
+        System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Client_RMI: Game started");
         propertyChangeSupport.firePropertyChange("gameStarted", null, connectedGameId);
     }
 }

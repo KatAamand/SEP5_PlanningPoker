@@ -13,6 +13,8 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -93,7 +95,7 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable {
     private void createTaskInDB(Task task, int planningPokerId) {
         try {
             taskDAO.create(task.getTaskHeader(), task.getDescription(), planningPokerId);
-            System.out.println("Task created in DB");
+            System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Task created in DB");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -107,7 +109,7 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable {
         if (tasklistMap.get(planningPokerId) != null) {
             taskList = tasklistMap.get(planningPokerId);
             if (taskList.remove(task)) {
-                System.out.println("TaskServerModelImpl: Removed a task.");
+                System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", TaskServerModelImpl: Removed a task.");
                 try {
                     taskDAO.delete(task);
                 } catch (SQLException e) {
@@ -117,7 +119,7 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable {
                 return true;
             }
         }
-        System.out.println("TaskServerModelImpl: FAILED to remove task.");
+        System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", TaskServerModelImpl: FAILED to remove task.");
         return false;
     }
 
@@ -135,7 +137,7 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable {
                 for (Task task : taskList) {
                     if (task.equals(oldTask)) {
                         task.copyAttributesFromTask(newTask);
-                        System.out.println("TaskServerModelImpl: Edited a task.");
+                        System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", TaskServerModelImpl: Edited a task.");
 
                         updateTaskInDB(newTask);
                         fireTaskListDataUpdatedEvent(planningPokerId);
@@ -186,6 +188,7 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable {
 
 
     @Override public synchronized void broadcastTaskListUpdate(Map<Integer, ArrayList<ClientConnection_RMI>> clientList, ServerConnection_RMI server, int planningPokerId) {
+        // Experienced concurrency issues here:
         //ArrayList<ClientConnection_RMI> receivingClients = clientList.get(planningPokerId);
         ArrayList<ClientConnection_RMI> receivingClients = new ArrayList<>(clientList.get(planningPokerId));
         if (receivingClients != null) {
@@ -196,7 +199,7 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable {
                 }
             }
 
-            System.out.println("Server: Broadcasting changes to the task list to clients in game [" + planningPokerId + "]");
+            System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", TaskServerModelImpl: Broadcasting changes to the task list to clients in game [" + planningPokerId + "]");
             for (ClientConnection_RMI client : receivingClients) {
                 //Create a new thread for each connected client, and then call the desired broadcast operation. This minimizes server lag/hanging due to clients who have connection issues.
                 Thread transmitThread = new Thread(() -> {

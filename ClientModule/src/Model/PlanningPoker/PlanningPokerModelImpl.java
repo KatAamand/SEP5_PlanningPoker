@@ -12,6 +12,8 @@ import javafx.application.Platform;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 public class PlanningPokerModelImpl implements PlanningPokerModel
 {
@@ -67,9 +69,13 @@ public class PlanningPokerModelImpl implements PlanningPokerModel
       clientConnection.setRoleInGame(UserRole.ADMIN, Session.getConnectedGameId(), Session.getCurrentUser());
     }
 
-    // Remove the user from the session and the game
-    this.removeUserFromSession();
-    clientConnection.removeUserFromGame(Session.getConnectedGameId());
+    // Remove the user from the game and reset the local users connected game and planning poker values:
+    int connectedGameId = Session.getConnectedGameId();
+    Session.setConnectedGameId(-1);
+    PlanningPoker dummyPlanningPoker = new PlanningPoker(-1);
+    Session.getCurrentUser().setPlanningPoker(dummyPlanningPoker);
+    //this.removeUserFromSession();
+    clientConnection.removeUserFromGame(connectedGameId);
   }
 
   @Override
@@ -157,7 +163,8 @@ public class PlanningPokerModelImpl implements PlanningPokerModel
         if(!localUserRole.equals(game.getProductOwner().getRole().getUserRole())) {
           // Local users has not been updated. Update it:
           Session.setCurrentUser(game.getProductOwner());
-          System.out.println("Local user [" + this.getLocalUser().getUsername() + "] has become '" + Session.getCurrentUser().getRole().getRoleAsString() + "' in game [" + game.getPlanningPokerID() + "]");
+          System.out.println(
+              LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", PlanningPokerModelImpl: Local user [" + this.getLocalUser().getUsername() + "] has become '" + Session.getCurrentUser().getRole().getRoleAsString() + "' in game [" + game.getPlanningPokerID() + "]");
         }
       }
       // Compare local user to the received games Scrum Master:
@@ -166,7 +173,7 @@ public class PlanningPokerModelImpl implements PlanningPokerModel
         if(!localUserRole.equals(game.getScrumMaster().getRole().getUserRole())) {
           // Local users has not been updated. Update it:
           Session.setCurrentUser(game.getScrumMaster());
-          System.out.println("Local user [" + this.getLocalUser().getUsername() + "] has become '" + this.getLocalUser().getRole().getRoleAsString() + "' in game [" + game.getPlanningPokerID() + "]");
+          System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", PlanningPokerModelImpl: Local user [" + this.getLocalUser().getUsername() + "] has become '" + this.getLocalUser().getRole().getRoleAsString() + "' in game [" + game.getPlanningPokerID() + "]");
         }
       }
       // Local user is not Scrum Master nor Product Owner in most recent game. Ensure they are developers:

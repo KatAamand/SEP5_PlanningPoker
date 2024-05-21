@@ -29,6 +29,8 @@ import javafx.util.Duration;
 
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -254,7 +256,7 @@ public class GameViewModel
         throw new RuntimeException(e);
       }
     } else {
-      System.out.println("GameViewModel: Local user attempted to set final effort. This action is reserved for the Scrum Master.");
+      System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", GameViewModel: Local user attempted to set final effort. This action is reserved for the Scrum Master.");
     }
   }
 
@@ -432,9 +434,9 @@ public class GameViewModel
         if (placedCards.size() > 1) {
             String firstCard = placedCards.get(0).getPlacedCard();
             for (UserCardData card : placedCards) {
-                System.out.println("card: " + card.getPlacedCard() + " firstCard: " + firstCard);
+                System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", GameViewModel: -> Card: " + card.getPlacedCard() + " FirstCard: " + firstCard);
                 if (!firstCard.equals(card.getPlacedCard())) {
-                    System.out.println("cards are not the same");
+                    System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", GameViewModel: Cards are not the same");
                     return;
                 }
             }
@@ -575,7 +577,7 @@ public class GameViewModel
     }
 
     private void activateHulaDancers() {
-        System.out.println("Hula dancers activated");
+        System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", GameViewModel: Hula dancers activated");
         HBox hulaContainer = new HBox();
 
         Image hulaGIF = new Image(getClass().getResourceAsStream("/Images/hula_girls.gif"));

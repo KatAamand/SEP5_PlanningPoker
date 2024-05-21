@@ -19,6 +19,8 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.sql.SQLException;
 import java.rmi.RemoteException;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.Map;
@@ -35,7 +37,6 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
     private ArrayList<PlanningPoker> planningPokerGames;
 
     private MainServerModelImpl() {
-        //TODO: Refactor so that it in the future loads the games from a database.
         support = new PropertyChangeSupport(this);
         planningPokerGames = new ArrayList<>();
         getAllPlanningPokersFromDb();
@@ -61,12 +62,12 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
             throw new RuntimeException(e);
         }
 
-        System.out.println("Creating planningPokerID: " + planningPoker.getPlanningPokerID());
+        System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", MainServerModelImpl: Creating planningPokerID: " + planningPoker.getPlanningPokerID());
         VoiceChatServer voiceChatServer = new VoiceChatServer((planningPoker.getPlanningPokerID() + 5000));
         Thread voiceChatServerThread = new Thread(voiceChatServer);
         voiceChatServerThread.start();
         planningPoker.setVoiceChatIsRunning();
-        System.out.println("Voice chat server for planning poker id: " + planningPoker.getPlanningPokerID() + " is started");
+        System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", MainServerModelImpl: Voice chat server for planning poker id: " + planningPoker.getPlanningPokerID() + " is started");
         planningPokerGames.add(planningPoker);
         return planningPoker;
     }
@@ -158,7 +159,12 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
 
                 // Assign the new role to the user
                 user.setRole(new Developer());
-                System.out.println("MainServerModelImpl: [" + user.getUsername() + "] is now a Developer in game [" + planningPokerId + "]");
+                System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", MainServerModelImpl: [" + user.getUsername() + "] is now a Developer in game [" + planningPokerId + "]");
+
+                // Check if user was an admin. If so, ensure to apply the admin privileges:
+                if(user.getAdmin() != null) {
+                    user.getRole().copyAndApplyPermissionsFrom(user.getAdmin());
+                }
                 return user;
             }
         }
@@ -176,7 +182,13 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
                 // Assign the new role to the user
                 planningPokerGames.get(i).setScrumMaster(user);
                 user.setRole(new ScrumMaster());
-                System.out.println("MainServerModelImpl: ScrumMaster is now [" + user.getUsername() + "] in game [" + planningPokerId + "]");
+                System.out.println(
+                    LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", MainServerModelImpl: ScrumMaster is now [" + user.getUsername() + "] in game [" + planningPokerId + "]");
+
+                // Check if user was an admin. If so, ensure to apply the admin privileges:
+                if(user.getAdmin() != null) {
+                    user.getRole().copyAndApplyPermissionsFrom(user.getAdmin());
+                }
                 return user;
             }
         }
@@ -194,7 +206,12 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
                 // Assign the new role to the user
                 planningPokerGames.get(i).setProductOwner(user);
                 user.setRole(new ProductOwner());
-                System.out.println("MainServerModelImpl: ProductOwner is now [" + user.getUsername() + "] in game [" + planningPokerId + "]");
+                System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", MainServerModelImpl: ProductOwner is now [" + user.getUsername() + "] in game [" + planningPokerId + "]");
+
+                // Check if user was an admin. If so, ensure to apply the admin privileges:
+                if(user.getAdmin() != null) {
+                    user.getRole().copyAndApplyPermissionsFrom(user.getAdmin());
+                }
                 return user;
             }
         }
@@ -210,13 +227,13 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
                 if(user.getAdmin() != null) {
                     user.getRole().getPermissions().removeAll(user.getAdmin().getPermissions());
                     user.setAdmin(null);
-                    System.out.println("MainServerModelImpl: [" + user.getUsername() + "] is no longer a ADMIN in game [" + planningPokerId + "]");
+                    System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", MainServerModelImpl: [" + user.getUsername() + "] is no longer a ADMIN in game [" + planningPokerId + "]");
                     return user;
                 } else {
                     // Assign the new ADMIN role to the user, without changing applied game roles
                     user.setAdmin(new Admin());
                     user.getRole().copyAndApplyPermissionsFrom(user.getAdmin());
-                    System.out.println("MainServerModelImpl: [" + user.getUsername() + "] is now a ADMIN in game [" + planningPokerId + "]");
+                    System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", MainServerModelImpl: [" + user.getUsername() + "] is now a ADMIN in game [" + planningPokerId + "]");
                     return user;
                 }
             }
@@ -225,14 +242,14 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
     }
 
     private void checkIfUserAlreadyIsAssignedToKeyRole(User user, PlanningPoker game) {
-        if(game.getProductOwner() != null && game.getProductOwner().equals(user)) {
+        if(game.getProductOwner() != null && game.getProductOwner().getUsername().equals(user.getUsername())) {
             // User is already assigned as the Product Owner. Unassign them in the Planning Poker Object.
             game.setProductOwner(null);
-            System.out.println("MainServerModelImpl: [" + user.getUsername() + "] was removed as Product Owner in game [" + game.getPlanningPokerID() + "]");
-        } else if (game.getScrumMaster() != null && game.getScrumMaster().equals(user)) {
+            System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", MainServerModelImpl: [" + user.getUsername() + "] was removed as Product Owner in game [" + game.getPlanningPokerID() + "]");
+        } else if (game.getScrumMaster() != null && game.getScrumMaster().getUsername().equals(user.getUsername())) {
             // User is already assigned as the Scrum Master. Unassign them in the Planning Poker Object.
             game.setScrumMaster(null);
-            System.out.println("MainServerModelImpl: [" + user.getUsername() + "] was removed as Scrum Master in game [" + game.getPlanningPokerID() + "]");
+            System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", MainServerModelImpl: [" + user.getUsername() + "] was removed as Scrum Master in game [" + game.getPlanningPokerID() + "]");
         }
     }
 
@@ -246,7 +263,7 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
                 }
             }
 
-            System.out.println("Server: Broadcasting changes to the Planning Poker Object to clients in game [" + planningPokerId + "]");
+            System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", MainServerModelImpl: Broadcasting changes to the Planning Poker Object to clients in game [" + planningPokerId + "]");
             for (ClientConnection_RMI client : receivingClients) {
                 //Create a new thread for each connected client, and then call the desired broadcast operation. This minimizes server lag/hanging due to clients who have connection issues.
                 Thread transmitThread = new Thread(() -> {
@@ -307,11 +324,7 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
                         j--;
                     }
                 }
-                if(userRemoved) {
-                    return true;
-                } else {
-                    return false;
-                }
+              return userRemoved;
             }
         }
         return false;

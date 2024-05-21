@@ -3,6 +3,8 @@ package Networking;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -33,7 +35,7 @@ public class VoiceChatServer implements Runnable {
                 String clientKey = receivePacket.getAddress().getHostAddress() + ":" + receivePacket.getPort();
                 if (!clients.containsKey(clientKey)) {
                     clients.put(clientKey, receivePacket.getPort());
-                    System.out.println("New client connected: " + clientKey);
+                    System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", VoiceChatServer: New client connected: " + clientKey);
                 }
 
                 // Forward packet to all other clients

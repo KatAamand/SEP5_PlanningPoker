@@ -95,7 +95,7 @@ public class ChatViewController {
 
     public void onSetProductOwnerButtonPressed()
     {
-        if (!userTableView.getSelectionModel().getSelectedItem().equals(Session.getCurrentUser())) {
+        if (!userTableView.getSelectionModel().getSelectedItem().equals(Session.getCurrentUser()) || Session.getCurrentUser().getAdmin() != null) {
             viewModel.setProductOwner(userTableView.getSelectionModel().getSelectedItem());
         }
     }
