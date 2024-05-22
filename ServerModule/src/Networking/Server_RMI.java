@@ -280,6 +280,10 @@ public class Server_RMI implements ServerConnection_RMI {
     @Override public boolean validatePlanningPokerID(int planningPokerID)
     {
       System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Server_RMI: Validating Planning Poker Game [" + planningPokerID + "]");
+
+      // Verify that all users are still connected to the game:
+      mainServerModel.verifyConnectedUsersIntegrity(clientsInEachGame, this, planningPokerID);
+
       return mainServerModel.validatePlanningPoker(planningPokerID);
     }
 
@@ -381,6 +385,9 @@ public class Server_RMI implements ServerConnection_RMI {
      */
     @Override public User setRoleInPlanningPokerGame(UserRole roleToApply, User userToReceiveRole, int planningPokerId) throws RemoteException
     {
+        // Verify that all users are still connected to the game:
+        mainServerModel.verifyConnectedUsersIntegrity(clientsInEachGame, this, planningPokerId);
+
         // Apply the role to the specified user in the specified game:
         User returnedUser = mainServerModel.applyPlanningPokerRole(roleToApply, userToReceiveRole, planningPokerId);
         if(returnedUser != null) {

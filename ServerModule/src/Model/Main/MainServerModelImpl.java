@@ -330,6 +330,87 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
         return false;
     }
 
+    @Override public void verifyConnectedUsersIntegrity(Map<Integer, ArrayList<ClientConnection_RMI>> clientList, ServerConnection_RMI server, int planningPokerId)
+    {
+        ArrayList<ClientConnection_RMI> connectedClients = new ArrayList<>(clientList.get(planningPokerId));
+        ArrayList<Thread> threadList = new ArrayList<>();
+        ArrayList<String> connectedUsersNames = new ArrayList<>();
+        PlanningPoker currentGame = this.getPlanningPokerGame(planningPokerId);
+        boolean somethingChanged = false;
+
+        for (ClientConnection_RMI client : connectedClients) {
+            //Create a new thread for each connected client, and then call the desired broadcast operation. This minimizes server lag/hanging due to clients who have connection issues.
+            Thread controlThread = new Thread(() -> {
+                try {
+                    connectedUsersNames.add(client.getCurrentUser().getUsername());
+                } catch (RemoteException e) {
+                    if (String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
+                        //Unregisters clients from the Game Server, who have lost connection in order to avoid further server errors.
+                        try {
+                            server.unRegisterClientFromGame(client, planningPokerId);
+                        } catch (RemoteException ex) {
+                            throw new RuntimeException();
+                        }
+                    } else {
+                        //Error is something else:
+                        e.printStackTrace();
+                        throw new RuntimeException();
+                    }
+                }
+            });
+            controlThread.setDaemon(true);
+            threadList.add(controlThread);
+            controlThread.start();
+        }
+
+        // Wait for all controlThreads to execute
+        for (Thread thread : threadList) {
+            try {
+                thread.join();
+            } catch (InterruptedException ignored) {}
+        }
+
+        // Create a list of all the users who are active and inactive in the game, based on the checked usernames:
+        ArrayList<User> foundUsers = new ArrayList<>();
+        ArrayList<User> nonActiveUsers = new ArrayList<>(currentGame.getConnectedUsers());
+        for (String connectedUserName : connectedUsersNames) {
+            for (User user : currentGame.getConnectedUsers()) {
+                if(user.getUsername().equals(connectedUserName)) {
+                    foundUsers.add(user);
+                    break;
+                }
+            }
+        }
+
+        for (User user : foundUsers) {
+            nonActiveUsers.remove(user);
+        }
+
+        // Remove any non-active users from the game:
+        for (User user : nonActiveUsers) {
+            // Check that the disconnected user did not hold a key role:
+            if(currentGame.getScrumMaster().getUsername().equals(user.getUsername())) {
+                // Disconnected user was Scrum Master. Reset Scrum Master:
+                currentGame.setScrumMaster(null);
+            }
+
+            if(currentGame.getProductOwner().getUsername().equals(user.getUsername())) {
+                // Disconnected user was Product Owner. Reset Product Owner:
+                currentGame.setProductOwner(null);
+            }
+
+            // Remove the non-active user from the game:
+            this.removeUserFromGame(user, planningPokerId);
+            somethingChanged = true;
+        }
+
+        // If there were changes, broadcast this to all connected clients:
+        if(somethingChanged) {
+            this.broadcastPlanningPokerObjUpdate(clientList, server, planningPokerId);
+        }
+
+    }
+
     public static MainServerModel getInstance() {
         //Here we use the "Double-checked lock" principle to ensure proper synchronization.
         if (instance == null) {

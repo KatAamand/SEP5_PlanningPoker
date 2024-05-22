@@ -51,18 +51,21 @@ public class MainModelImpl implements MainModel
 
   @Override public void requestConnectPlanningPoker(int planningPokerID) throws RemoteException
   {
-    if(clientConnection.validatePlanningPokerID(planningPokerID))
-    {
+    // Ensure that the connecting client is not assigned to an existing planning poker object:
+    Session.getCurrentUser().setPlanningPoker(null);
+    Session.setConnectedGameId(-1);
+
+    if(clientConnection.validatePlanningPokerID(planningPokerID)) {
       ModelFactory.getInstance().getPlanningPokerModel().setActivePlanningPokerGame(clientConnection.loadPlanningPoker(planningPokerID));
       Session.getCurrentUser().setPlanningPoker(ModelFactory.getInstance().getPlanningPokerModel().getActivePlanningPokerGame());
 
       // Check if there is already a Scrum Master in the game:
-      if (ModelFactory.getInstance().getPlanningPokerModel().getActivePlanningPokerGame().getScrumMaster() == null) {
+      if (ModelFactory.getInstance().getPlanningPokerModel().getActivePlanningPokerGame().getScrumMaster() == null || ModelFactory.getInstance().getPlanningPokerModel().getActivePlanningPokerGame().getScrumMaster().getUsername().equals(Session.getCurrentUser().getUsername())) {
         // There is no Scrum Master. Set this client/User as the Scrum Master:
         clientConnection.setRoleInGame(UserRole.SCRUM_MASTER, Session.getConnectedGameId(), Session.getCurrentUser());
       }
       // Check if there is a Product Owner in the game already:
-      else if (ModelFactory.getInstance().getPlanningPokerModel().getActivePlanningPokerGame().getProductOwner() == null) {
+      else if (ModelFactory.getInstance().getPlanningPokerModel().getActivePlanningPokerGame().getProductOwner() == null || ModelFactory.getInstance().getPlanningPokerModel().getActivePlanningPokerGame().getProductOwner().getUsername().equals(Session.getCurrentUser().getUsername())) {
         // There is already no product owner. Set this client to initially be the Product Owner.
         clientConnection.setRoleInGame(UserRole.PRODUCT_OWNER, Session.getConnectedGameId(), Session.getCurrentUser());
       }
