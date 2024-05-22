@@ -17,7 +17,7 @@
          <children>
             <HBox alignment="CENTER_RIGHT" spacing="20.0">
                <children>
-                  <Label text="Klar til at starte et nyt planningPoker? ">
+                  <Label text="Ready to start a new PlanningPoker?">
                      <font>
                         <Font size="14.0" />
                      </font>
@@ -27,7 +27,7 @@
                         <Image url="@../../Images/arrow.png" />
                      </image>
                   </ImageView>
-                  <Button fx:id="createPlanningPokerButton" mnemonicParsing="false" onAction="#onCreatePlanningPokerPressed" prefWidth="138.0" style="-fx-background-color: #fff; -fx-border-color: #222;" text="Opret planningPoker">
+                  <Button fx:id="createPlanningPokerButton" mnemonicParsing="false" onAction="#onCreatePlanningPokerPressed" prefWidth="138.0" style="-fx-background-color: #fff; -fx-border-color: #222;" text="Create PlanningPoker">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor></Button>
@@ -35,7 +35,7 @@
             </HBox>
             <HBox alignment="CENTER_RIGHT" prefHeight="67.0" prefWidth="553.0" spacing="15.0">
                <children>
-                  <Label text="Deltag i PlanningPoker">
+                  <Label text="Join a PlanningPoker">
                      <font>
                         <Font size="14.0" />
                      </font>
@@ -46,7 +46,7 @@
                      </image>
                   </ImageView>
                   <TextField fx:id="planningPokerIdTextField" alignment="CENTER_RIGHT" prefHeight="28.0" prefWidth="106.0" promptText="PlanningPoker id" style="-fx-border-color: #222;" />
-                  <Button fx:id="connectToPlanningPokerButton" defaultButton="true" mnemonicParsing="false" onAction="#onConnectToPlanningPokerPressed" prefHeight="28.0" prefWidth="138.0" style="-fx-border-color: #222; -fx-background-color: #fff;" text="Tilslut planningPoker">
+                  <Button fx:id="connectToPlanningPokerButton" defaultButton="true" mnemonicParsing="false" onAction="#onConnectToPlanningPokerPressed" prefHeight="28.0" prefWidth="138.0" style="-fx-border-color: #222; -fx-background-color: #fff;" text="Join PlanningPoker">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor></Button>
