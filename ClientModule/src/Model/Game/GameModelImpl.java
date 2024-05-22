@@ -9,18 +9,16 @@ import DataTypes.UserRoles.UserPermission;
 import Model.PlanningPoker.PlanningPokerModelImpl;
 import Networking.Client;
 import javafx.application.Platform;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
 {
-  private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-  private Client clientConnection;
+  private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+  private final Client clientConnection;
   private ArrayList<Task> skippedTaskList;
 
   /**
@@ -98,8 +96,7 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
 
 
 
-  @Override public void refreshTaskList()
-  {
+  @Override public void refreshTaskList() {
     clientConnection.loadTaskList(Session.getConnectedGameId());
   }
 
@@ -135,13 +132,13 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
   }
 
   @Override public synchronized void removeTaskFromSkippedList(Task task) {
-    // In order to avoid concurrency issues here, since the skippedTaskList is concurrently being sent to other clients while this tasks possibly is running,
+    // In order to avoid concurrency issues here, since the skippedTaskList is concurrently being sent to other clients while this method possibly is running,
     // we simply create a copy of the skipped task list and use this as a reference to the tasks to remove from the original skippedTaskList.
-    ArrayList<Task> copyOfSkippedTaskList = new ArrayList<>(skippedTaskList);
+    ArrayList<Task> copyOfSkippedTaskList = new ArrayList<>(this.getSkippedTaskList());
     boolean dataRemoved = false;
     for (Task skippedTask : copyOfSkippedTaskList) {
       if(skippedTask.equals(task)) {
-        skippedTaskList.remove(skippedTask);
+        this.skippedTaskList.remove(skippedTask);
         dataRemoved = true;
       }
     }
@@ -153,8 +150,7 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
   }
 
   /** Assigns all the required listeners to the clientConnection allowing for Observable behavior between these classes. */
-  private void assignListeners()
-  {
+  private void assignListeners() {
     clientConnection.addPropertyChangeListener("placedCardReceived",
         this::updatePlacedCardMap);
 
@@ -168,18 +164,18 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
 
     clientConnection.addPropertyChangeListener("receivedListOfTasksToSkip",
         evt -> {
-          if (evt.getNewValue() != null)
-          {
+          if (evt.getNewValue() != null) {
             skippedTaskList = ((ArrayList<Task>) evt.getNewValue());
           }
-          propertyChangeSupport.firePropertyChange("receivedListOfTasksToSkip",
-              null, null);
+          propertyChangeSupport.firePropertyChange("receivedListOfTasksToSkip",null, null);
         });
+
     clientConnection.addPropertyChangeListener("receivedUpdatedTaskList",
         evt -> {
           propertyChangeSupport.firePropertyChange("taskListUpdated", null,
               null);
         });
+
     clientConnection.addPropertyChangeListener("showCards", evt ->  {
         propertyChangeSupport.firePropertyChange("showCards", null, null);
     });
@@ -189,35 +185,25 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
     });
   }
 
-  @Override public void updatePlacedCardMap(
-      PropertyChangeEvent propertyChangeEvent)
-  {
+  @Override public void updatePlacedCardMap(PropertyChangeEvent propertyChangeEvent) {
     System.out.println("Model: Updating placed card map");
     propertyChangeSupport.firePropertyChange("placedCardReceived", null,
         propertyChangeEvent.getNewValue());
   }
 
-  @Override public void addPropertyChangeListener(
-      PropertyChangeListener listener)
-  {
+  @Override public void addPropertyChangeListener(PropertyChangeListener listener) {
     propertyChangeSupport.addPropertyChangeListener(listener);
   }
 
-  @Override public void addPropertyChangeListener(String name,
-      PropertyChangeListener listener)
-  {
+  @Override public void addPropertyChangeListener(String name, PropertyChangeListener listener) {
     propertyChangeSupport.addPropertyChangeListener(name, listener);
   }
 
-  @Override public void removePropertyChangeListener(
-      PropertyChangeListener listener)
-  {
+  @Override public void removePropertyChangeListener(PropertyChangeListener listener) {
     propertyChangeSupport.removePropertyChangeListener(listener);
   }
 
-  @Override public void removePropertyChangeListener(String name,
-      PropertyChangeListener listener)
-  {
+  @Override public void removePropertyChangeListener(String name, PropertyChangeListener listener) {
     propertyChangeSupport.removePropertyChangeListener(name, listener);
   }
 }

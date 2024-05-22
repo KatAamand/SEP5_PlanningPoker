@@ -3,11 +3,11 @@ package Util;
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
 
-
-/** This interface is used to define the subject in an Obervable relationship. It extends Serializable.
- * It allows Observers to attach listeners to the subject in order to Observe for specific events. */
-public interface PropertyChangeSubject extends Serializable
-{
+/** This interface is used to define the subject in an Obervable relationship.
+ * It allows Observers to attach listeners to the subject in order to Observe for specific events.
+ * This interface extends the Serializable interface in order to prepare implementing classes for transmission between the Client and Server
+ * */
+public interface PropertyChangeSubject extends Serializable {
   /**<p>Assigns a listener to this subject<br></p>
    * @param listener A PropertyChangeListener, i.e. some code or methods that should be executed when a PropertyChangeEvent is fired).
    */

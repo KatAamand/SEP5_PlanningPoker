@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class TaskServerModelImpl implements TaskServerModel, Runnable {
+public class TaskServerModelImpl implements TaskServerModel {
 
     private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private volatile static TaskServerModel instance;
@@ -33,7 +33,6 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable {
 
 
     private TaskServerModelImpl() {
-        //TODO: Refactor so that it in the future loads the list from a database.
         this.tasklistMap = new HashMap<>();
         try {
             this.taskDAO = TaskDAOImpl.getInstance();
@@ -260,11 +259,5 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable {
     @Override
     public void removePropertyChangeListener(String name, PropertyChangeListener listener) {
         propertyChangeSupport.removePropertyChangeListener(name, listener);
-    }
-
-
-    @Override
-    public void run() {
-        //TODO
     }
 }

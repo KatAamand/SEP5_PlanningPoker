@@ -51,6 +51,7 @@ public class PlanningPokerModelImpl implements PlanningPokerModel
     return this.activePlanningPokerGame;
   }
 
+  /* TODO: This method is not used. Should be deleted.
   @Override
   public void removeUserFromSession() {
       try {
@@ -58,7 +59,7 @@ public class PlanningPokerModelImpl implements PlanningPokerModel
       } catch (RemoteException e) {
           throw new RuntimeException(e);
       }
-  }
+  }*/
 
   /** Resets the local User to the base level developer permission set, when leaving a planning poker game */
   @Override public void resetUserPermissionUponLeavingGame() {
@@ -142,7 +143,7 @@ public class PlanningPokerModelImpl implements PlanningPokerModel
 
   }
 
-  public void confirmLocalUserHasProperRoleAndPermissions(PlanningPoker game) {
+  @Override public void confirmLocalUserHasProperRoleAndPermissions(PlanningPoker game) {
     if(game != null) {
       // Check if the local user was assigned a role inside the Planning Poker Object. If so, ensure that the local session Object is updated:
       UserRole localUserRole = this.getLocalUser().getRole().getUserRole();

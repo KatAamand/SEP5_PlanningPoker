@@ -9,7 +9,6 @@ import Model.PlanningPoker.PlanningPokerModelImpl;
 import Networking.Client;
 import Networking.VoiceChat.VoiceChatClient;
 import javafx.application.Platform;
-
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
@@ -18,7 +17,7 @@ import java.util.ArrayList;
 public class ChatModelImpl extends PlanningPokerModelImpl implements ChatModel
 {
   private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-  private Client clientConnection;
+  private final Client clientConnection;
   private VoiceChatClient voiceChat;
 
 
@@ -58,16 +57,17 @@ public class ChatModelImpl extends PlanningPokerModelImpl implements ChatModel
     clientConnection.sendUser();
   }
 
-  @Override
+
+  // TODO: The method below is never used. It should be removed.
+  /*@Override
   public void removeUserFromSession() {
     clientConnection.removeUserFromSession();
-  }
+  }*/
+
 
   @Override
   public void setProductOwner(User user) {
-    //clientConnection.setProductOwner(user);
-
-    // This method ensures that other connected clients also receive and update about the new product owner, as well as ensuring that the product owner is added to the Planning Poker obj on the server.
+    // This method ensures that other connected clients also receive the update about the new product owner, as well as ensuring that the product owner is added to the Planning Poker obj on the server.
     clientConnection.setRoleInGame(UserRole.PRODUCT_OWNER, Session.getConnectedGameId(), user);
   }
 
@@ -76,8 +76,7 @@ public class ChatModelImpl extends PlanningPokerModelImpl implements ChatModel
     clientConnection.setRoleInGame(UserRole.SCRUM_MASTER, Session.getConnectedGameId(), user);
   }
 
-  @Override public boolean setAdmin(User user, String adminPswd)
-  {
+  @Override public boolean setAdmin(User user, String adminPswd) {
     if(adminPswd.equals(super.getActivePlanningPokerGame().getAdminOverridePassword())) {
       clientConnection.setRoleInGame(UserRole.ADMIN, Session.getConnectedGameId(), user);
       return true;
@@ -107,7 +106,8 @@ public class ChatModelImpl extends PlanningPokerModelImpl implements ChatModel
 
       //Here the actual messsage gets sent
       propertyChangeSupport.firePropertyChange("messageReceived", null, evt.getNewValue());
-      });
+    });
+
 
     clientConnection.addPropertyChangeListener("userReceived", evt -> {
       //same as above
@@ -115,6 +115,10 @@ public class ChatModelImpl extends PlanningPokerModelImpl implements ChatModel
       propertyChangeSupport.firePropertyChange("userReceived", null, evt.getNewValue());
     });
 
+
+    // Listens to the parent class for updates to the Planning Poker object. Each time the Planning Poker object is updated
+    // in the parent class (which receives from the client connection with the server), there is a possibility that the user list has changed.
+    // Thus, we must update the user list each time this object changes.
     super.addPropertyChangeListener("PlanningPokerObjUpdated", evt -> {
       propertyChangeSupport.firePropertyChange("userReceived", null, super.getActivePlanningPokerGame().getConnectedUsers());
     });

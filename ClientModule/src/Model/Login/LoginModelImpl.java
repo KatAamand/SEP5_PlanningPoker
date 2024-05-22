@@ -1,11 +1,9 @@
 package Model.Login;
 
 import Application.ClientFactory;
-
 import DataTypes.User;
 import Networking.Client;
 import javafx.application.Platform;
-
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
@@ -41,6 +39,7 @@ public class LoginModelImpl implements LoginModel {
         this.userList = userList;
     }
 
+
     @Override
     public ArrayList<User> getUserList() {
         return userList;
@@ -71,8 +70,8 @@ public class LoginModelImpl implements LoginModel {
 
     @Override
     public boolean usernameAlreadyExists(String username) {
-        if (userList != null) {
-            for (User user : userList) {
+        if (this.getUserList() != null) {
+            for (User user : this.getUserList()) {
                 if (user.getUsername().equals(username)) {
                     return true;
                 }

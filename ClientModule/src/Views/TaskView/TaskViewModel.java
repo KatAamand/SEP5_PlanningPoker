@@ -115,17 +115,16 @@ public class TaskViewModel
     return isTaskListEmpty;
   }
 
-  public void assignButtonMethods()
-  {
-    btnEditTask.setOnAction(event -> {
-      this.editTask();
-    });
-    btnCreateTask.setOnAction(event -> {
-      this.createTask();
-    });
+  public void assignButtonMethods() {
+    btnEditTask.setOnAction(event -> this.editTask());
+    btnCreateTask.setOnAction(event ->  this.createTask());
     btnRuleSet.setOnAction(event -> this.showRuleSetBox());
-    btnExportTaskList.setOnAction(event -> this.exportTaskList());
-
+    btnExportTaskList.setOnAction(event -> {
+      // Check that the local user has the proper permissions to export task list.
+      if(Session.getCurrentUser().getRole().getPermissions().contains(UserPermission.EXPORT_TASKLIST)) {
+        // Export the task list.
+        this.exportTaskList();
+      }});
   }
 
   public void refresh()
@@ -358,37 +357,28 @@ public class TaskViewModel
         alert.showAndWait();
     }
 
-  public void exportTaskList()
-  {
+  public void exportTaskList() {
     List<Task> tasks = taskModel.getTaskList();
 
     String fileName = "Tasklist.csv";
 
-    try (PrintWriter writer = new PrintWriter(new FileWriter(fileName)))
-    {
+    try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) {
       writer.println("Header, Description, Final effort");
 
-      for (Task task : tasks)
-      {
-        writer.println(task.getTaskHeader() + "," + task.getDescription() + ","
-            + task.getFinalEffort());
+      for (Task task : tasks) {
+        writer.println(task.getTaskHeader() + "," + task.getDescription() + "," + task.getFinalEffort());
       }
       Alert alert = new Alert((Alert.AlertType.INFORMATION));
       alert.setTitle("Export successful");
       alert.setHeaderText(null);
-      alert.setContentText(
-          "Tasklist has been exported succesfully with filename: " + fileName);
+      alert.setContentText("Tasklist has been exported succesfully with filename: " + fileName);
       alert.showAndWait();
-    }
-
-    catch (IOException e)
-    {
+    } catch (IOException e) {
       e.printStackTrace();
       Alert alert = new Alert((Alert.AlertType.INFORMATION));
       alert.setTitle("Export failed");
       alert.setHeaderText(null);
-      alert.setContentText(
-          "Tasklist failed to export, please try again.");
+      alert.setContentText("Tasklist failed to export, please try again.");
       alert.showAndWait();
     }
   }

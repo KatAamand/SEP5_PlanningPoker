@@ -10,6 +10,7 @@ import Model.MainView.MainModel;
 import Model.MainView.MainModelImpl;
 import Model.Game.GameModel;
 import Model.Game.GameModelImpl;
+import Model.PlanningPoker.PlanningPokerModel;
 import Model.PlanningPoker.PlanningPokerModelImpl;
 import Model.Task.TaskModel;
 import Model.Task.TaskModelImpl;
@@ -92,7 +93,7 @@ public class ModelFactory {
         return lobbyModel;
     }
 
-    public PlanningPokerModelImpl getPlanningPokerModel() throws RemoteException {
+    public PlanningPokerModel getPlanningPokerModel() throws RemoteException {
         if (planningPokerModelImpl == null) {
             planningPokerModelImpl = new PlanningPokerModelImpl();
         }
