@@ -26,6 +26,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
         propertyChangeSupport = new PropertyChangeSupport(this);
         try {
             UnicastRemoteObject.exportObject(this, 0);
+            // Registry registry = LocateRegistry.getRegistry("192.168.1.166", 1099);
             Registry registry = LocateRegistry.getRegistry("localhost", 1099);
             server = (ServerConnection_RMI) registry.lookup("Model");
             server.registerClient(this);
@@ -396,6 +397,11 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     @Override
     public void receiveRecommendedEffort(String recommendedEffort) {
         propertyChangeSupport.firePropertyChange("recommendedEffortReceived", null, recommendedEffort);
+    }
+
+    @Override
+    public void startTimer() {
+        propertyChangeSupport.firePropertyChange("startTimer", null, null);
     }
 
     @Override public void setRoleInGame(UserRole role, int planningPokerId, User user) {

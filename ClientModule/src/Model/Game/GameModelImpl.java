@@ -154,6 +154,10 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
     clientConnection.addPropertyChangeListener("placedCardReceived",
         this::updatePlacedCardMap);
 
+    clientConnection.addPropertyChangeListener("startTimer", evt -> {
+      propertyChangeSupport.firePropertyChange("startTimer", null, null);
+    });
+
     clientConnection.addPropertyChangeListener("recommendedEffortReceived",
         evt -> propertyChangeSupport.firePropertyChange("recommendedEffortReceived",
             null, evt.getNewValue()));

@@ -56,6 +56,8 @@ public class TaskDAOImpl extends DatabaseConnection implements TaskDAO {
             statement.setString(3, task.getFinalEffort());
             statement.setInt(4, task.getTaskID());
             statement.executeUpdate();
+
+            System.out.println("Task updated" + task.getFinalEffort() + " get task final effort from DB: " + task.getTaskID() + readByTaskId(task.getTaskID()).getFinalEffort());
         }
     }
 

@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
 <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="616.0" prefWidth="890.0" stylesheets="@/resources/style.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Views.GameView.GameViewController">
@@ -104,27 +105,42 @@
                <children>
                   <VBox alignment="BOTTOM_RIGHT" prefHeight="224.0" prefWidth="890.0">
                      <children>
-                        <HBox>
+                        <StackPane prefHeight="244.0" prefWidth="890.0">
                            <children>
-                              <HBox fx:id="placedCardsWrapper" alignment="CENTER" prefHeight="227.0" prefWidth="890.0" />
-                              <VBox alignment="CENTER" prefHeight="224.0" prefWidth="228.0" spacing="20.0">
+                              <HBox>
                                  <children>
-                                    <Button fx:id="showCardsButton" mnemonicParsing="false" onAction="#onShowCardsButtonPressed" prefWidth="100.0" style="-fx-background-color: #D5E8D4; -fx-border-color: #82B366;" text="Show cards">
-                                       <cursor>
-                                          <Cursor fx:constant="HAND" />
-                                       </cursor></Button>
-                                    <Button fx:id="clearCardsButton" mnemonicParsing="false" onAction="#onClearCardsButtonPressed" prefWidth="100.0" style="-fx-background-color: #fff; -fx-border-color: #ccc;" text="Clear cards">
-                                       <cursor>
-                                          <Cursor fx:constant="HAND" />
-                                       </cursor></Button>
+                                    <HBox fx:id="placedCardsWrapper" alignment="CENTER" prefHeight="227.0" prefWidth="890.0" />
+                                    <VBox alignment="CENTER" prefHeight="224.0" prefWidth="228.0" spacing="20.0">
+                                       <children>
+                                          <Button fx:id="showCardsButton" mnemonicParsing="false" onAction="#onShowCardsButtonPressed" prefWidth="100.0" style="-fx-background-color: #D5E8D4; -fx-border-color: #82B366;" text="Show cards">
+                                             <cursor>
+                                                <Cursor fx:constant="HAND" />
+                                             </cursor></Button>
+                                          <Button fx:id="clearCardsButton" mnemonicParsing="false" onAction="#onClearCardsButtonPressed" prefWidth="100.0" style="-fx-background-color: #fff; -fx-border-color: #ccc;" text="Clear cards">
+                                             <cursor>
+                                                <Cursor fx:constant="HAND" />
+                                             </cursor></Button>
+                                       </children>
+                                    </VBox>
                                  </children>
-                              </VBox>
+                                 <padding>
+                                    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                                 </padding>
+                              </HBox>
+                              <StackPane fx:id="countDownCircle">
+                                 <children>
+                                    <Circle fill="#dae8fc" radius="50.0" stroke="#6c8ebf" strokeType="INSIDE" strokeWidth="2.0" />
+                                    <Label fx:id="CountDownLabel" text="3" textFill="#6c8ebf">
+                                       <font>
+                                          <Font name="System Bold" size="24.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </StackPane>
                            </children>
-                           <padding>
-                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                           </padding>
-                        </HBox>
-                     </children></VBox>
+                        </StackPane>
+                     </children>
+                  </VBox>
                   <StackPane fx:id="effortWrapper" alignment="CENTER_LEFT" prefHeight="135.0" prefWidth="890.0">
                      <padding>
                         <Insets left="30.0" right="30.0" />

@@ -17,6 +17,7 @@ public class GameViewController
   @FXML public StackPane effortWrapper;
   @FXML public HBox placedCardsWrapper;
   @FXML public Label recommendedEffortLabel;
+  @FXML public StackPane countDownCircle;
   @FXML private Button clearCardsButton;
   @FXML private Button showCardsButton;
   @FXML private Button setEffortButton;
@@ -43,6 +44,7 @@ public class GameViewController
     gameViewModel.setFinalEffortDropdownRef(finalEffortDropdown);
     gameViewModel.setClearCardsButtonRef(clearCardsButton);
     gameViewModel.setShowCardsButtonRef(showCardsButton);
+    gameViewModel.setCountDownStackPane(countDownCircle);
     gameViewModel.setGameStarted(false);
     gameViewModel.refresh();
     showPlayingCards();
