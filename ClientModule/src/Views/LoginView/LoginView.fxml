@@ -19,7 +19,7 @@
             <Insets bottom="10.0" left="20.0" right="20.0" top="20.0" />
          </VBox.margin>
       </Label>
-      <Label text="Nøjagtige estimeringer, bedre resultater">
+      <Label text="Precise estimation, better results">
          <font>
             <Font name="Open Sans Italic" size="14.0" />
          </font>
@@ -28,7 +28,7 @@
          <children>
             <VBox alignment="CENTER_LEFT">
                <children>
-                  <TextField fx:id="usernameTextField" promptText="Brugernavn" style="-fx-border-color: #222;" />
+                  <TextField fx:id="usernameTextField" promptText="Username" style="-fx-border-color: #222;" />
                   <Label fx:id="usernameErrorLabel" textFill="#b52b2b">
                      <VBox.margin>
                         <Insets top="5.0" />
@@ -41,7 +41,7 @@
             </VBox>
             <VBox alignment="CENTER_LEFT">
                <children>
-                  <TextField fx:id="passwordTextField" promptText="Adgangskode" style="-fx-border-color: #222;" />
+                  <TextField fx:id="passwordTextField" promptText="Password" style="-fx-border-color: #222;" />
                   <Label fx:id="passwordErrorLabel" textFill="#b52b2b">
                      <VBox.margin>
                         <Insets top="5.0" />
@@ -59,7 +59,7 @@
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></Button>
-            <Button fx:id="createUserButton" mnemonicParsing="false" onAction="#onCreateUserButtonPressed" prefWidth="100.0" style="-fx-background-color: #fff; -fx-border-color: #222;" text="Opret bruger">
+            <Button fx:id="createUserButton" mnemonicParsing="false" onAction="#onCreateUserButtonPressed" prefWidth="100.0" style="-fx-background-color: #fff; -fx-border-color: #222;" text="Register user">
                <HBox.margin>
                   <Insets bottom="20.0" />
                </HBox.margin>
