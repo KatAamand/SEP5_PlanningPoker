@@ -180,6 +180,7 @@ public class Server_RMI implements ServerConnection_RMI {
         //TODO: This feature is not implemented yet.
         System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Server_RMI: Logging out user " + username);
         loginServerModel.logoutUser(username, password);
+        gameServerModel.clearCardMap();
     }
 
     // Adding listeners to the client
@@ -289,7 +290,6 @@ public class Server_RMI implements ServerConnection_RMI {
 
     @Override public PlanningPoker createPlanningPoker(ClientConnection_RMI client) throws RemoteException
     {
-      System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Server_RMI: Trying to create planningPokerID");
       PlanningPoker planningPoker = mainServerModel.createPlanningPoker();
 
       if(planningPoker != null) {
@@ -344,13 +344,6 @@ public class Server_RMI implements ServerConnection_RMI {
         return gameServerModel.getEffortList();
     }
 
-    public int numOfClientsInGame(int planningPokerId) {
-        ArrayList<ClientConnection_RMI> clientsInGame = clientsInEachGame.get(planningPokerId);
-
-        return clientsInGame.size();
-    }
-
-
     // User related requests
 
     @Override
@@ -361,6 +354,7 @@ public class Server_RMI implements ServerConnection_RMI {
     @Override
     public void removeUserFromSession(User user) throws RemoteException {
         chatServerModel.removeUserFromSession(user, connectedClients, this);
+        gameServerModel.removeUser(user.getUsername());
     }
 
     @Override public void removeUserFromGame(ClientConnection_RMI localClient, User user, int planningPokerId) throws RemoteException {
@@ -371,6 +365,7 @@ public class Server_RMI implements ServerConnection_RMI {
 
             //Broadcast the changed planning poker object to connected clients:
             mainServerModel.broadcastPlanningPokerObjUpdate(clientsInEachGame, this, planningPokerId);
+            gameServerModel.removeUser(user.getUsername());
         }
     }
 

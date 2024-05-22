@@ -129,6 +129,39 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
         clientCardMap.put(userCardData.getUsername(), userCardData.getPlacedCard());
 
         broadcastNewCard(userCardData, connectedClients, server);
+
+        if (allCardsPlaced(connectedClients)) {
+            broadcastStartTimer(connectedClients, server);
+        }
+    }
+
+    private boolean allCardsPlaced(ArrayList<ClientConnection_RMI> connectedClients) {
+        return clientCardMap.size() == connectedClients.size();
+    }
+
+    private void broadcastStartTimer(ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) {
+        for (ClientConnection_RMI client : connectedClients) {
+            Thread startTimerThread = new Thread(() -> {
+                try {
+                    client.startTimer();
+                    System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", GameServerModelImpl: Starting timer");
+                } catch (Exception e) {
+                    if (String.valueOf(e.getCause()).equals("java.net.ConnectException: Connection refused: connect")) {
+                        //Unregisters clients from the Server, who have lost connection in order to avoid further server errors.
+                        try {
+                            server.unRegisterClient(client);
+                        } catch (RemoteException ex) {
+                            throw new RuntimeException();
+                        }
+                    } else {
+                        //Error is something else:
+                        throw new RuntimeException();
+                    }
+                }
+            });
+            startTimerThread.setDaemon(true);
+            startTimerThread.start();
+        }
     }
 
     @Override
@@ -151,6 +184,11 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
             clearCardsThread.setDaemon(true);
             clearCardsThread.start();
         }
+    }
+
+    @Override
+    public void removeUser(String username) {
+        clientCardMap.remove(username);
     }
 
     @Override
@@ -259,6 +297,11 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
             predictEffortThread.setDaemon(true);
             predictEffortThread.start();
         }
+    }
+
+    @Override
+    public void clearCardMap() {
+        clientCardMap.clear();
     }
 
     public void broadcastNewCard(UserCardData userCardData, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) {

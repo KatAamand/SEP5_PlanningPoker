@@ -137,7 +137,7 @@ public class TaskServerModelImpl implements TaskServerModel, Runnable {
                 for (Task task : taskList) {
                     if (task.equals(oldTask)) {
                         task.copyAttributesFromTask(newTask);
-                        System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", TaskServerModelImpl: Edited a task.");
+                        System.out.println("TaskServerModelImpl: Edited a task.");
 
                         updateTaskInDB(newTask);
                         fireTaskListDataUpdatedEvent(planningPokerId);

@@ -15,7 +15,7 @@
          <children>
             <HBox alignment="CENTER_LEFT" prefHeight="22.0" prefWidth="150.0" spacing="10.0">
                <children>
-                  <Label text="User_id:">
+                  <Label text="User id:">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
@@ -25,7 +25,7 @@
             </HBox>
             <HBox fx:id="label" prefHeight="22.0" prefWidth="150.0" spacing="10.0">
                <children>
-                  <Label text="Session: ">
+                  <Label text="PlanningPoker id">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>

@@ -74,6 +74,7 @@ public class TaskModelImpl extends PlanningPokerModelImpl implements TaskModel
   }
 
   @Override public boolean editTask(Task uneditedTask, Task editedTask) {
+    System.out.println("TaskModelImpl: editTask called" + editedTask.getFinalEffort());
     return clientConnection.editTask(uneditedTask, editedTask, super.getActivePlanningPokerGame().getPlanningPokerID());
   }
 
