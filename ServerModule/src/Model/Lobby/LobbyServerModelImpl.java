@@ -5,16 +5,17 @@ import java.beans.PropertyChangeSupport;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class LobbyServerModelImpl implements LobbyServerModel, Runnable{
+public class LobbyServerModelImpl implements LobbyServerModel {
+  // TODO: This class is never used. Consider removing.
 
-  private PropertyChangeSupport propertyChangeSupport;
-  private static LobbyServerModel instance;
+  private final PropertyChangeSupport propertyChangeSupport;
+  private static volatile LobbyServerModel instance;
   private static final Lock lock = new ReentrantLock();
 
 
   private LobbyServerModelImpl()
   {
-    //TODO
+    propertyChangeSupport = new PropertyChangeSupport(this);
   }
 
   public static LobbyServerModel getInstance()
@@ -44,10 +45,5 @@ public class LobbyServerModelImpl implements LobbyServerModel, Runnable{
   }
   @Override public void removePropertyChangeListener(String name, PropertyChangeListener listener) {
     propertyChangeSupport.removePropertyChangeListener(name, listener);
-  }
-
-  @Override public void run()
-  {
-    //TODO
   }
 }

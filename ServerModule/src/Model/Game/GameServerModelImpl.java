@@ -20,10 +20,10 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 
-public class GameServerModelImpl implements GameServerModel, Runnable {
+public class GameServerModelImpl implements GameServerModel {
 
-    private PropertyChangeSupport propertyChangeSupport;
-    private static GameServerModel instance;
+    private final PropertyChangeSupport propertyChangeSupport;
+    private static volatile GameServerModel instance;
     private static final Lock lock = new ReentrantLock();
     private ArrayList<Effort> effortList;
     private Map<String, String> clientCardMap;
@@ -32,6 +32,7 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
         effortList = new ArrayList<>();
         effortList = getEffortListFromDB();
         clientCardMap = new HashMap<>();
+        propertyChangeSupport = new PropertyChangeSupport(this);
     }
 
     public static GameServerModel getInstance() {
@@ -64,11 +65,6 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
     @Override
     public void removePropertyChangeListener(String name, PropertyChangeListener listener) {
         propertyChangeSupport.removePropertyChangeListener(name, listener);
-    }
-
-    @Override
-    public void run() {
-        //TODO
     }
 
     @Override
@@ -334,6 +330,6 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
 
     public Map<String, String> getClientCardMap() {
         return clientCardMap;
-    }
+    } //TODO: Method is never used. Consider removing.
 
 }
