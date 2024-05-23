@@ -6,7 +6,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 /**
- * The TaskClientInterface interface defines all the key methods relating to interfacing the client-side application with the server.
+ * The TaskClientInterface interface defines all the key methods relating to interfacing the client-side application with the server as they relate to the Tasks associated with each Planning Poker Game.
  * These methods enable the server and client to communicate with each other, and can be called from either the server or the client.
  * It extends the Remote interface and is thus prepared for network use with RMI.
  */
