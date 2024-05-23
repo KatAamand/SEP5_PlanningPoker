@@ -26,7 +26,7 @@ public interface GameServerModel extends PropertyChangeSubject
     ArrayList<Effort> getEffortListFromDB();
 
 
-    /** Broadcasts the list of skipped tasks to all the given clients, whom connected can still be established with. If connection cannot be established with a client,
+    /** Broadcasts the list of skipped tasks to all the given clients, whom connection can still be established with. If connection cannot be established with a client,
      * this method will forward a request to the server to unregister the problematic client in order to reduce server lag and server crashing.
      * @param clientList A reference to the Map containing the list of connected clients to each Planning Poker game.
      * @param skippedTaskList An ArrayList containing a list of tasks, that each connected client should skip.

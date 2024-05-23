@@ -292,7 +292,7 @@ public class MainServerModelImpl implements MainServerModel {
             try {
                 if (client.getCurrentUser().equals(user))
                 {
-                    client.setRoleInGameFromServer(PRODUCT_OWNER, user.getPlanningPoker().getPlanningPokerID(), user);
+                    client.setRoleOnServer(PRODUCT_OWNER, user.getPlanningPoker().getPlanningPokerID(), user);
                     break;
                 }
             } catch (RemoteException e) {

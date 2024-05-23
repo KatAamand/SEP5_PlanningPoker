@@ -113,13 +113,8 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     }
 
     @Override
-    public User setRoleOnServer(UserRole roleToApply, int s, User userToReceiveRole) throws RemoteException {
-        return server.setRoleInPlanningPokerGame(roleToApply, userToReceiveRole, s);
-    }
-
-    @Override
-    public void setRoleInGameFromServer(UserRole userRole, int s, User user) throws RemoteException {
-        setRoleInGame(userRole, s, user);
+    public User setRoleOnServer(UserRole roleToApply, int planningPokerId, User userToReceiveRole) throws RemoteException {
+        return server.setRoleInPlanningPokerGame(roleToApply, userToReceiveRole, planningPokerId);
     }
 
     @Override
@@ -369,7 +364,6 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     @Override
     public void receiveUser(ArrayList<User> users) throws RemoteException {
         Platform.runLater(() -> {
-            //System.out.println("Client receiving user" + users);
             propertyChangeSupport.firePropertyChange("userReceived", null, users);
             propertyChangeSupport.firePropertyChange("UpdatedLocalUser", null, null);
         });

@@ -101,8 +101,6 @@ public class PlanningPoker implements Serializable
     this.adminOverridePassword = pswd;
   }
 
-  //TODO: Do we need a removeUser method here?
-
   public List<Task> getTaskList()
   {
     return this.taskList;
