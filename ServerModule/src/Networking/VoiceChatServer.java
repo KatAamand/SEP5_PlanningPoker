@@ -33,7 +33,7 @@ public class VoiceChatServer implements Runnable {
                 DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
                 serverSocket.receive(receivePacket);
 
-                //If client doesnt exist i client hashMap, add client to the hashMap
+                //If client doesn't exist i client hashMap, add client to the hashMap
                 String clientKey = receivePacket.getAddress().getHostAddress() + ":" + receivePacket.getPort();
                 if (!clients.containsKey(clientKey)) {
                     clients.put(clientKey, receivePacket.getPort());
