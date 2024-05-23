@@ -27,7 +27,7 @@ public interface MainServerModel extends PropertyChangeSubject
   boolean validatePlanningPoker(int planningPokerID);
 
 
-  // TODO: Source code comment/document
+  /** Creates a planning poker session in the database, where its id is used to create an object in the java program*/
   PlanningPoker createPlanningPoker();
 
 

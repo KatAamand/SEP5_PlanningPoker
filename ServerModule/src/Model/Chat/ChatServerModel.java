@@ -22,16 +22,15 @@ public interface ChatServerModel extends PropertyChangeSubject
      * @param server the server which receives the request*/
     void receiveAndBroadcastMessage(Message message, User sender, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) throws RemoteException;
 
-    /** Adds user to */
-    // TODO: Source code comment/document
+    /** Adds user to its planning poker session's list of connected user, then broadcasts userlist to all users in that session */
     void addUserToSession(User user, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) throws RemoteException;
 
-    // TODO: Source code comment/document
+    /** Broadcasts userlist of senders planningpoker session to all users in that session*/
     void broadcastUsers(User user, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server, PlanningPoker planningPoker) throws RemoteException;
 
-    // TODO: Source code comment/document
+    /** Broadcasts userlist of senders planningpoker session to all users in that session, except to the sender who is being removed from that session*/
     void broadcastUsersWithException(User removedUser, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server, PlanningPoker planningPoker) throws RemoteException;
 
-    // TODO: Source code comment/document
+    /** Removes the user from the session, and broadcasts that update to the rest of the users in that session*/
     void removeUserFromSession(User user, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) throws RemoteException;
 }
