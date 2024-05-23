@@ -29,7 +29,10 @@ public interface GameModel extends PropertyChangeSubject {
     Task nextTaskToEvaluate();
 
 
-    // TODO: Source code comment/document
+    /**
+     * Returns the list of efforts assigned to the tasks during the current Planning Poker game.
+     * @return an ArrayList<Effort> containing all the efforts assigned.
+     */
     ArrayList<Effort> getEffortList();
 
 
@@ -54,11 +57,17 @@ public interface GameModel extends PropertyChangeSubject {
     void skipTask(Task task);
 
 
-    // TODO: Source code comment/document
+    /**
+     * Requests that a card is placed by the user during the current Planning Poker game.
+     * @param userCardData The data related to the user's card.
+     */
     void requestPlacedCard(UserCardData userCardData);
 
 
-    // TODO: Source code comment/document
+    /**
+     * Updates the map of placed cards when a PropertyChangeEvent occurs.
+     * @param propertyChangeEvent The event that triggers the update.
+     */
     void updatePlacedCardMap(PropertyChangeEvent propertyChangeEvent);
 
 
@@ -68,14 +77,18 @@ public interface GameModel extends PropertyChangeSubject {
     void refreshTaskList();
 
 
-    // TODO: Source code comment/document
+    /**
+     * Requests the server to clear all placed cards in the current Planning Poker game.
+     */
     void requestClearPlacedCards();
 
-
-    // TODO: Source code comment/document
+    /**
+     * Requests the server to show all placed cards in the current Planning Poker game.
+     */
     void requestShowCards();
 
-
-    // TODO: Source code comment/document
+    /**
+     * Requests the recommended effort estimation for the current task from the server.
+     */
     void requestRecommendedEffort();
 }

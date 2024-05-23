@@ -10,24 +10,44 @@ import java.util.ArrayList;
  * It extends the PropertyChangeSubject interface and is thus prepared for use with Observer Pattern principles.
  */
 public interface LoginModel extends PropertyChangeSubject {
-  // TODO: Source code comment/document
+
+  /**
+   * Sets the list of users.
+   * @param userList the list of users to set.
+   */
   void setUserList(ArrayList<User> userList);
 
-  // TODO: Source code comment/document
+  /**
+   * Returns the list of users.
+   * @return an ArrayList<User> containing all the users.
+   */
   ArrayList<User> getUserList();
 
-  // TODO: Source code comment/document
+  /**
+   * Requests to log in a user with the specified username and password.
+   * @param username the username of the user attempting to log in.
+   * @param password the password of the user attempting to log in.
+   */
   void requestLogin(String username, String password);
 
-
-  // TODO: Source code comment/document
+  /**
+   * Requests to create a new user with the specified username and password.
+   * @param username the desired username for the new user.
+   * @param password the desired password for the new user.
+   */
   void requestCreateUser(String username, String password);
 
-
-  // TODO: Source code comment/document
+  /**
+   * Requests to log out a user with the specified username and password.
+   * @param username the username of the user attempting to log out.
+   * @param password the password of the user attempting to log out.
+   */
   void requestLogout(String username, String password);
 
-
-  // TODO: Source code comment/document
+  /**
+   * Checks if a username already exists in the user list.
+   * @param username the username to check for existence.
+   * @return true if the username already exists, false otherwise.
+   */
   boolean usernameAlreadyExists(String username);
 }

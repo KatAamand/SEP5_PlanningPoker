@@ -60,6 +60,9 @@ public interface PlanningPokerModel extends PropertyChangeSubject
   void resetUserPermissionUponLeavingGame();
 
 
-  // TODO: Source code comment/document
+  /**
+   * Requests to start the Planning Poker game.
+   * This method signals the server to begin the game for all connected clients.
+   */
   void requestStartGame();
 }
