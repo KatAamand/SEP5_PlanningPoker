@@ -46,7 +46,7 @@
          <children>
             <HBox>
                <children>
-                  <Label text="Task list">
+                  <Label text="Tasklist">
                      <font>
                         <Font size="16.0" />
                      </font>
