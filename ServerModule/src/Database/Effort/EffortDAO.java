@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 public interface EffortDAO
 {
+  // TODO: Source code comment/document
   Effort readByEffort(String effort) throws SQLException;
 
   /**

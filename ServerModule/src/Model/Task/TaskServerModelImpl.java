@@ -8,7 +8,6 @@ import Database.Task.TaskDAO;
 import Database.Task.TaskDAOImpl;
 import Networking.ClientConnection_RMI;
 import Networking.ServerConnection_RMI;
-
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.rmi.RemoteException;
@@ -24,7 +23,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class TaskServerModelImpl implements TaskServerModel {
 
-    private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private volatile static TaskServerModel instance;
     private static final Lock lock = new ReentrantLock();
     private Map<Integer, List<Task>> tasklistMap;
@@ -71,20 +70,21 @@ public class TaskServerModelImpl implements TaskServerModel {
     public void addTask(Task task, int planningPokerId) {
         List<Task> taskList;
 
+        // Attempt to get the relevant list of tasks associated with specified planning poker game id, if such a list exists.
         if (tasklistMap.get(planningPokerId) != null) {
             taskList = tasklistMap.get(planningPokerId);
         } else {
             taskList = new ArrayList<>();
         }
 
-        if (taskList.contains(task)) {
-            taskList.remove(task);
-        }
+        // Attempt to remove any identical tasks, to avoid duplicates entering the task list:
+        taskList.remove(task);
 
+        // Attempt to add the task, to the task list:
         taskList.add(task);
-
         tasklistMap.put(planningPokerId, taskList);
 
+        // Create the task in the database:
         Task newTask = createTaskInDB(task, planningPokerId);
         task.setTaskID(newTask.getTaskID());
 
@@ -190,7 +190,6 @@ public class TaskServerModelImpl implements TaskServerModel {
 
     @Override public synchronized void broadcastTaskListUpdate(Map<Integer, ArrayList<ClientConnection_RMI>> clientList, ServerConnection_RMI server, int planningPokerId) {
         // Experienced concurrency issues here:
-        //ArrayList<ClientConnection_RMI> receivingClients = clientList.get(planningPokerId);
         ArrayList<ClientConnection_RMI> receivingClients = new ArrayList<>(clientList.get(planningPokerId));
         if (receivingClients != null) {
             for (int i = 0; i < receivingClients.size(); i++) {
@@ -240,26 +239,22 @@ public class TaskServerModelImpl implements TaskServerModel {
     }
 
 
-    @Override
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
+    @Override public void addPropertyChangeListener(PropertyChangeListener listener) {
         propertyChangeSupport.addPropertyChangeListener(listener);
     }
 
 
-    @Override
-    public void addPropertyChangeListener(String name, PropertyChangeListener listener) {
+    @Override public void addPropertyChangeListener(String name, PropertyChangeListener listener) {
         propertyChangeSupport.addPropertyChangeListener(name, listener);
     }
 
 
-    @Override
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
+    @Override public void removePropertyChangeListener(PropertyChangeListener listener) {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
 
-    @Override
-    public void removePropertyChangeListener(String name, PropertyChangeListener listener) {
+    @Override public void removePropertyChangeListener(String name, PropertyChangeListener listener) {
         propertyChangeSupport.removePropertyChangeListener(name, listener);
     }
 }

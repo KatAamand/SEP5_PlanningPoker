@@ -38,6 +38,7 @@ public interface MainServerModel extends PropertyChangeSubject
    */
   PlanningPoker getPlanningPokerGame(int planningPokerId);
 
+
   /** Retrieves all saved planning poker session from the database and saves them in the model*/
   void getAllPlanningPokersFromDb();
 
@@ -61,6 +62,7 @@ public interface MainServerModel extends PropertyChangeSubject
    * @param server A reference to the server object responsible for removing clients where connectivity issues occur (disconnect, etc.).
    */
   void broadcastPlanningPokerObjUpdate(Map<Integer, ArrayList<ClientConnection_RMI>> clientList, ServerConnection_RMI server, int planningPokerId);
+
 
   /** Sets the product owner for the users planning poker session
    * @param user the user that is intended to become product owner
