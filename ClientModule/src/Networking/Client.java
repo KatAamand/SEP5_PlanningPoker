@@ -3,9 +3,12 @@ package Networking;
 import DataTypes.*;
 import DataTypes.UserRoles.UserRole;
 import Util.PropertyChangeSubject;
-
 import java.util.ArrayList;
 
+/**
+ * Client defines the interface which is responsible for all local client network related tasks. These methods provide the means of communicating with the server.
+ * It extends the PropertyChangeSubject interface and is thus prepared for use with Observer Pattern principles.
+ */
 public interface Client extends PropertyChangeSubject {
 
     /**
