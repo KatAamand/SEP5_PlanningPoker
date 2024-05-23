@@ -3,9 +3,6 @@ package Model.Login;
 import DataTypes.User;
 import Database.User.UserDAO;
 import Database.User.UserDAOImpl;
-import Networking.ClientConnection_RMI;
-import Networking.Server_RMI;
-
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.sql.SQLException;
@@ -15,9 +12,9 @@ import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class LoginServerModelImpl implements LoginServerModel, Runnable {
+public class LoginServerModelImpl implements LoginServerModel {
 
-    private PropertyChangeSupport support;
+    private final PropertyChangeSupport support;
     private volatile static LoginServerModel instance;
     private static final Lock lock = new ReentrantLock();
     private ArrayList<User> users;
@@ -80,6 +77,7 @@ public class LoginServerModelImpl implements LoginServerModel, Runnable {
 
     @Override
     public boolean logoutUser(String username, String password) {
+        // TODO: Logout is not fully implemented
         return false;
     }
 
@@ -107,10 +105,4 @@ public class LoginServerModelImpl implements LoginServerModel, Runnable {
     public void removePropertyChangeListener(String name, PropertyChangeListener listener) {
         support.removePropertyChangeListener(name, listener);
     }
-
-    @Override
-    public void run() {
-    }
-
-
 }
