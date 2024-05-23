@@ -6,7 +6,6 @@ import DataTypes.UserRoles.ConcreteRoles.Admin;
 import DataTypes.UserRoles.ConcreteRoles.Developer;
 import DataTypes.UserRoles.ConcreteRoles.ProductOwner;
 import DataTypes.UserRoles.ConcreteRoles.ScrumMaster;
-import DataTypes.UserRoles.Role;
 import DataTypes.UserRoles.UserRole;
 import Database.PlanningPoker.PlanningPokerDAO;
 import Database.PlanningPoker.PlanningPokerDAOImpl;
@@ -14,7 +13,6 @@ import Networking.ClientConnection_RMI;
 import Networking.ServerConnection_RMI;
 import Networking.Server_RMI;
 import Networking.VoiceChatServer;
-
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.sql.SQLException;
@@ -25,11 +23,9 @@ import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
-
-import static DataTypes.UserRoles.UserRole.DEVELOPER;
 import static DataTypes.UserRoles.UserRole.PRODUCT_OWNER;
 
-public class MainServerModelImpl implements MainServerModel, Runnable {
+public class MainServerModelImpl implements MainServerModel {
 
     private final PropertyChangeSupport support;
     private volatile static MainServerModel instance;
@@ -101,7 +97,7 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
         }
     }
 
-    /** Add new Planning Poker Game roles to this list when they are implemented. */
+
     @Override public User applyPlanningPokerRole(UserRole role, User user, int planningPokerId) {
         User returnUser;
 
@@ -228,14 +224,13 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
                     user.getRole().getPermissions().removeAll(user.getAdmin().getPermissions());
                     user.setAdmin(null);
                     System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", MainServerModelImpl: [" + user.getUsername() + "] is no longer a ADMIN in game [" + planningPokerId + "]");
-                    return user;
                 } else {
                     // Assign the new ADMIN role to the user, without changing applied game roles
                     user.setAdmin(new Admin());
                     user.getRole().copyAndApplyPermissionsFrom(user.getAdmin());
                     System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", MainServerModelImpl: [" + user.getUsername() + "] is now a ADMIN in game [" + planningPokerId + "]");
-                    return user;
                 }
+              return user;
             }
         }
         return null;
@@ -281,8 +276,7 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
                         }
                         else {
                             //Error is something else:
-                            e.printStackTrace();
-                            throw new RuntimeException();
+                            throw new RuntimeException(e);
                         }
                     }
                 });
@@ -354,8 +348,7 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
                             }
                         } else {
                             //Error is something else:
-                            e.printStackTrace();
-                            throw new RuntimeException();
+                            throw new RuntimeException(e);
                         }
                     }
                 });
@@ -424,32 +417,15 @@ public class MainServerModelImpl implements MainServerModel, Runnable {
         return instance;
     }
 
-    @Override
-    public void addPropertyChangeListener(
-            PropertyChangeListener listener) {
-        support.addPropertyChangeListener(listener);
+    @Override public void addPropertyChangeListener(PropertyChangeListener listener) {support.addPropertyChangeListener(listener);
     }
 
-    @Override
-    public void addPropertyChangeListener(String name,
-                                          PropertyChangeListener listener) {
-        support.addPropertyChangeListener(name, listener);
+    @Override public void addPropertyChangeListener(String name, PropertyChangeListener listener) {support.addPropertyChangeListener(name, listener);
     }
 
-    @Override
-    public void removePropertyChangeListener(
-            PropertyChangeListener listener) {
-        support.removePropertyChangeListener(listener);
+    @Override public void removePropertyChangeListener(PropertyChangeListener listener) {support.removePropertyChangeListener(listener);
     }
 
-    @Override
-    public void removePropertyChangeListener(String name,
-                                             PropertyChangeListener listener) {
-        support.removePropertyChangeListener(name, listener);
-    }
-
-    @Override
-    public void run() {
-        //TODO
+    @Override public void removePropertyChangeListener(String name, PropertyChangeListener listener) {support.removePropertyChangeListener(name, listener);
     }
 }
