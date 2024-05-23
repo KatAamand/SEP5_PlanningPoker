@@ -89,8 +89,11 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
 
     @Override
     public void broadcastListOfSkippedTasksToClients(Map<Integer, ArrayList<ClientConnection_RMI>> clientList, ArrayList<Task> skippedTaskList, int planningPokerId, ServerConnection_RMI server) {
+        // Create a list of all the clients, that should receive this updated list
         ArrayList<ClientConnection_RMI> receivingClients = clientList.get(planningPokerId);
+
         if (receivingClients != null) {
+            // Remove any invalid / null clients from the list.
             for (int i = 0; i < receivingClients.size(); i++) {
                 if (receivingClients.get(i) == null) {
                     receivingClients.remove(i);
@@ -98,6 +101,7 @@ public class GameServerModelImpl implements GameServerModel, Runnable {
                 }
             }
 
+            // Initiate broadcasting:
             for (ClientConnection_RMI client : receivingClients) {
                 //Create a new thread for each connected client, and then call the desired broadcast operation. This minimizes server lag/hanging due to clients who have connection issues.
                 Thread transmitThread = new Thread(() -> {

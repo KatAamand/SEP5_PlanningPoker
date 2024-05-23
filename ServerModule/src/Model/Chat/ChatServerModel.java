@@ -10,7 +10,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 /**
- * ChatServerModel handles all the server-side logic relating to the chat and users connected to each Planning Poker game.
+ * The ChatServerModel interface defines all the key methods relating to the server-side logic relating to the chat and users connected to each Planning Poker game.
  * It extends the PropertyChangeSubject interface and is thus prepared for use with Observer Pattern principles.
  */
 public interface ChatServerModel extends PropertyChangeSubject
