@@ -57,14 +57,6 @@ public class ChatModelImpl extends PlanningPokerModelImpl implements ChatModel
     clientConnection.sendUser();
   }
 
-
-  // TODO: The method below is never used. It should be removed.
-  /*@Override
-  public void removeUserFromSession() {
-    clientConnection.removeUserFromSession();
-  }*/
-
-
   @Override
   public void setProductOwner(User user) {
     // This method ensures that other connected clients also receive the update about the new product owner, as well as ensuring that the product owner is added to the Planning Poker obj on the server.

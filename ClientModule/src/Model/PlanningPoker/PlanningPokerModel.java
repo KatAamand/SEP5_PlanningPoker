@@ -51,10 +51,6 @@ public interface PlanningPokerModel extends PropertyChangeSubject
   void confirmLocalUserHasProperRoleAndPermissions(PlanningPoker game);
 
 
-  // TODO: This method is never used. Should be removed.
-  // void removeUserFromSession();
-
-
   /** Resets all user role related permissions when the local client leaves the currently active planning poker game.
    */
   void resetUserPermissionUponLeavingGame();
