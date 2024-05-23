@@ -3,6 +3,7 @@ package Networking.ClientInterfaces;
 import DataTypes.PlanningPoker;
 import DataTypes.User;
 import DataTypes.UserRoles.UserRole;
+import java.beans.PropertyChangeListener;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -48,4 +49,34 @@ public interface MainClientInterface extends Remote {
    * @throws RemoteException Is thrown if any error occurs while trying to apply the UserRole to the User in the given game.
    * */
   User setRoleOnServer(UserRole roleToApply, int planningPokerId, User userToReceiveRole) throws RemoteException;
+
+
+  /**<p>Assigns a listener to this subject<br></p>
+   * @param listener A PropertyChangeListener, i.e. some code or methods that should be executed when a PropertyChangeEvent is fired.
+   * @throws RemoteException If an error relating to the RMI connection is encountered.
+   */
+  void addPropertyChangeListener(PropertyChangeListener listener) throws RemoteException;
+
+
+  /**<p>Assigns a listener to this subject<br></p>
+   * @param name A String reference to the event name a specific PropertyChangeEvent.
+   * @param listener A PropertyChangeListener, i.e. some code or methods that should be executed when a named specific PropertyChangeEvent is fired.
+   * @throws RemoteException If an error relating to the RMI connection is encountered.
+   */
+  void addPropertyChangeListener(String name, PropertyChangeListener listener) throws RemoteException;
+
+
+  /**<p>Removes a listener from this subject<br></p>
+   * @param listener A PropertyChangeListener, i.e. some code or methods that should be executed when a named specific PropertyChangeEvent is fired.
+   * @throws RemoteException If an error relating to the RMI connection is encountered.
+   */
+  void removePropertyChangeListener(PropertyChangeListener listener) throws RemoteException;
+
+
+  /**<p>Removes a listener from this subject<br></p>
+   * @param name A String reference to the event name a specific PropertyChangeEvent.
+   * @param listener A PropertyChangeListener, i.e. some code or methods that should be executed when a named specific PropertyChangeEvent is fired.
+   * @throws RemoteException If an error relating to the RMI connection is encountered.
+   */
+  void removePropertyChangeListener(String name, PropertyChangeListener listener) throws RemoteException;
 }
