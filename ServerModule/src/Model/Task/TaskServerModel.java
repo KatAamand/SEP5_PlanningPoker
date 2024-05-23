@@ -11,7 +11,7 @@ public interface TaskServerModel extends PropertyChangeSubject
 {
   void addTask(Task task, int planningPokerId);
   boolean removeTask(Task task, int planningPokerId);
-  boolean editTask(Task oldTask, Task newTask, int planningPokerId);
+  boolean editTask(Task task, Task updatedTask, int planningPokerId);
   ArrayList<Task> getTaskList(int planningPokerId);
   ArrayList<Task> getTaskListFromDB(int planningPokerId);
   void broadcastTaskListUpdate(Map<Integer, ArrayList<ClientConnection_RMI>> clientList, ServerConnection_RMI server, int planningPokerId);

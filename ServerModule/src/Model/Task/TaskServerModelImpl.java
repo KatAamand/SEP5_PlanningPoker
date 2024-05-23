@@ -79,26 +79,29 @@ public class TaskServerModelImpl implements TaskServerModel {
 
         if (taskList.contains(task)) {
             taskList.remove(task);
-            taskList.add(task);
-        } else {
-            taskList.add(task);
         }
+
+        taskList.add(task);
 
         tasklistMap.put(planningPokerId, taskList);
 
-        createTaskInDB(task, planningPokerId);
+        Task newTask = createTaskInDB(task, planningPokerId);
+        task.setTaskID(newTask.getTaskID());
 
         fireTaskListDataUpdatedEvent(planningPokerId);
     }
 
-    private void createTaskInDB(Task task, int planningPokerId) {
+    private Task createTaskInDB(Task task, int planningPokerId) {
         try {
-            taskDAO.create(task.getTaskHeader(), task.getDescription(), planningPokerId);
-            System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Task created in DB");
+            Task newTask = taskDAO.create(task.getTaskHeader(), task.getDescription(), planningPokerId);
+            task.setTaskID(newTask.getTaskID());
+            System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Task created in DB with ID: " + newTask.getTaskID());
+            return newTask;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
+
 
 
     @Override
@@ -124,39 +127,38 @@ public class TaskServerModelImpl implements TaskServerModel {
 
 
     @Override
-    public boolean editTask(Task oldTask, Task newTask, int planningPokerId) {
-        // Find appropriate taskList assigned to this game:
-        List<Task> taskList;
-        if (tasklistMap.get(planningPokerId) != null) {
-            // Set the taskList from the found game:
-            taskList = tasklistMap.get(planningPokerId);
-            // Check if the oldTask even exists in the list:
-            if (taskList.contains(oldTask)) {
-                // Find the task
-                for (Task task : taskList) {
-                    if (task.equals(oldTask)) {
-                        task.copyAttributesFromTask(newTask);
-                        System.out.println("TaskServerModelImpl: Edited a task.");
+    public boolean editTask(Task task, Task updatedTask, int planningPokerId) {
+        List<Task> taskList = tasklistMap.get(planningPokerId);
+        if (taskList != null) {
+            int taskIndex = taskList.indexOf(task);
+            if (taskIndex != -1) {
+                taskList.get(taskIndex).copyAttributesFromTask(updatedTask);
+                System.out.println("TaskServerModelImpl: Edited a task.");
 
-                        updateTaskInDB(newTask);
-                        fireTaskListDataUpdatedEvent(planningPokerId);
-                        return true;
-                    }
-                }
+                updateTaskInDB(updatedTask);
+                fireTaskListDataUpdatedEvent(planningPokerId);
+                return true;
             } else {
-                return false;
+                System.out.println("TaskServerModelImpl: Task not found for editing.");
             }
         }
         return false;
     }
 
-    private void updateTaskInDB(Task newTask) {
+    private void updateTaskInDB(Task task) {
         try {
-            taskDAO.update(newTask);
+            Task existingTask = taskDAO.readByTaskId(task.getTaskID());
+            if (existingTask == null) {
+                throw new SQLException("Task not found with ID: " + task.getTaskID());
+            }
+            taskDAO.update(task);
+            System.out.println("TaskServerModelImpl: Task updated in DB.");
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            System.err.println("Error updating task in database: " + e.getMessage());
+            throw new RuntimeException("Error updating task in database", e);
         }
     }
+
 
 
     @Override
