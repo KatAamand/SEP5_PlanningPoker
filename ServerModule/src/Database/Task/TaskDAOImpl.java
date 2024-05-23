@@ -55,12 +55,17 @@ public class TaskDAOImpl extends DatabaseConnection implements TaskDAO {
             statement.setString(2, task.getDescription());
             statement.setString(3, task.getFinalEffort());
             statement.setInt(4, task.getTaskID());
-            statement.executeUpdate();
 
-            System.out.println("Task updated" + task.getFinalEffort() + " get task final effort from DB: " + task.getTaskID() + readByTaskId(task.getTaskID()).getFinalEffort());
+            int rowsUpdated = statement.executeUpdate();
+            if (rowsUpdated == 0) {
+                throw new SQLException("Task not found with ID: " + task.getTaskID());
+            }
+
+            System.out.println("Task updated: " + task.getFinalEffort() + " get task final effort from DB: " + task.getTaskID() + readByTaskId(task.getTaskID()).getFinalEffort());
         }
     }
 
+    @Override
     public Task readByTaskId(int taskId) throws SQLException {
         try (Connection connection = super.getConnection()) {
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM task WHERE taskid = ?");
@@ -70,9 +75,10 @@ public class TaskDAOImpl extends DatabaseConnection implements TaskDAO {
             if (resultSet.next()) {
                 String header = resultSet.getString("header");
                 String description = resultSet.getString("desc");
-                return new Task(taskId, header, description);
+                String finalEffort = resultSet.getString("final_effort"); // Assuming you have this column in the table
+                return new Task(taskId, header, description, finalEffort); // Adjust Task constructor if necessary
             } else {
-                throw new SQLException("Task not found");
+                return null; // Task not found
             }
         }
     }
