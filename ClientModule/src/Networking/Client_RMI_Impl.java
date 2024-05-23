@@ -50,7 +50,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     }
 
     @Override
-    public void createUser(String username, String password) {
+    public void createUser(String username, String password) throws RuntimeException {
         try {
             server.createUser(username, password, this);
         } catch (RemoteException e) {
@@ -86,7 +86,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     }
 
     @Override
-    public PlanningPoker loadPlanningPoker(int planningPokerId) {
+    public PlanningPoker loadPlanningPoker(int planningPokerId) throws RuntimeException {
         try {
             System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Client_RMI: Trying to load PlanningPoker Game with ID " + planningPokerId);
             PlanningPoker serverAnswer = server.loadPlanningPokerGame(planningPokerId, this, true);
@@ -104,7 +104,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     }
 
     @Override
-    public void loadTaskList(int planningPokerId) {
+    public void loadTaskList(int planningPokerId) throws RuntimeException {
         try {
             this.loadTaskListFromServer(planningPokerId);
         } catch (RemoteException e) {
@@ -135,7 +135,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     }
 
     @Override
-    public void addTask(Task task, int planningPokerId) {
+    public void addTask(Task task, int planningPokerId) throws RuntimeException {
         try {
             this.addTaskToServer(task, planningPokerId);
         } catch (RemoteException e) {
@@ -144,7 +144,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     }
 
     @Override
-    public boolean removeTask(Task task, int planningPokerId) {
+    public boolean removeTask(Task task, int planningPokerId) throws RuntimeException {
         try {
             return this.removeTaskFromServer(task, planningPokerId);
         } catch (RemoteException e) {
@@ -153,7 +153,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     }
 
     @Override
-    public boolean editTask(Task oldTask, Task newTask, int planningPokerId) {
+    public boolean editTask(Task oldTask, Task newTask, int planningPokerId) throws RuntimeException {
         try {
             return this.editTaskOnServer(oldTask, newTask, planningPokerId);
         } catch (RemoteException e) {
@@ -162,7 +162,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     }
 
     @Override
-    public void skipTasks(ArrayList<Task> skippedTasksList, int planningPokerId) {
+    public void skipTasks(ArrayList<Task> skippedTasksList, int planningPokerId) throws RuntimeException {
         try {
             this.broadcastSkipTasksOnServer(skippedTasksList, planningPokerId);
         } catch (RemoteException e) {
@@ -186,7 +186,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     }
 
     @Override
-    public void logoutUser(String username, String password) {
+    public void logoutUser(String username, String password) throws RuntimeException {
         //Check that the requested user is the local user before logging out (prevent local user from logging out other remote users):
         if (Session.getCurrentUser() != null
                 && Session.getCurrentUser().getUsername().equals(username)
@@ -203,8 +203,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     }
 
 
-    @Override
-    public void disconnectLocalClient() {
+    private void disconnectLocalClient() {
         try {
             // Unregister the client from the server:
             server.unRegisterClient(this);
@@ -245,7 +244,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     }
 
     @Override
-    public PlanningPoker createPlanningPoker() {
+    public PlanningPoker createPlanningPoker() throws RuntimeException {
         try {
             System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Client_RMI: User trying to create planningPoker");
             PlanningPoker serverAnswer = server.createPlanningPoker(this);
@@ -291,7 +290,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
         }
     }
 
-    @Override public void removeUserFromGame(int planningPokerId) {
+    @Override public void removeUserFromGame(int planningPokerId) throws RuntimeException {
         try {
             server.removeUserFromGame(this, Session.getCurrentUser(), planningPokerId);
         } catch (RemoteException e) {
@@ -404,7 +403,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
         propertyChangeSupport.firePropertyChange("startTimer", null, null);
     }
 
-    @Override public void setRoleInGame(UserRole role, int planningPokerId, User user) {
+    @Override public void setRoleInGame(UserRole role, int planningPokerId, User user) throws RuntimeException {
         // Check if the user already has this role, if yes - do not trouble the server:
         if(user.getRole() != null && user.getRole().getUserRole() == role) {
             // User already has this role assigned. Do nothing.
