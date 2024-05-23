@@ -18,30 +18,29 @@ public interface ChatModel extends PropertyChangeSubject {
   void init();
 
 
-  // TODO: Source code comment/document
+  /** This method is responsible for sending a message from the local user to the server, which then broadcasts the message to the rest of the planning poker session */
   void sendMessage(Message message, User sender);
 
 
-  // TODO: Source code comment/document
+  /** This method requests the userlist for hte current session of planning poker from the server */
   void loadUsers();
 
 
-  //void removeUserFromSession(); //TODO: This method is never used. It should be removed.
-
-
-  // TODO: Source code comment/document
+  /** This method sets the product owner of the planning poker session from which it is sent
+   * @param user the user which is intended to become product owner */
   void setProductOwner(User user);
 
 
-  // TODO: Source code comment/document
+  /** This method sets the scrum master of the planning poker session from which it is sent
+   * @param user the user which is intended to become scrum master */
   void setScrumMaster(User user);
 
 
-  // TODO: Source code comment/document
+  /** This method starts the voice chat client for the current planning poker session*/
   void startVoiceCall();
 
 
-  // TODO: Source code comment/document
+  /** This method stops the voice chat client for the current planning poker session */
   void endVoiceCall();
 
 

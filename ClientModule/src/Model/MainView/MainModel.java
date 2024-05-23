@@ -19,7 +19,11 @@ public interface MainModel extends PropertyChangeSubject {
   // TODO: Source code comment/document
   void requestCreatePlanningPokerID() throws RemoteException;
 
-
-  // TODO: Source code comment/document
+  /**
+   * Requests to connect to an existing Planning Poker game with the specified planningPoker ID.
+   * This method validates the planningPoker ID and assigns a role to the current user based on the existing roles in the game.
+   * @param planningPokerID the ID of the Planning Poker game to connect to.
+   * @throws RemoteException if there is an issue with the remote method invocation.
+   */
   void requestConnectPlanningPoker(int planningPokerID) throws RemoteException;
 }
