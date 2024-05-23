@@ -364,7 +364,6 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
     @Override
     public void receiveUser(ArrayList<User> users) throws RemoteException {
         Platform.runLater(() -> {
-            //System.out.println("Client receiving user" + users);
             propertyChangeSupport.firePropertyChange("userReceived", null, users);
             propertyChangeSupport.firePropertyChange("UpdatedLocalUser", null, null);
         });
