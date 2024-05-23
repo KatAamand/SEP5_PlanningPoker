@@ -9,6 +9,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ResourceBundle;
@@ -22,6 +24,7 @@ public class TaskViewController implements Initializable
     @FXML private Button btnEditTask;
     @FXML private Button btnRuleSet;
     @FXML private Button btnExportTaskList;
+    @FXML private Button btnImportTaskList;
     private TaskViewModel taskViewModel;
     private PlanningPokerViewController parentController;
 
@@ -43,15 +46,22 @@ public class TaskViewController implements Initializable
     @Override public void initialize(URL location, ResourceBundle resources)
     {
         Platform.runLater(() -> {
-            taskViewModel.initialize(btnCreateTask, btnEditTask, btnExportTaskList, btnRuleSet, taskWrapper);
+            taskViewModel.initialize(btnCreateTask, btnEditTask,
+                btnExportTaskList, btnRuleSet, taskWrapper, btnImportTaskList);
 
             //Apply Property Bindings:
             applyBindings();
 
             //Refresh onScreen elements:
             this.taskViewModel.refresh();
+
+            btnImportTaskList.setOnAction(event -> {
+                Stage stage = (Stage) btnImportTaskList.getScene().getWindow();
+                taskViewModel.importTaskList();
+            });
         });
     }
+
 
 
 }

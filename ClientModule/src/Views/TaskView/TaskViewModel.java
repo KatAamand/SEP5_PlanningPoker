@@ -16,12 +16,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +31,7 @@ public class TaskViewModel
   private Button btnEditTask;
   private Button btnCreateTask;
   private Button btnExportTaskList;
+  private Button btnImportTaskList;
   private Button btnRuleSet;
   private VBox taskWrapper;
   private Property<String> sessionId;
@@ -55,8 +55,12 @@ public class TaskViewModel
     updateTaskListEmptyProperty(); // updates upon creation
   }
 
-  public void initialize(Button btnCreateTask, Button btnEditTask, Button btnExportTaskList, Button btnRuleSet, VBox taskWrapper)  {
-    setButtonReferences(btnCreateTask, btnEditTask, btnExportTaskList, btnRuleSet);
+  public void initialize(Button btnCreateTask, Button btnEditTask,
+      Button btnExportTaskList, Button btnRuleSet, VBox taskWrapper,
+      Button btnImportTaskList)
+  {
+    setButtonReferences(btnCreateTask, btnEditTask, btnExportTaskList, btnImportTaskList,
+        btnRuleSet);
     assignButtonMethods();
     this.taskWrapper = taskWrapper;
     disableEditButton();
@@ -115,16 +119,22 @@ public class TaskViewModel
     return isTaskListEmpty;
   }
 
-  public void assignButtonMethods() {
+  public void assignButtonMethods()
+  {
     btnEditTask.setOnAction(event -> this.editTask());
-    btnCreateTask.setOnAction(event ->  this.createTask());
+    btnCreateTask.setOnAction(event -> this.createTask());
     btnRuleSet.setOnAction(event -> this.showRuleSetBox());
+    btnExportTaskList.setOnAction(event -> this.exportTaskList());
+    btnImportTaskList.setOnAction(event -> this.importTaskList());
     btnExportTaskList.setOnAction(event -> {
       // Check that the local user has the proper permissions to export task list.
-      if(Session.getCurrentUser().getRole().getPermissions().contains(UserPermission.EXPORT_TASKLIST)) {
+      if (Session.getCurrentUser().getRole().getPermissions()
+          .contains(UserPermission.EXPORT_TASKLIST))
+      {
         // Export the task list.
         this.exportTaskList();
-      }});
+      }
+    });
   }
 
   public void refresh()
@@ -138,248 +148,382 @@ public class TaskViewModel
     //Refresh the ViewModels inside the singleTaskListViewModelList
     setSingleTaskViewModelList(new ArrayList<>());
 
-        if(taskModel.getTaskList() != null)
+    if (taskModel.getTaskList() != null)
+    {
+      for (int i = 0; i < taskModel.getTaskList().size(); i++)
+      {
+        this.singleTaskListViewModelList.add(new SingleTaskListViewModel(this));
+        getSingleTaskViewModelList().get(i).setTaskHeaderLabel(
+            i + 1 + ": " + taskModel.getTaskList().get(i).getTaskHeader());
+        getSingleTaskViewModelList().get(i)
+            .setTaskDesc(taskModel.getTaskList().get(i).getDescription());
+        getSingleTaskViewModelList().get(i).setEstimationLabel("");
+        getSingleTaskViewModelList().get(i).setFinalEffortLabel(
+            taskModel.getTaskList().get(i).getFinalEffort());
+
+        // Check if this task is already selected. If yes, update the selected task:
+        if (this.getSelectedTask() != null && this.getSelectedTask()
+            .getTaskHeader()
+            .equals(taskModel.getTaskList().get(i).getTaskHeader()))
         {
-            for (int i = 0; i < taskModel.getTaskList().size(); i++)
+          this.setSelectedTask(taskModel.getTaskList().get(i).getTaskHeader(),
+              taskModel.getTaskList().get(i).getDescription());
+        }
+      }
+    }
+
+    // Refresh all the data in the nested viewControllers
+    try
+    {
+      isTaskListEmptyProperty();
+      taskWrapper.getChildren().clear();
+      displayTaskData();
+    }
+    catch (IOException e)
+    {
+      throw new RuntimeException();
+    }
+
+    // Refresh the game view, in the case where the user has manually selected another task from the list to view:
+    ViewFactory.getInstance().getPlanningPokerViewController()
+        .refreshDisplayedTaskInfo();
+  }
+
+  private synchronized void displayTaskData() throws IOException
+  {
+    if (taskModel.getTaskList() != null)
+    {
+      int numberOfTasks = taskModel.getTaskList().size();
+      taskControllerList.clear();
+
+      for (int i = 0; i < numberOfTasks; i++)
+      {
+        if (i < this.getSingleTaskViewModelList().size())
+        {
+          // Initialize a separate nested view and controller for each task:
+          FXMLLoader fxmlLoader = new FXMLLoader(
+              getClass().getResource("SingleTaskListView.fxml"));
+          VBox newTask = fxmlLoader.load();
+          ((SingleTaskListViewController) fxmlLoader.getController()).initialize(
+              this.getSingleTaskViewModelList().get(i));
+          taskControllerList.add(fxmlLoader.getController());
+
+          // Assign the created controller to this class list of nested controllers:
+          taskWrapper.getChildren().add(newTask);
+
+          // Assign the necessary property bindings:
+          taskControllerList.get(i).getTaskHeaderLabel().textProperty()
+              .bindBidirectional(this.getSingleTaskViewModelList().get(i)
+                  .getTaskHeaderLabelProperty());
+          taskControllerList.get(i).getTaskDescLabel().textProperty()
+              .bindBidirectional(this.getSingleTaskViewModelList().get(i)
+                  .getTaskDescProperty());
+          taskControllerList.get(i).getIsBeingEstimatedLabel().textProperty()
+              .bindBidirectional(this.getSingleTaskViewModelList().get(i)
+                  .getEstimationLabel());
+          taskControllerList.get(i).getFinalEffortLabel().textProperty()
+              .bindBidirectional(this.getSingleTaskViewModelList().get(i)
+                  .getFinalEffortLabelProperty());
+
+          // Apply any previous formatting, in the case where we are refreshing a previously loaded list:
+          this.getSingleTaskViewModelList().get(i).reApplyApplicableStyle();
+
+          // If this task is currently being estimated on, apply a marker, so it is visually identified that this task is being estimated on:
+          if ((ViewModelFactory.getInstance().getGameViewModel()
+              .getTaskBeingEstimated() != null))
+          {
+            if (ViewModelFactory.getInstance().getGameViewModel()
+                .getTaskBeingEstimated().getTaskHeader()
+                .equals(taskModel.getTaskList().get(i).getTaskHeader()))
             {
-                this.singleTaskListViewModelList.add(new SingleTaskListViewModel(this));
-                getSingleTaskViewModelList().get(i).setTaskHeaderLabel(i+1 + ": " + taskModel.getTaskList().get(i).getTaskHeader());
-                getSingleTaskViewModelList().get(i).setTaskDesc(taskModel.getTaskList().get(i).getDescription());
-                getSingleTaskViewModelList().get(i).setEstimationLabel("");
-                getSingleTaskViewModelList().get(i).setFinalEffortLabel(taskModel.getTaskList().get(i).getFinalEffort());
-
-                // Check if this task is already selected. If yes, update the selected task:
-                if(this.getSelectedTask() != null && this.getSelectedTask().getTaskHeader().equals(taskModel.getTaskList().get(i).getTaskHeader())) {
-                    this.setSelectedTask(taskModel.getTaskList().get(i).getTaskHeader(), taskModel.getTaskList().get(i).getDescription());
-                }
+              this.getSingleTaskViewModelList().get(i).getEstimationLabel()
+                  .setValue("-> ");
             }
+          }
         }
-
-        // Refresh all the data in the nested viewControllers
-        try {
-            isTaskListEmptyProperty();
-            taskWrapper.getChildren().clear();
-            displayTaskData();
-        } catch (IOException e) {
-            throw new RuntimeException();
-        }
-
-        // Refresh the game view, in the case where the user has manually selected another task from the list to view:
-        ViewFactory.getInstance().getPlanningPokerViewController().refreshDisplayedTaskInfo();
+      }
     }
+  }
 
+  public Property<String> sessionIdProperty()
+  {
+    return sessionId;
+  }
 
-    private synchronized void displayTaskData() throws IOException {
-        if(taskModel.getTaskList() != null) {
-            int numberOfTasks = taskModel.getTaskList().size();
-            taskControllerList.clear();
+  public Property<String> labelUserIdProperty()
+  {
+    return labelUserId;
+  }
 
-            for (int i = 0; i < numberOfTasks; i++) {
-                if(i < this.getSingleTaskViewModelList().size())
-                {
-                    // Initialize a separate nested view and controller for each task:
-                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("SingleTaskListView.fxml"));
-                    VBox newTask = fxmlLoader.load();
-                    ((SingleTaskListViewController) fxmlLoader.getController()).initialize(this.getSingleTaskViewModelList().get(i));
-                    taskControllerList.add(fxmlLoader.getController());
+  public ArrayList<SingleTaskListViewModel> getSingleTaskViewModelList()
+  {
+    return this.singleTaskListViewModelList;
+  }
 
-                    // Assign the created controller to this class list of nested controllers:
-                    taskWrapper.getChildren().add(newTask);
+  public void setSingleTaskViewModelList(
+      ArrayList<SingleTaskListViewModel> singleTaskListViewModelList)
+  {
+    this.singleTaskListViewModelList = singleTaskListViewModelList;
+  }
 
-                    // Assign the necessary property bindings:
-                    taskControllerList.get(i).getTaskHeaderLabel().textProperty().bindBidirectional(this.getSingleTaskViewModelList().get(i).getTaskHeaderLabelProperty());
-                    taskControllerList.get(i).getTaskDescLabel().textProperty().bindBidirectional(this.getSingleTaskViewModelList().get(i).getTaskDescProperty());
-                    taskControllerList.get(i).getIsBeingEstimatedLabel().textProperty().bindBidirectional(this.getSingleTaskViewModelList().get(i).getEstimationLabel());
-                    taskControllerList.get(i).getFinalEffortLabel().textProperty().bindBidirectional(this.getSingleTaskViewModelList().get(i).getFinalEffortLabelProperty());
-
-
-                    // Apply any previous formatting, in the case where we are refreshing a previously loaded list:
-                    this.getSingleTaskViewModelList().get(i).reApplyApplicableStyle();
-
-                    // If this task is currently being estimated on, apply a marker, so it is visually identified that this task is being estimated on:
-                    if((ViewModelFactory.getInstance().getGameViewModel().getTaskBeingEstimated() != null)) {
-                        if(ViewModelFactory.getInstance().getGameViewModel().getTaskBeingEstimated().getTaskHeader().equals(taskModel.getTaskList().get(i).getTaskHeader())) {
-                            this.getSingleTaskViewModelList().get(i).getEstimationLabel().setValue("-> ");
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-
-    public Property<String> sessionIdProperty() {
-        return sessionId;
-    }
-
-
-    public Property<String> labelUserIdProperty() {
-        return labelUserId;
-    }
-
-
-    public ArrayList<SingleTaskListViewModel> getSingleTaskViewModelList() {
-        return this.singleTaskListViewModelList;
-    }
-
-
-    public void setSingleTaskViewModelList(ArrayList<SingleTaskListViewModel> singleTaskListViewModelList) {
-        this.singleTaskListViewModelList = singleTaskListViewModelList;
-    }
-
-
-  private void setButtonReferences(Button btnCreateTask, Button btnEditTask, Button btnExportTaskList, Button btnRuleSet) {
+  private void setButtonReferences(Button btnCreateTask, Button btnEditTask,
+      Button btnExportTaskList, Button btnRuleSet, Button ruleSet)
+  {
     this.btnCreateTask = btnCreateTask;
     this.btnEditTask = btnEditTask;
     this.btnExportTaskList = btnExportTaskList;
+    this.btnImportTaskList = btnExportTaskList;
     this.btnRuleSet = btnRuleSet;
   }
 
+  private void disableEditButton()
+  {
+    btnEditTask.setDisable(true);
+  }
 
-    private void disableEditButton() {
-        btnEditTask.setDisable(true);
+  private void enableEditButton()
+  {
+    this.btnEditTask.setDisable(false);
+  }
+
+  private void disableCreateButton()
+  {
+    btnCreateTask.setDisable(true);
+  }
+
+  private void disableAndHideCreateButton()
+  {
+    this.disableCreateButton();
+    this.btnCreateTask.setVisible(false);
+
+  }
+
+  private void enableAndShowCreateButton()
+  {
+    this.btnCreateTask.setDisable(false);
+    this.btnCreateTask.setVisible(true);
+  }
+
+  public void setSelectedTask(String taskHeader, String taskDescription)
+  {
+    // Check if task exists in list, before setting:
+    for (Task task : taskModel.getTaskList())
+    {
+      if (task.getTaskHeader().equals(taskHeader) && task.getDescription()
+          .equals(taskDescription))
+      {
+        this.selectedTask = task.copy();
+        this.enableEditButton();
+        return;
+      }
     }
+    this.disableEditButton();
+    this.selectedTask = null;
+  }
 
+  public Task getSelectedTask()
+  {
+    return this.selectedTask;
+  }
 
-    private void enableEditButton() {
-        this.btnEditTask.setDisable(false);
-    }
+  public void resetTaskStyles()
+  {
+    for (SingleTaskListViewModel singleTaskListViewModel : singleTaskListViewModelList)
+    {
+      if (this.getSelectedTask() != null)
+      {
+        int index_of_added_char = singleTaskListViewModel.getTaskHeaderLabelProperty()
+            .getValue().indexOf(':');
+        String taskHeader = singleTaskListViewModel.getTaskHeaderLabelProperty()
+            .getValue().substring(index_of_added_char + 2);
 
-    private void disableCreateButton() {
-        btnCreateTask.setDisable(true);
-    }
-
-    private void disableAndHideCreateButton() {
-        this.disableCreateButton();
-        this.btnCreateTask.setVisible(false);
-
-    }
-
-    private void enableAndShowCreateButton() {
-        this.btnCreateTask.setDisable(false);
-        this.btnCreateTask.setVisible(true);
-    }
-
-
-    public void setSelectedTask(String taskHeader, String taskDescription) {
-        // Check if task exists in list, before setting:
-        for (Task task : taskModel.getTaskList()) {
-            if(task.getTaskHeader().equals(taskHeader) && task.getDescription().equals(taskDescription)) {
-                this.selectedTask = task.copy();
-                this.enableEditButton();
-                return;
-            }
+        if (!taskHeader.equals(this.getSelectedTask().getTaskHeader()))
+        {
+          singleTaskListViewModel.resetStyle();
         }
-        this.disableEditButton();
-        this.selectedTask = null;
+      }
+      else
+      {
+        singleTaskListViewModel.resetStyle();
+      }
     }
+  }
 
-    public Task getSelectedTask() {
-        return this.selectedTask;
+  /** Creates a pop-up window where the user can enter a new task into. */
+  public void createTask()
+  {
+    //Create the viewController
+    FXMLLoader fxmlLoader = new FXMLLoader(
+        getClass().getResource("ManageSingleTaskView.fxml"));
+
+    //Create the popup screen as a new stage, and show it!
+    Stage stage = new Stage();
+    stage.setTitle("Opret Task");
+    try
+    {
+      Scene scene = new Scene(fxmlLoader.load());
+      stage.setScene(scene);
+      stage.setResizable(false);
+      stage.initModality(Modality.APPLICATION_MODAL);
+
+      // Notify the controller that it is in "add task" mode:
+      ((ManageSingleTaskViewController) fxmlLoader.getController()).isEditModeActive(
+          false);
+
+      stage.show();
     }
-
-    public void resetTaskStyles() {
-        for (SingleTaskListViewModel singleTaskListViewModel : singleTaskListViewModelList) {
-            if(this.getSelectedTask() != null) {
-                int index_of_added_char = singleTaskListViewModel.getTaskHeaderLabelProperty().getValue().indexOf(':');
-                String taskHeader = singleTaskListViewModel.getTaskHeaderLabelProperty().getValue().substring(index_of_added_char+2);
-
-                if(!taskHeader.equals(this.getSelectedTask().getTaskHeader())) {
-                    singleTaskListViewModel.resetStyle();
-                }
-            } else {
-                singleTaskListViewModel.resetStyle();
-            }
-        }
+    catch (IOException e)
+    {
+      throw new RuntimeException();
     }
+  }
 
+  /** Creates a pop-up window where the user can edit the task information. */
+  public void editTask()
+  {
+    //Create the viewController
+    FXMLLoader fxmlLoader = new FXMLLoader(
+        getClass().getResource("ManageSingleTaskView.fxml"));
 
-    /** Creates a pop-up window where the user can enter a new task into.*/
-    public void createTask() {
-        //Create the viewController
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ManageSingleTaskView.fxml"));
+    //Create the popup screen as a new stage, and show it!
+    Stage stage = new Stage();
+    try
+    {
+      Scene scene = new Scene(fxmlLoader.load());
+      stage.setScene(scene);
+      stage.setResizable(false);
+      stage.initModality(Modality.APPLICATION_MODAL);
 
-        //Create the popup screen as a new stage, and show it!
-        Stage stage = new Stage();
-        stage.setTitle("Opret Task");
-        try {
-            Scene scene = new Scene(fxmlLoader.load());
-            stage.setScene(scene);
-            stage.setResizable(false);
-            stage.initModality(Modality.APPLICATION_MODAL);
+      // Load task data into view:
+      ((ManageSingleTaskViewController) fxmlLoader.getController()).textFieldTaskHeader.setText(
+          this.getSelectedTask().getTaskHeader());
+      ((ManageSingleTaskViewController) fxmlLoader.getController()).textAreaTaskDescription.setText(
+          this.getSelectedTask().getDescription());
 
-            // Notify the controller that it is in "add task" mode:
-            ((ManageSingleTaskViewController) fxmlLoader.getController()).isEditModeActive(false);
+      // Notify the controller that it is in "edit task" mode, and send along the current task which is requested to be edited:
+      ((ManageSingleTaskViewController) fxmlLoader.getController()).isEditModeActive(
+          true, this.getSelectedTask());
 
-            stage.show();
-        } catch (IOException e) {
-            throw new RuntimeException();
-        }
+      // Validate data:
+      ((ManageSingleTaskViewController) fxmlLoader.getController()).validateData();
+
+      stage.setTitle(
+          "Edit task '" + this.getSelectedTask().getTaskHeader() + "'");
+      stage.show();
     }
-
-    /** Creates a pop-up window where the user can edit the task information.*/
-    public void editTask() {
-        //Create the viewController
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ManageSingleTaskView.fxml"));
-
-        //Create the popup screen as a new stage, and show it!
-        Stage stage = new Stage();
-        try {
-            Scene scene = new Scene(fxmlLoader.load());
-            stage.setScene(scene);
-            stage.setResizable(false);
-            stage.initModality(Modality.APPLICATION_MODAL);
-
-            // Load task data into view:
-            ((ManageSingleTaskViewController) fxmlLoader.getController()).textFieldTaskHeader.setText(this.getSelectedTask().getTaskHeader());
-            ((ManageSingleTaskViewController) fxmlLoader.getController()).textAreaTaskDescription.setText(this.getSelectedTask().getDescription());
-
-            // Notify the controller that it is in "edit task" mode, and send along the current task which is requested to be edited:
-            ((ManageSingleTaskViewController) fxmlLoader.getController()).isEditModeActive(true, this.getSelectedTask());
-
-            // Validate data:
-            ((ManageSingleTaskViewController) fxmlLoader.getController()).validateData();
-
-            stage.setTitle("Edit task '" + this.getSelectedTask().getTaskHeader() + "'");
-            stage.show();
-        } catch (IOException e) {
-            throw new RuntimeException();
-        }
+    catch (IOException e)
+    {
+      throw new RuntimeException();
     }
+  }
 
-    public void showRuleSetBox() {
-        RuleSet rulesSet = new RuleSet();
+  public void showRuleSetBox()
+  {
+    RuleSet rulesSet = new RuleSet();
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(rulesSet.getHeader());
-        alert.setHeaderText(null);
-        alert.setContentText(rulesSet.getBody());
-        alert.showAndWait();
-    }
+    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    alert.setTitle(rulesSet.getHeader());
+    alert.setHeaderText(null);
+    alert.setContentText(rulesSet.getBody());
+    alert.showAndWait();
+  }
 
-  public void exportTaskList() {
+  /**
+   * exportTaskList exports a .csv-file locally of the current tasklist. /
+   */
+  public void exportTaskList()
+  {
     List<Task> tasks = taskModel.getTaskList();
 
     String fileName = "Tasklist.csv";
 
-    try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) {
+    try (PrintWriter writer = new PrintWriter(new FileWriter(fileName)))
+    {
       writer.println("Header, Description, Final effort");
 
-      for (Task task : tasks) {
-        writer.println(task.getTaskHeader() + "," + task.getDescription() + "," + task.getFinalEffort());
+      for (Task task : tasks)
+      {
+        writer.println(task.getTaskHeader() + "," + task.getDescription() + ","
+            + task.getFinalEffort());
       }
       Alert alert = new Alert((Alert.AlertType.INFORMATION));
       alert.setTitle("Export successful");
       alert.setHeaderText(null);
-      alert.setContentText("Tasklist has been exported succesfully with filename: " + fileName);
+      alert.setContentText(
+          "Tasklist has been exported succesfully with filename: " + fileName);
       alert.showAndWait();
-    } catch (IOException e) {
+    }
+    catch (IOException e)
+    {
       e.printStackTrace();
       Alert alert = new Alert((Alert.AlertType.INFORMATION));
       alert.setTitle("Export failed");
       alert.setHeaderText(null);
       alert.setContentText("Tasklist failed to export, please try again.");
       alert.showAndWait();
+    }
+  }
+
+  /** allows for import of a csv-file containing a tasklist. Tasks will be inserted in current tasklist after current tasks, in tasklists. */
+  public void importTaskList() {
+    FileChooser fileChooser = new FileChooser();
+    fileChooser.setTitle("Please open tasklist file.");
+    fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("csv-files", "*.csv"));
+
+    File selectedFile = fileChooser.showOpenDialog(null);
+    if (selectedFile != null) {
+      try (BufferedReader bufferedReader = new BufferedReader(new FileReader(selectedFile))) {
+        String line;
+        List<Task> importedTasks = new ArrayList<>();
+        bufferedReader.readLine();
+
+        while ((line = bufferedReader.readLine()) != null) {
+          String[] values = line.split(",");
+          if (values.length >= 2) {
+            String header = values[0].trim();
+            String description = values[1].trim();
+            String finalEffort = (values.length > 2) ? values[2].trim() : "";
+
+            try {
+
+              Task newTask = new Task(header, description);
+
+              newTask.setFinalEffort(finalEffort);
+
+              importedTasks.add(newTask);
+            } catch (Exception e) {
+              System.err.println("Error parsing task: " + line + ", Exception: " + e.getMessage());
+            }
+          } else {
+            System.err.println("Invalid line format in file: " + line);
+          }
+        }
+
+        for (Task task : importedTasks) {
+          try {
+            taskModel.addTask(task);
+            System.out.println("Adding task: " + task.getTaskHeader() + ", " + task.getDescription());
+          } catch (Exception e) {
+            throw new RuntimeException(e);
+          }
+        }
+
+        refresh();
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Import successful");
+        alert.setHeaderText(null);
+        alert.setContentText("Tasklist has been imported successfully.");
+        alert.showAndWait();
+
+      } catch (IOException e) {
+        e.printStackTrace();
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Import failed");
+        alert.setHeaderText(null);
+        alert.setContentText("Tasklist failed to import, please try again.");
+        alert.showAndWait();
+      }
     }
   }
 
