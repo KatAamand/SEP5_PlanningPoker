@@ -4,6 +4,7 @@ import DataTypes.Task;
 import Util.PropertyChangeSubject;
 import java.util.ArrayList;
 
+
 /**
  * TaskModel defines the interface to the model which is responsible for task related methods and data in the context of a Planning Poker game.
  * It extends the PropertyChangeSubject interface and is thus prepared for use with Observer Pattern principles.
