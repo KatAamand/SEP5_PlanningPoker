@@ -94,8 +94,6 @@ public class PlanningPokerViewModel implements PropertyChangeSubject {
                     throw new RuntimeException();
                 }
 
-                // TODO: Implement the functionality to delete the currently active PlanningPoker game, as described in Use Case #2, ALT0 sequence.
-
                 System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", PlanningPokerViewModel: Closing planning poker window");
 
                 // Reset the users permission level to simply be a developer, outside the game that is being closed:

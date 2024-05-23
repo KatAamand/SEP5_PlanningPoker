@@ -216,24 +216,6 @@ public class GameViewModel {
         if (user.getRole().getPermissions().contains(UserPermission.CLEAR_USER_EFFORTS)) {
             this.enableAndShowClearCardsButton();
         }
-
-        // Enable permission to set a game password, if proper user permissions exists:
-        if (user.getRole().getPermissions().contains(UserPermission.SET_GAME_PASSWORD)) {
-            // TODO: Not implemented yet. This might not be the right class for this check. Maybe PlanningPokerViewModel is better?
-            //  Depends on where the UI button/dropdown/etc to set the game password will be located.
-        }
-
-        // Enable permission to EXPORT a list of tasks, if proper user permission exists:
-        if (user.getRole().getPermissions().contains(UserPermission.EXPORT_TASKLIST)) {
-            // TODO: Not implemented yet. This might not be the right class for this check. Maybe PlanningPokerViewModel is better?
-            //  Depends on where the UI button/dropdown/etc to export will be located.
-        }
-
-        // Enable permission to IMPORT a list of tasks, if proper user permission exists:
-        if (user.getRole().getPermissions().contains(UserPermission.IMPORT_TASKLIST)) {
-            // TODO: Not implemented yet. This might not be the right class for this check. Maybe PlanningPokerViewModel is better?
-            //  Depends on where the UI button/dropdown/etc to import will be located.
-        }
     }
 
     /**
