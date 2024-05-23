@@ -294,7 +294,7 @@ public class GameViewModel {
     }
 
   public void setFinalEffortLabel(String finalEffortvalue) {
-    if(Session.getCurrentUser().getRole().getUserRole() == UserRole.SCRUM_MASTER) {
+    if(Session.getCurrentUser().getRole().getPermissions().contains(UserPermission.ASSIGN_FINAL_EFFORT)) {
       Task nonEditedTask = taskBeingEstimated.copy();
       taskBeingEstimated.setFinalEffort(finalEffortvalue);
       try {
