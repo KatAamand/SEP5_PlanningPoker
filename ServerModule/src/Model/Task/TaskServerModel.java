@@ -17,7 +17,7 @@ public interface TaskServerModel extends PropertyChangeSubject
 
   /**
    * Adds the specified Task to the Planning Poker game with the specified game id, if such a game exists.
-   * @param task The Task that should be applied to the specified user.
+   * @param task The Task that should be added to the specified Planning Poker game.
    * @param planningPokerId The Game ID for the Planning Poker game, to which the specified Task should be added.
    */
   void addTask(Task task, int planningPokerId);
@@ -47,7 +47,7 @@ public interface TaskServerModel extends PropertyChangeSubject
 
   /**
    * Returns a List of all the Task objects in the Planning Poker game with the specified game id, if such a game exists.
-   * @param planningPokerId The Game ID for the Planning Poker game, from which the specified Task should be edited.
+   * @param planningPokerId The Game ID for the Planning Poker game, from which to load all current Tasks.
    * @return An ArrayList containing all the current Tasks associated with the Planning Poker game with the specified game id.
    */
   ArrayList<Task> getTaskList(int planningPokerId);

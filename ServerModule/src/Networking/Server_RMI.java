@@ -299,7 +299,7 @@ public class Server_RMI implements ServerConnection_RMI {
       return planningPoker;
     }
 
-    /** addClientToGame: True, the method will add the client to the game when loading. False, the method will simply return the planning poker object without adding the local client / local user to the game */
+
     @Override public PlanningPoker loadPlanningPokerGame(int planningPokerId, ClientConnection_RMI client, boolean addClientToGame) throws RemoteException {
         System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", Server_RMI: Loading Planning Poker Game [" + planningPokerId + "] for Client [" + client.hashCode() + "]");
         PlanningPoker planningPoker = mainServerModel.getPlanningPokerGame(planningPokerId);
@@ -373,11 +373,6 @@ public class Server_RMI implements ServerConnection_RMI {
 
     // Roles in game related requests
 
-    /** These roles are set from the following client classes:<br>
-     - Scrum Master is set on game creation of a Planning Poker game. The call cascades from MainModelImpl and down to the server connection. <br>
-     - Product Owner is currently assigned to the first user to join a game after the Scrum Master.<br>
-     - Developer is currently assigned to each user (other than the Scrum Master and Product Owner) who joins a game.<br>
-     */
     @Override public User setRoleInPlanningPokerGame(UserRole roleToApply, User userToReceiveRole, int planningPokerId) throws RemoteException
     {
         // Verify that all users are still connected to the game:

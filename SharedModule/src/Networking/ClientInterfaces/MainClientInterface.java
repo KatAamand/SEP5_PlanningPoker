@@ -34,6 +34,7 @@ public interface MainClientInterface extends Remote {
    * Method implementation causes the local client to query the server for the most recent version of the Planning Poker game with the specified planningPokerId.<br>
    * Should be called from the server-side connection towards the local client. <br>
    * Causes the event 'PlanningPokerObjUpdated' to fire, if the server returned a NON-NULL Planning Poker game.
+   * @param planningPokerId The unique Planning Poker game id for the Planning Poker game that should be loaded from the server.
    * @throws RemoteException Is thrown if RMI related connection errors occur.
    * */
   void updatePlanningPokerObj(int planningPokerId) throws RemoteException;
