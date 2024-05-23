@@ -17,22 +17,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class ChatServerModelImpl implements ChatServerModel, Runnable
+public class ChatServerModelImpl implements ChatServerModel
 {
   private PropertyChangeSupport propertyChangeSupport;
-  private static ChatServerModel instance;
+  private static volatile ChatServerModel instance;
   private static final Lock lock = new ReentrantLock();
 
 
 
-  private ChatServerModelImpl()
-  {
-    //TODO
-
+  private ChatServerModelImpl() {
+    //Empty Constructor
   }
 
-  public static ChatServerModel getInstance()
-  {
+  public static ChatServerModel getInstance() {
     //Here we use the "Double-checked lock" principle to ensure proper synchronization.
     if(instance == null)
     {
@@ -58,11 +55,6 @@ public class ChatServerModelImpl implements ChatServerModel, Runnable
   }
   @Override public void removePropertyChangeListener(String name, PropertyChangeListener listener) {
     propertyChangeSupport.removePropertyChangeListener(name, listener);
-  }
-
-  @Override public void run()
-  {
-    //TODO
   }
 
   @Override
