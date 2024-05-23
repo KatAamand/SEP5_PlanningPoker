@@ -19,7 +19,11 @@ import java.util.Map;
 public interface MainServerModel extends PropertyChangeSubject
 {
 
-  // TODO: Source code comment/document
+  /**
+   * Validates the existence of a Planning Poker game with the specified ID.
+   * @param planningPokerID the ID of the Planning Poker game to validate.
+   * @return true if the game exists, false otherwise.
+   */
   boolean validatePlanningPoker(int planningPokerID);
 
 
@@ -34,8 +38,7 @@ public interface MainServerModel extends PropertyChangeSubject
    */
   PlanningPoker getPlanningPokerGame(int planningPokerId);
 
-
-  // TODO: Source code comment/document
+  /** Retrieves all saved planning poker session from the database and saves them in the model*/
   void getAllPlanningPokersFromDb();
 
 
@@ -59,8 +62,10 @@ public interface MainServerModel extends PropertyChangeSubject
    */
   void broadcastPlanningPokerObjUpdate(Map<Integer, ArrayList<ClientConnection_RMI>> clientList, ServerConnection_RMI server, int planningPokerId);
 
-
-  // TODO: Source code comment/document
+  /** Sets the product owner for the users planning poker session
+   * @param user the user that is intended to become product owner
+   * @param connectedClients all the clients that are connected to the server
+   * @param serverRmi the server which has received the request*/
   void setProductOwner(User user, ArrayList<ClientConnection_RMI> connectedClients, Server_RMI serverRmi);
 
 

@@ -10,22 +10,36 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class VoiceChatClient {
-    private static final String SERVER_ADDRESS = "localhost";  // Skift til serverens IP-adresse
+    // Constants for server address and port
+    private static final String SERVER_ADDRESS = "localhost";  // Change to the server's IP address
     private static int serverPort;
+
+    // Datagram socket for network communication
     private DatagramSocket clientSocket;
+
+    // Threads for sending and receiving voice data
     private Thread sendThread;
     private Thread receiveThread;
+
+    // Flag to indicate if the client is running
     private volatile boolean running;
+
+    // Audio lines for capturing and playing sound
     private TargetDataLine microphone;
     private SourceDataLine speakers;
-    private static VoiceChatClient instance;
-    private static final Lock lock = new ReentrantLock();
 
+    // Singleton instance of the VoiceChatClient
+    private static VoiceChatClient instance;
+
+    // Locks for synchronization
     private final Object sendLock = new Object();
     private final Object receiveLock = new Object();
+    private static final Lock lock = new ReentrantLock();
 
+    // Private constructor for singleton pattern
     private VoiceChatClient(int serverPort) {
         try {
+            // Initialize microphone and speakers using utility methods
             microphone = AudioUtils.getTargetDataLine();
             speakers = AudioUtils.getSourceDataLine();
         } catch (LineUnavailableException e) {
@@ -35,8 +49,9 @@ public class VoiceChatClient {
         this.serverPort = serverPort;
     }
 
+    // Method to get the singleton instance of VoiceChatClient
     public static VoiceChatClient getInstance(int serverPortToSet) {
-        lock.lock();
+        lock.lock(); // Ensure thread-safe access to the instance
         try {
             if (instance == null) {
                 instance = new VoiceChatClient(serverPortToSet);
@@ -48,23 +63,27 @@ public class VoiceChatClient {
         return instance;
     }
 
+    // Initialize the DatagramSocket
     private void initializeSocket() {
         try {
+            // Close existing socket if open
             if (clientSocket != null && !clientSocket.isClosed()) {
                 clientSocket.close();
             }
-            clientSocket = new DatagramSocket();
+            clientSocket = new DatagramSocket(); // Create new DatagramSocket
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to initialize DatagramSocket");
         }
     }
 
+    // Start the voice chat client
     public void start() {
-        if (running) return;
+        if (running) return; // Return if already running
 
-        running = true;
+        running = true; // Set running flag to true
         try {
+            // Open and start microphone and speakers
             microphone.open();
             microphone.start();
             speakers.open();
@@ -73,18 +92,19 @@ public class VoiceChatClient {
             throw new RuntimeException(e);
         }
 
-        initializeSocket();
+        initializeSocket(); // Initialize the socket
 
+        // Thread for sending audio data to the server
         sendThread = new Thread(() -> {
             try {
-                InetAddress serverAddress = InetAddress.getByName(SERVER_ADDRESS);
-                byte[] buffer = new byte[1024];
+                InetAddress serverAddress = InetAddress.getByName(SERVER_ADDRESS); // Get server address
+                byte[] buffer = new byte[1024]; // Buffer for audio data
 
                 while (running) {
-                    int bytesRead = microphone.read(buffer, 0, buffer.length);
-                    DatagramPacket sendPacket = new DatagramPacket(buffer, bytesRead, serverAddress, serverPort);
+                    int bytesRead = microphone.read(buffer, 0, buffer.length); // Read audio data from microphone
+                    DatagramPacket sendPacket = new DatagramPacket(buffer, bytesRead, serverAddress, serverPort); // Create packet
                     synchronized (sendLock) {
-                        clientSocket.send(sendPacket);
+                        clientSocket.send(sendPacket); // Send packet to server
                     }
                 }
             } catch (Exception e) {
@@ -94,17 +114,18 @@ public class VoiceChatClient {
             }
         });
 
+        // Thread for receiving audio data from the server
         receiveThread = new Thread(() -> {
             try {
-                byte[] receiveBuffer = new byte[1024];
+                byte[] receiveBuffer = new byte[1024]; // Buffer for receiving data
 
                 while (running) {
-                    DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length);
+                    DatagramPacket receivePacket = new DatagramPacket(receiveBuffer, receiveBuffer.length); // Create packet for receiving data
                     synchronized (receiveLock) {
-                        clientSocket.receive(receivePacket);
+                        clientSocket.receive(receivePacket); // Receive packet from server
                     }
                     synchronized (speakers) {
-                        speakers.write(receivePacket.getData(), 0, receivePacket.getLength());
+                        speakers.write(receivePacket.getData(), 0, receivePacket.getLength()); // Write data to speakers
                     }
                 }
             } catch (Exception e) {
@@ -114,14 +135,17 @@ public class VoiceChatClient {
             }
         });
 
+        // Start send and receive threads
         sendThread.start();
         receiveThread.start();
     }
 
+    // Stop the voice chat client
     public void stop() {
-        running = false;
+        running = false; // Set running flag to false
 
         try {
+            // Join send and receive threads
             if (sendThread != null) {
                 sendThread.join();
             }
@@ -131,6 +155,7 @@ public class VoiceChatClient {
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
+            // Stop and close microphone and speakers
             if (microphone != null) {
                 microphone.stop();
                 microphone.close();
@@ -139,10 +164,10 @@ public class VoiceChatClient {
                 speakers.stop();
                 speakers.close();
             }
+            // Close the socket if open
             if (clientSocket != null && !clientSocket.isClosed()) {
                 clientSocket.close();
             }
         }
     }
 }
-
