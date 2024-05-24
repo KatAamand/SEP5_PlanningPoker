@@ -7,7 +7,12 @@ import java.util.ArrayList;
 
 public interface EffortDAO
 {
-  // TODO: Source code comment/document
+  /**
+   * Retrieves a effort by its value from the database.
+   * @param effort the value of the effort to retrieve
+   * @return the effortvalue and the coorsponding image for plannigpokerCards.
+   * @throws SQLException if there is an error accessing the database, or null if not found.
+   */
   Effort readByEffort(String effort) throws SQLException;
 
   /**

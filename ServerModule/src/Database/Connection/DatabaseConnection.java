@@ -4,6 +4,10 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/**
+ * Controls the general connection to the database.
+ * Handles inserting user, password and url inherited by subclasses performing as entities in database.
+ **/
 public abstract class DatabaseConnection
 {
   private final String user = "piefiptf";;
