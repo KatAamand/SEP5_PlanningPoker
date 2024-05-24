@@ -70,11 +70,23 @@ public class TaskModelImpl extends PlanningPokerModelImpl implements TaskModel
   }
 
   @Override public boolean removeTask(Task task) {
-    return clientConnection.removeTask(task, super.getActivePlanningPokerGame().getPlanningPokerID());
+    // Create a copy of the task, before removal:
+    Task taskCopy = task.copy();
+
+    // Attempt to remove the task:
+    boolean success = clientConnection.removeTask(task, super.getActivePlanningPokerGame().getPlanningPokerID());
+
+    // If successful, fire an event so listeners can update the UI:
+    if(success) {
+      // New value contains the removed tasks, so connected listeners can identify which task was removed.
+      this.propertyChangeSupport.firePropertyChange("TaskRemoved", null, taskCopy);
+    }
+
+    // Return success state:
+    return success;
   }
 
   @Override public boolean editTask(Task uneditedTask, Task editedTask) {
-    System.out.println("TaskModelImpl: editTask called" + editedTask.getFinalEffort());
     return clientConnection.editTask(uneditedTask, editedTask, super.getActivePlanningPokerGame().getPlanningPokerID());
   }
 

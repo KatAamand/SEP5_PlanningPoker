@@ -16,7 +16,8 @@ public class GameViewController
 {
   @FXML public StackPane effortWrapper;
   @FXML public HBox placedCardsWrapper;
-  @FXML public Label recommendedEffortLabel;
+  @FXML public Label recommendedEffortLabel; // Contains the recommended effort.
+  @FXML private Label recommendedEffortTextLabel; // Contains the text description for the recommended effort.
   @FXML public StackPane countDownCircle;
   @FXML private Button clearCardsButton;
   @FXML private Button showCardsButton;
@@ -45,7 +46,6 @@ public class GameViewController
     gameViewModel.setClearCardsButtonRef(clearCardsButton);
     gameViewModel.setShowCardsButtonRef(showCardsButton);
     gameViewModel.setCountDownStackPane(countDownCircle);
-    gameViewModel.setGameStarted(false);
     gameViewModel.refresh();
     showPlayingCards();
     finalEffortDropdown();
@@ -57,6 +57,7 @@ public class GameViewController
     taskDescLabel.textProperty().bindBidirectional(gameViewModel.taskDescPropertyProperty());
     finalEffortLabel.textProperty().bindBidirectional(gameViewModel.finalEffortLabelProperty());
     recommendedEffortLabel.textProperty().bindBidirectional(gameViewModel.recommendedEffortProperty());
+    recommendedEffortTextLabel.textProperty().bindBidirectional(gameViewModel.recommendedEffortTextLabelProperty());
   }
 
   public void refresh(){
@@ -65,10 +66,6 @@ public class GameViewController
 
   public void setParentController(PlanningPokerViewController parentController) {
     this.parentController = parentController;
-  }
-
-  public void onGameStart() {
-    gameViewModel.setGameStarted(true);
   }
 
   public void onsetEffortButtonPressed()

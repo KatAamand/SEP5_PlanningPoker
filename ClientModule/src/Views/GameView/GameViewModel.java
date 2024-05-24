@@ -43,6 +43,7 @@ public class GameViewModel {
     private Property<String> taskDescProperty;
     private Property<String> finalEffortLabelProperty;
     private Property<String> recommendedFinalEffortProperty;
+    private Property<String> recommendedEffortTextLabel;
     private ArrayList<Effort> effortList;
     private Task taskBeingEstimated;
     @FXML
@@ -53,7 +54,6 @@ public class GameViewModel {
     private Button setEffortButtonRef;
     private Button clearCardsButtonRef;
     private Button showCardsButtonRef;
-    private boolean isGameStarted;
     private StackPane countDownStackPane;
     @FXML private HBox hulaContainer;
 
@@ -63,9 +63,9 @@ public class GameViewModel {
         taskDescProperty = new SimpleStringProperty();
         finalEffortLabelProperty = new SimpleStringProperty();
         recommendedFinalEffortProperty = new SimpleStringProperty();
+        recommendedEffortTextLabel = new SimpleStringProperty();
 
         effortList = new ArrayList<>();
-        isGameStarted = false;
         getEffortList();
 
         placedCards = new ArrayList<>();
@@ -154,6 +154,11 @@ public class GameViewModel {
       // Local user has manually selected another task. Continue to display this task.
       taskHeaderPropertyProperty().setValue(selectedTaskInTaskList.getTaskHeader());
       taskDescPropertyProperty().setValue(selectedTaskInTaskList.getDescription());
+
+      if(selectedTaskInTaskList.getFinalEffort() != null) {
+        this.recommendedEffortTextLabelProperty().setValue("");
+      }
+
       if(selectedTaskInTaskList.getFinalEffort() != null && !selectedTaskInTaskList.getFinalEffort().isBlank()) {
         finalEffortLabelProperty().setValue("Final Effort: " + selectedTaskInTaskList.getFinalEffort());
       } else {
@@ -163,19 +168,21 @@ public class GameViewModel {
 
     } else {
       // Local user has NOT manually selected another task. Display the task that the team is currently estimating.
-      if (taskBeingEstimated != null) {
+      if (this.getTaskBeingEstimated() != null) {
         // Show the next non-skipped and non-estimated task in the game UI:
-        taskHeaderPropertyProperty().setValue(taskBeingEstimated.getTaskHeader());
-        taskDescPropertyProperty().setValue(taskBeingEstimated.getDescription());
-        finalEffortLabelProperty().setValue(taskBeingEstimated.getFinalEffort());
+        taskHeaderPropertyProperty().setValue(this.getTaskBeingEstimated().getTaskHeader());
+        taskDescPropertyProperty().setValue(this.getTaskBeingEstimated().getDescription());
+        finalEffortLabelProperty().setValue(this.getTaskBeingEstimated().getFinalEffort());
         recommendedEffortProperty().setValue("");
         finalEffortLabelProperty().setValue("");
+        this.recommendedEffortTextLabelProperty().setValue("Recommended effort: ");
       } else {
         // Shows if there are no more valid tasks left for estimation:
         taskHeaderPropertyProperty().setValue("No more tasks");
         taskDescPropertyProperty().setValue("No more tasks");
         finalEffortLabelProperty().setValue("");
         recommendedEffortProperty().setValue("");
+        this.recommendedEffortTextLabelProperty().setValue("");
       }
     }
     clearPlacedCards();
@@ -222,7 +229,7 @@ public class GameViewModel {
      * Returns false if the skip button should be deactivated and true if it should be activated - based on the number of tasks remaining to be estimated on.
      */
     private boolean checkIfSkipTaskBTNShouldBeEnabled() {
-        if (taskBeingEstimated != null) {
+        if (this.getTaskBeingEstimated() != null) {
             List<Task> taskList;
             try {
                 taskList = ModelFactory.getInstance().getTaskModel().getTaskList();
@@ -252,8 +259,8 @@ public class GameViewModel {
     }
 
     public void skipTask() {
-        if (taskBeingEstimated != null && Session.getCurrentUser().getRole().getPermissions().contains(UserPermission.SKIP_TASK)) {
-            gameModel.skipTask(taskBeingEstimated);
+        if (getTaskBeingEstimated() != null && Session.getCurrentUser().getRole().getPermissions().contains(UserPermission.SKIP_TASK)) {
+          gameModel.skipTask(getTaskBeingEstimated());
         }
         this.refresh();
         gameModel.refreshTaskList();
@@ -277,15 +284,20 @@ public class GameViewModel {
 
   public void setFinalEffortLabel(String finalEffortvalue) {
     if(Session.getCurrentUser().getRole().getPermissions().contains(UserPermission.ASSIGN_FINAL_EFFORT)) {
-      Task nonEditedTask = taskBeingEstimated.copy();
-      taskBeingEstimated.setFinalEffort(finalEffortvalue);
-      try {
-        ModelFactory.getInstance().getTaskModel().editTask(nonEditedTask, taskBeingEstimated);
-        Platform.runLater(() -> gameModel.removeTaskFromSkippedList(taskBeingEstimated));
-        finalEffortDropdownRef.setValue(null);
-        recommendedFinalEffortProperty.setValue("");
-      } catch (RemoteException e) {
-        throw new RuntimeException(e);
+      if(getTaskBeingEstimated() == null) {
+        // Catches a very rare occurrence, where a foreign client deleting a task causes a potential for the Scrum Master to attempt applying an effort to a non-existent task.
+        this.refresh();
+      } else {
+        Task nonEditedTask = getTaskBeingEstimated().copy();
+        getTaskBeingEstimated().setFinalEffort(finalEffortvalue);
+        try {
+          ModelFactory.getInstance().getTaskModel().editTask(nonEditedTask, getTaskBeingEstimated());
+          Platform.runLater(() -> gameModel.removeTaskFromSkippedList(getTaskBeingEstimated()));
+          finalEffortDropdownRef.setValue(null);
+          recommendedFinalEffortProperty.setValue("");
+        } catch (RemoteException e) {
+          throw new RuntimeException(e);
+        }
       }
     } else {
       System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + ", GameViewModel: Local user attempted to set final effort. This action is reserved for the Scrum Master.");
@@ -317,14 +329,6 @@ public class GameViewModel {
 
     public void disableSkipButton() {
         this.skipButtonRef.setDisable(true);
-    }
-
-    public void setGameStarted(boolean bool) {
-        this.isGameStarted = bool;
-    }
-
-    public boolean getGameStartStatus() {
-        return this.isGameStarted;
     }
 
     public void setClearCardsButtonRef(Button clearCardsButtonRef) {
@@ -628,6 +632,10 @@ public class GameViewModel {
 
     public Property<String> recommendedEffortProperty() {
         return recommendedFinalEffortProperty;
+    }
+
+    public Property<String> recommendedEffortTextLabelProperty() {
+      return this.recommendedEffortTextLabel;
     }
 
     public void setCountDownStackPane(StackPane countDownCircle) {

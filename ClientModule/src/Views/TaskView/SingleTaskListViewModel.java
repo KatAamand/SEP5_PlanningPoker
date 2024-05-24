@@ -7,11 +7,11 @@ import javafx.scene.layout.VBox;
 
 public class SingleTaskListViewModel
 {
-  private Property<String> taskHeaderLabel;
-  private Property<String> taskDescLabel;
-  private Property<String> isBeingEstimatedLabel; // Value is set in the TaskViewModel after this controller is created.
-  private Property<String> finalEffortLabel;
-  private TaskViewModel parentViewModel; //This field variable will become useful when task selection (clicking on tasks) becomes relevant!
+  private final Property<String> taskHeaderLabel;
+  private final Property<String> taskDescLabel;
+  private final Property<String> isBeingEstimatedLabel; // Value is set in the TaskViewModel after this controller is created.
+  private final Property<String> finalEffortLabel;
+  private final TaskViewModel parentViewModel;
   private VBox currentSource;
 
 
@@ -43,7 +43,11 @@ public class SingleTaskListViewModel
 
   public void setFinalEffortLabel(String finalEffortLabel)
   {
-    this.finalEffortLabel.setValue("effort: " + finalEffortLabel);
+    if(finalEffortLabel != null) {
+      this.finalEffortLabel.setValue("effort: " + finalEffortLabel);
+    } else {
+      this.finalEffortLabel.setValue("");
+    }
   }
 
   public void setTaskDesc(String taskDesc)
