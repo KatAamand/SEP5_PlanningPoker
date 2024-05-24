@@ -56,11 +56,10 @@ public class TaskViewModel
   }
 
   public void initialize(Button btnCreateTask, Button btnEditTask,
-      Button btnExportTaskList, Button btnRuleSet, VBox taskWrapper,
-      Button btnImportTaskList)
+      Button btnExportTaskList, Button btnRuleSet, Button btnImportTaskList, VBox taskWrapper
+      )
   {
-    setButtonReferences(btnCreateTask, btnEditTask, btnExportTaskList, btnImportTaskList,
-        btnRuleSet);
+    setButtonReferences(btnCreateTask, btnEditTask, btnExportTaskList, btnRuleSet, btnImportTaskList);
     assignButtonMethods();
     this.taskWrapper = taskWrapper;
     disableEditButton();
@@ -280,12 +279,12 @@ public class TaskViewModel
   }
 
   private void setButtonReferences(Button btnCreateTask, Button btnEditTask,
-      Button btnExportTaskList, Button btnRuleSet, Button ruleSet)
+      Button btnExportTaskList, Button btnRuleSet, Button btnImportTaskList)
   {
     this.btnCreateTask = btnCreateTask;
     this.btnEditTask = btnEditTask;
     this.btnExportTaskList = btnExportTaskList;
-    this.btnImportTaskList = btnExportTaskList;
+    this.btnImportTaskList = btnImportTaskList;
     this.btnRuleSet = btnRuleSet;
   }
 

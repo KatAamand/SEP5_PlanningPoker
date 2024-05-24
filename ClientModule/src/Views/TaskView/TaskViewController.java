@@ -47,7 +47,7 @@ public class TaskViewController implements Initializable
     {
         Platform.runLater(() -> {
             taskViewModel.initialize(btnCreateTask, btnEditTask,
-                btnExportTaskList, btnRuleSet, taskWrapper, btnImportTaskList);
+                btnExportTaskList, btnRuleSet, btnImportTaskList, taskWrapper);
 
             //Apply Property Bindings:
             applyBindings();
