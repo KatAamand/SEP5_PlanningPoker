@@ -28,6 +28,8 @@ public interface TaskModel extends PropertyChangeSubject
   void addTask(Task task);
 
   /** Removes a Planning Poker task from the currently connected Planning Poker game.
+   * If removal was successful, this method will fire the event 'TaskRemoved', so listening
+   * classes/controllers can update UI and similar elements.
    * @param task The task to remove from the currently connected Planning Poker game.
    * @return True if the task was successfully removed. False if removal for some reason failed.
    */

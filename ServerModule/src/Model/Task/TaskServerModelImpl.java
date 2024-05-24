@@ -80,13 +80,13 @@ public class TaskServerModelImpl implements TaskServerModel {
         // Attempt to remove any identical tasks, to avoid duplicates entering the task list:
         taskList.remove(task);
 
-        // Attempt to add the task, to the task list:
-        taskList.add(task);
-        tasklistMap.put(planningPokerId, taskList);
-
         // Create the task in the database:
         Task newTask = createTaskInDB(task, planningPokerId);
         task.setTaskID(newTask.getTaskID());
+
+        // Attempt to add the task, to the task list:
+        taskList.add(task);
+        tasklistMap.put(planningPokerId, taskList);
 
         fireTaskListDataUpdatedEvent(planningPokerId);
     }
@@ -127,19 +127,19 @@ public class TaskServerModelImpl implements TaskServerModel {
 
 
     @Override
-    public boolean editTask(Task task, Task updatedTask, int planningPokerId) {
+    public boolean editTask(Task oldTask, Task updatedTask, int planningPokerId) {
         List<Task> taskList = tasklistMap.get(planningPokerId);
         if (taskList != null) {
-            int taskIndex = taskList.indexOf(task);
+            int taskIndex = taskList.indexOf(oldTask);
             if (taskIndex != -1) {
                 taskList.get(taskIndex).copyAttributesFromTask(updatedTask);
-                System.out.println("TaskServerModelImpl: Edited a task.");
+                System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + "TaskServerModelImpl: Edited a task.");
 
                 updateTaskInDB(updatedTask);
                 fireTaskListDataUpdatedEvent(planningPokerId);
                 return true;
             } else {
-                System.out.println("TaskServerModelImpl: Task not found for editing.");
+                System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + "TaskServerModelImpl: Task not found for editing.");
             }
         }
         return false;
@@ -152,7 +152,7 @@ public class TaskServerModelImpl implements TaskServerModel {
                 throw new SQLException("Task not found with ID: " + task.getTaskID());
             }
             taskDAO.update(task);
-            System.out.println("TaskServerModelImpl: Task updated in DB.");
+            System.out.println(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")) + "TaskServerModelImpl: Task updated in DB.");
         } catch (SQLException e) {
             System.err.println("Error updating task in database: " + e.getMessage());
             throw new RuntimeException("Error updating task in database", e);

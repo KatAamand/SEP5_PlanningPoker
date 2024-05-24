@@ -42,7 +42,7 @@ public interface TaskServerModel extends PropertyChangeSubject
    * @param planningPokerId The Game ID for the Planning Poker game, from which the specified Task should be edited.
    * @return True, if the specified Task was successfully edited. False, if it failed, or the specified game does not exist.
    */
-  boolean editTask(Task task, Task updatedTask, int planningPokerId);
+  boolean editTask(Task oldTask, Task updatedTask, int planningPokerId);
 
 
   /**

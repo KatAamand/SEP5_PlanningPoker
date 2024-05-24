@@ -79,6 +79,19 @@ public class TaskViewModel
         this.enableSpecificUIPermissionBasedElements(Session.getCurrentUser());
       });
     });
+
+    taskModel.addPropertyChangeListener("TaskRemoved", evt -> {
+      Platform.runLater(() -> {
+        this.disableAllPermissionBasedUIInteractionElements();
+        if(this.getSelectedTask() != null && this.getSelectedTask().getTaskHeader().equals(((Task) evt.getNewValue()).getTaskHeader())) {
+          // Removed task was the currently selected task. Reset selectedTask to null:
+          this.setSelectedTask(null,null);
+        }
+        this.enableSpecificUIPermissionBasedElements(Session.getCurrentUser());
+        this.refresh();
+        this.updateTaskListEmptyProperty();
+      });
+    });
   }
 
   public void disableAllPermissionBasedUIInteractionElements()
@@ -502,7 +515,7 @@ public class TaskViewModel
         for (Task task : importedTasks) {
           try {
             taskModel.addTask(task);
-            System.out.println("Adding task: " + task.getTaskHeader() + ", " + task.getDescription());
+            System.out.println("TaskViewModel: Adding task: " + task.getTaskHeader() + ", " + task.getDescription());
           } catch (Exception e) {
             throw new RuntimeException(e);
           }

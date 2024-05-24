@@ -68,7 +68,6 @@ public class PlanningPokerViewController
         gameView.setVisible(true);
 
         gameViewController.initialize();
-        gameViewController.onGameStart();
     }
 
     public void catchCloseRequests()

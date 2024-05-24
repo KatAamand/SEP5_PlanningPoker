@@ -1,7 +1,6 @@
 package DataTypes;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class Task implements Serializable
 {
@@ -18,7 +17,7 @@ public class Task implements Serializable
 
     setTaskHeader(taskHeader);
     setDescription(description);
-    setFinalEffort("");
+    setFinalEffort(null);
   }
 
   public Task(int id, String taskName, String description) throws NullPointerException {
@@ -29,7 +28,7 @@ public class Task implements Serializable
     setTaskID(id);
     setTaskHeader(taskName);
     setDescription(description);
-    setFinalEffort("");
+    setFinalEffort(null);
   }
 
   public Task(int id, String header, String description, String finalEffort) {
@@ -86,6 +85,7 @@ public class Task implements Serializable
   public Task copy() {
     Task copy = new Task(this.getTaskHeader(), this.getDescription());
     copy.setFinalEffort(this.getFinalEffort());
+    copy.setTaskID(this.getTaskID());
 
     return copy;
   }
@@ -105,9 +105,21 @@ public class Task implements Serializable
       return false;
     }
     Task task = (Task) obj;
-    return (this.getTaskHeader().equals(task.getTaskHeader())
-        && this.getDescription().equals(task.getDescription())
-        && this.getFinalEffort().equals(task.getFinalEffort())
-    );
+    if(this.getFinalEffort() == null && task.getFinalEffort() == null) {
+      return (this.getTaskHeader().equals(task.getTaskHeader())
+          && this.getDescription().equals(task.getDescription())
+          && this.getTaskID() == (task.getTaskID())
+      );
+    } else if(this.getFinalEffort() == null || task.getFinalEffort() == null)
+    {
+      return false;
+    } else {
+      return (this.getTaskHeader().equals(task.getTaskHeader())
+          && this.getDescription().equals(task.getDescription())
+          && this.getFinalEffort().equals(task.getFinalEffort())
+          && this.getTaskID() == (task.getTaskID())
+      );
+    }
+
   }
 }

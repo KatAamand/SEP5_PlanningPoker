@@ -21,13 +21,13 @@ import java.util.ArrayList;
 
 public class ManageSingleTaskViewModel
 {
-  private Button saveButtonRef;
-  private Button deleteButtonRef;
-  private Button cancelButtonRef;
-  private Property<String> textFieldTaskHeaderProperty;
-  private Property<String> textAreaTaskDescriptionProperty;
-  private TaskModel taskModel;
-  private StringProperty taskHeaderErrorMessage = new SimpleStringProperty();
+  private final Button saveButtonRef;
+  private final Button deleteButtonRef;
+  private final Button cancelButtonRef;
+  private final Property<String> textFieldTaskHeaderProperty;
+  private final Property<String> textAreaTaskDescriptionProperty;
+  private final TaskModel taskModel;
+  private final StringProperty taskHeaderErrorMessage = new SimpleStringProperty();
   private TextField textFieldTaskHeader;
   private TextArea textAreaTaskDescription;
   private Task uneditedTask; // Used to contain a reference to the unedited task, when doing edit / deletion operations.
