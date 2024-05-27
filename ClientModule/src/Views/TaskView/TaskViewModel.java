@@ -500,7 +500,11 @@ public class TaskViewModel
 
               Task newTask = new Task(header, description);
 
-              newTask.setFinalEffort(finalEffort);
+              if(finalEffort == null || finalEffort.isEmpty()) {
+                newTask.setFinalEffort(null);
+              } else {
+                newTask.setFinalEffort(finalEffort);
+              }
 
               importedTasks.add(newTask);
             } catch (Exception e) {
