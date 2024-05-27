@@ -6,7 +6,6 @@
     <orderEntry type="jdk" jdkName="liberica-17 (2)" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="postgresql-42.7.3" level="project" />
-    <orderEntry type="library" name="postgresql-42.7.3" level="project" />
     <orderEntry type="library" name="mockito-core-5.11.0" level="project" />
     <orderEntry type="library" name="byte-buddy-agent-1.12.3" level="project" />
     <orderEntry type="library" name="byte-buddy-1.12.3" level="project" />

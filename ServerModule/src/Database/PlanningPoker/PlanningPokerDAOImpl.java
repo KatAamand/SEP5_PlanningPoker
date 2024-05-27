@@ -94,7 +94,7 @@ public class PlanningPokerDAOImpl extends DatabaseConnection implements Planning
                 int planningPokerID = resultSet.getInt("planning_pokerId");
                 PlanningPoker planningPokerToAdd = new PlanningPoker(planningPokerID);
 
-                PreparedStatement taskListStatement = connection.prepareStatement("SELECT * FROM task WHERE planning_pokerid = ?");
+                PreparedStatement taskListStatement = connection.prepareStatement("SELECT * FROM task WHERE planningpoker_id = ?");
                 taskListStatement.setInt(1, planningPokerID);
                 ResultSet taskListResultSet = taskListStatement.executeQuery();
 

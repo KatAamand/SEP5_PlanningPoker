@@ -23,13 +23,12 @@ public class TaskDAOImpl extends DatabaseConnection implements TaskDAO {
     @Override
     public Task create(String header, String desc, int planningPokerId) throws SQLException {
         PreparedStatement taskStatement = null;
-        PreparedStatement taskListStatement = null;
 
         try (Connection connection = getConnection()) {
-            taskStatement = connection.prepareStatement("INSERT INTO task(header, \"desc\", planning_pokerid) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+            taskStatement = connection.prepareStatement("INSERT INTO task(header, \"desc\", planningpoker_id) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
             taskStatement.setString(1, header);
             taskStatement.setString(2, desc);
-            taskStatement.setString(3, String.valueOf(planningPokerId));
+            taskStatement.setInt(3, planningPokerId);
             taskStatement.executeUpdate();
 
             ResultSet generatedKeys = taskStatement.getGeneratedKeys();
@@ -81,7 +80,7 @@ public class TaskDAOImpl extends DatabaseConnection implements TaskDAO {
         try (Connection connection = super.getConnection()) {
             ArrayList<Task> tasks = new ArrayList<>();
 
-            PreparedStatement statement = connection.prepareStatement("SELECT taskid, header, \"desc\", final_effort FROM task WHERE planning_pokerid = ?");
+            PreparedStatement statement = connection.prepareStatement("SELECT taskid, header, \"desc\", final_effort FROM task WHERE planningpoker_id = ?");
             statement.setInt(1, planningPokerId);
             ResultSet resultSet = statement.executeQuery();
 

@@ -134,7 +134,7 @@ public class Client_RMI_Impl implements Client, ClientConnection_RMI, Serializab
         try {
             this.addTaskToServer(task, planningPokerId);
         } catch (RemoteException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
     }
 

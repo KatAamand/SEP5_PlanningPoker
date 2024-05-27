@@ -1,13 +1,13 @@
 package Database.User;
 
 import DataTypes.User;
-import Database.Connection.DatabaseConnection;
+import Database.Connection.DatabaseConnectionUser;
 
 
 import java.sql.*;
 import java.util.ArrayList;
 
-public class UserDAOImpl extends DatabaseConnection implements UserDAO {
+public class UserDAOImpl extends DatabaseConnectionUser implements UserDAO {
     private static UserDAOImpl instance;
 
     private UserDAOImpl() throws SQLException {
