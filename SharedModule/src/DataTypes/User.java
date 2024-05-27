@@ -70,7 +70,7 @@ public class User implements Serializable
     }
   }
 
-  public String getRoleAsString() { // TODO: Method is never used. Should be removed.
+  public String getRoleAsString() {
     return role.getRoleAsString();
   }
 
