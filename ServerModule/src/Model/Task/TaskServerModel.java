@@ -53,7 +53,11 @@ public interface TaskServerModel extends PropertyChangeSubject
   ArrayList<Task> getTaskList(int planningPokerId);
 
 
-  // TODO: Source code comment/document
+  /**
+ * Retrieves the list of tasks from the database for the specified Planning Poker game.
+ * @param planningPokerId the ID of the Planning Poker game.
+ * @return an ArrayList of tasks associated with the specified Planning Poker game.
+ */
   ArrayList<Task> getTaskListFromDB(int planningPokerId);
 
 

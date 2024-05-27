@@ -157,7 +157,7 @@ public interface Client extends PropertyChangeSubject {
     /**
      * Clears all placed cards locally.
      */
-    void clearPlacedCards(); //TODO: Method is never used. Should be removed.
+    void clearPlacedCards();
 
 
     /**
@@ -200,5 +200,5 @@ public interface Client extends PropertyChangeSubject {
     /**
      * Starts the timer for the Planning Poker game.
      */
-    void startTimer(); //TODO: Method is never used. Should be removed.
+    void startTimer();
 }
