@@ -38,7 +38,7 @@ public interface Client extends PropertyChangeSubject {
     void logoutUser(String username, String password) throws RuntimeException;
 
 
-    // TODO: Source code comment/document
+    /** Sends message to the server from client, server then distributes message*/
     void sendMessage(Message message, User sender);
 
 
