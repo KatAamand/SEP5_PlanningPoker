@@ -330,6 +330,6 @@ public class GameServerModelImpl implements GameServerModel {
 
     public Map<String, String> getClientCardMap() {
         return clientCardMap;
-    } //TODO: Method is never used. Consider removing.
+    }
 
 }

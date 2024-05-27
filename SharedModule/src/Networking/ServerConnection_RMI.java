@@ -46,11 +46,23 @@ public interface ServerConnection_RMI extends Remote {
     void sendMessage(Message message, User sender) throws RemoteException;
 
 
-    // TODO: Source code comment/document
+    /**
+     * Validates the credentials of a user.
+     * @param username the username of the user.
+     * @param password the password of the user.
+     * @param client the client connection making the request.
+     * @throws RemoteException if there is a communication error during the remote method call.
+     */
     void validateUser(String username, String password, ClientConnection_RMI client) throws RemoteException;
 
 
-    // TODO: Source code comment/document
+    /**
+     * Creates a new user with the given credentials.
+     * @param username the username for the new user.
+     * @param password the password for the new user.
+     * @param client the client connection making the request.
+     * @throws RemoteException if there is a communication error during the remote method call.
+     */
     void createUser(String username, String password, ClientConnection_RMI client) throws RemoteException;
 
 
@@ -65,11 +77,19 @@ public interface ServerConnection_RMI extends Remote {
     void logoutUser(String username, String password) throws RemoteException;
 
 
-    // TODO: Source code comment/document
+    /**
+     * Registers a listener on the client to receive updates from the server.
+     * @param client the client connection to register the listener for.
+     * @throws RemoteException if there is a communication error during the remote method call.
+     */
     void registerClientListener(ClientConnection_RMI client) throws RemoteException;
 
 
-    // TODO: Source code comment/document
+    /**
+     * Unregisters a listener on the client to stop receiving updates from the server.
+     * @param client the client connection to unregister the listener for.
+     * @throws RemoteException if there is a communication error during the remote method call.
+     */
     void unRegisterClientListener(ClientConnection_RMI client) throws RemoteException;
 
 
@@ -128,7 +148,11 @@ public interface ServerConnection_RMI extends Remote {
     void broadcastSkipTasks(ArrayList<Task> skippedTasksList, int planningPokerId) throws RemoteException;
 
 
-    // TODO: Source code comment/document
+    // Validates the provided Planning Poker ID by communicating with the server.
+    // Verifies the integrity of all users connected to the game before validation.
+    // @param planningPokerID the ID of the Planning Poker game to be validated.
+    // @return true if the ID is validated, false otherwise.
+    // @throws RemoteException if there is an issue with the remote method call.
     boolean validatePlanningPokerID(int planningPokerID) throws RemoteException;
 
 
@@ -152,7 +176,11 @@ public interface ServerConnection_RMI extends Remote {
     void addConnectedUserToSession(User user) throws RemoteException;
 
 
-    // TODO: Source code comment/document
+    /**
+     * Retrieves the list of efforts.
+     * @return an ArrayList of Effort objects.
+     * @throws RemoteException if there is a communication error during the remote method call.
+     */
     ArrayList<Effort> getEffortList() throws RemoteException;
 
 
@@ -171,11 +199,20 @@ public interface ServerConnection_RMI extends Remote {
     void removeUserFromGame(ClientConnection_RMI localClient, User user, int planningPokerId) throws RemoteException;
 
 
-    // TODO: Source code comment/document
+    /**
+     * Places a card for the specified user in the specified Planning Poker game.
+     * @param userCardData the data of the card being placed.
+     * @param planningPokerId the ID of the Planning Poker game.
+     * @throws RemoteException if there is a communication error during the remote method call.
+     */
     void placeCard(UserCardData userCardData, int planningPokerId) throws RemoteException;
 
 
-    // TODO: Source code comment/document
+    /**
+     * Requests to clear all placed cards in the specified Planning Poker game.
+     * @param planningPokerId the ID of the Planning Poker game.
+     * @throws RemoteException if there is a communication error during the remote method call.
+     */
     void requestClearPlacedCards(int planningPokerId) throws RemoteException;
 
 
@@ -191,7 +228,11 @@ public interface ServerConnection_RMI extends Remote {
     User setRoleInPlanningPokerGame(UserRole roleToApply, User userToReceiveRole, int planningPokerId) throws RemoteException;
 
 
-    // TODO: Source code comment/document
+    /**
+     * Requests to show all cards in the specified Planning Poker game.
+     * @param planningPokerId the ID of the Planning Poker game.
+     * @throws RemoteException if there is a communication error during the remote method call.
+     */
     void requestShowCards(int planningPokerId) throws RemoteException;
 
 
@@ -207,10 +248,18 @@ public interface ServerConnection_RMI extends Remote {
     ArrayList<User> requestUserList() throws RemoteException;
 
 
-    // TODO: Source code comment/document
+    /**
+     * Requests to start the specified Planning Poker game.
+     * @param planningPokerId the ID of the Planning Poker game.
+     * @throws RemoteException if there is a communication error during the remote method call.
+     */
     void requestStartGame(int planningPokerId) throws RemoteException;
 
 
-    // TODO: Source code comment/document
+    /**
+     * Requests the recommended effort for the specified Planning Poker game.
+     * @param planningPokerId the ID of the Planning Poker game.
+     * @throws RemoteException if there is a communication error during the remote method call.
+     */
     void requestRecommendedEffort(int planningPokerId) throws RemoteException;
 }
