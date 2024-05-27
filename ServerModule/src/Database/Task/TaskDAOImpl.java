@@ -26,20 +26,15 @@ public class TaskDAOImpl extends DatabaseConnection implements TaskDAO {
         PreparedStatement taskListStatement = null;
 
         try (Connection connection = getConnection()) {
-            taskStatement = connection.prepareStatement("INSERT INTO task(header, \"desc\") VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+            taskStatement = connection.prepareStatement("INSERT INTO task(header, \"desc\", planning_pokerid) VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
             taskStatement.setString(1, header);
             taskStatement.setString(2, desc);
+            taskStatement.setString(3, String.valueOf(planningPokerId));
             taskStatement.executeUpdate();
 
             ResultSet generatedKeys = taskStatement.getGeneratedKeys();
             if (generatedKeys.next()) {
                 int taskId = generatedKeys.getInt(1);
-
-                taskListStatement = connection.prepareStatement("INSERT INTO task_list(taskid, planning_pokerid) VALUES (?, ?)");
-                taskListStatement.setInt(1, taskId);
-                taskListStatement.setInt(2, planningPokerId);
-                taskListStatement.executeUpdate();
-
                 return new Task(taskId, header, desc);
             } else {
                 throw new SQLException("Creating task failed, no ID obtained.");
@@ -60,8 +55,6 @@ public class TaskDAOImpl extends DatabaseConnection implements TaskDAO {
             if (rowsUpdated == 0) {
                 throw new SQLException("Task not found with ID: " + task.getTaskID());
             }
-
-            System.out.println("Task updated: " + task.getFinalEffort() + " get task final effort from DB: " + task.getTaskID() + readByTaskId(task.getTaskID()).getFinalEffort());
         }
     }
 
@@ -88,7 +81,7 @@ public class TaskDAOImpl extends DatabaseConnection implements TaskDAO {
         try (Connection connection = super.getConnection()) {
             ArrayList<Task> tasks = new ArrayList<>();
 
-            PreparedStatement statement = connection.prepareStatement("SELECT task.taskid, header, \"desc\", final_effort FROM task INNER JOIN task_list tl ON task.taskid = tl.taskid WHERE planning_pokerid = ?");
+            PreparedStatement statement = connection.prepareStatement("SELECT taskid, header, \"desc\", final_effort FROM task WHERE planning_pokerid = ?");
             statement.setInt(1, planningPokerId);
             ResultSet resultSet = statement.executeQuery();
 
@@ -109,10 +102,6 @@ public class TaskDAOImpl extends DatabaseConnection implements TaskDAO {
     @Override
     public void delete(Task task) throws SQLException {
         try (Connection connection = getConnection()) {
-            PreparedStatement taskListStatement = connection.prepareStatement("DELETE FROM task_list WHERE taskid = ?");
-            taskListStatement.setInt(1, task.getTaskID());
-            taskListStatement.executeUpdate();
-
             PreparedStatement statement = connection.prepareStatement("DELETE FROM task WHERE taskid = ?");
             statement.setInt(1, task.getTaskID());
             statement.executeUpdate();
