@@ -51,7 +51,7 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
     // First check if there are tasks that haven't been estimated on, and that haven't already been skipped:
     for (Task task : taskList) {
       // If the tasks do not already have a final effort assigned, and the task has not been skipped, we display it.
-      if (task.getFinalEffort() == null || task.getFinalEffort().isEmpty() && !skippedTaskList.contains(task)) {
+      if ((task.getFinalEffort() == null || task.getFinalEffort().isEmpty()) && !skippedTaskList.contains(task)) {
         return task;
       }
     }
@@ -75,7 +75,7 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
       // First check if there are tasks that haven't been estimated on, and that haven't already been skipped:
       for (Task taskFromList : taskList) {
         // If the tasks do not already have a final effort assigned, and the task has not been skipped, we display it.
-        if (taskFromList.getFinalEffort() != null && !skippedTaskList.contains(task)) {
+        if (taskFromList.getFinalEffort() == null && !skippedTaskList.contains(task)) {
           // Add the skipped task to a list of skipped tasks:
           skippedTaskList.add(task);
 
