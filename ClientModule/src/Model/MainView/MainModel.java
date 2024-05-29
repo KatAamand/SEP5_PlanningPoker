@@ -16,7 +16,8 @@ public interface MainModel extends PropertyChangeSubject {
   void init();
 
 
-  // TODO: Source code comment/document
+  /** Sends request to server to create a new planning poker game
+   * Assigns creating user to become Scrum Master in created game*/
   void requestCreatePlanningPokerID() throws RemoteException;
 
   /**

@@ -42,9 +42,6 @@ public interface Client extends PropertyChangeSubject {
     void sendMessage(Message message, User sender);
 
 
-    void receiveMessage(Message message); //TODO Method is never used. Should be removed.
-
-
     /**
      * Validates the provided Planning Poker game ID with the server.
      * @param planningPokerID the ID of the Planning Poker game to validate.
@@ -119,11 +116,11 @@ public interface Client extends PropertyChangeSubject {
     void skipTasks(ArrayList<Task> skippedTasksList, int planningPokerId) throws RuntimeException;
 
 
-    // TODO: Source code comment/document
+    /** Sends the client's current user to the server, to add the user to the game he's in.*/
     void sendUser();
 
 
-    void removeUserFromSession(); //TODO Method is never used. Should be removed.
+    void removeUserFromSession();
 
 
     /** Causes the server to remove the Local user from any currently active games, on the server.
@@ -166,7 +163,7 @@ public interface Client extends PropertyChangeSubject {
     void requestShowCards();
 
 
-    void setProductOwner(User user); //TODO: Method is never used. Should be removed.
+    void setProductOwner(User user);
 
 
     /** Attempts to apply the given UserRole to the given User in the given Planning Poker, by forwarding the request to the server.
@@ -180,7 +177,8 @@ public interface Client extends PropertyChangeSubject {
     void setRoleInGame(UserRole userRole, int planningPokerId, User user);
 
 
-    // TODO: Source code comment/document
+    /** Used for requesting the current user list from the server
+     * Lets the client get all current users in their game*/
     void requestUserList();
 
 

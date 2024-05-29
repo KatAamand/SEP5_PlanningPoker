@@ -12,7 +12,6 @@ import java.rmi.RemoteException;
 public class LobbyModelImpl extends PlanningPokerModelImpl implements LobbyModel
 {
   private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-  //private Client clientConnection; TODO: This field variable is never used. Should be removed
 
 
 
@@ -22,10 +21,6 @@ public class LobbyModelImpl extends PlanningPokerModelImpl implements LobbyModel
   {
     super();
     super.initialize();
-
-    //Assign the network connection: TODO: This field variable is never used. Should be removed.
-    //clientConnection = (Client) ClientFactory.getInstance().getClient();
-
     //Initialize remaining data:
     Platform.runLater(this::init);
   }

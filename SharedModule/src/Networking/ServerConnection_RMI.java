@@ -42,7 +42,9 @@ public interface ServerConnection_RMI extends Remote {
     void unRegisterClientFromGame(ClientConnection_RMI client, int planningPokerId) throws RemoteException;
 
 
-    // TODO: Source code comment/document
+    /** Lets the client send a message via the chat system
+     * @param message the message being sent
+     * @param sender the user that sends the message*/
     void sendMessage(Message message, User sender) throws RemoteException;
 
 
@@ -156,7 +158,7 @@ public interface ServerConnection_RMI extends Remote {
     boolean validatePlanningPokerID(int planningPokerID) throws RemoteException;
 
 
-    // TODO: Source code comment/document
+    /** Lets a client create a game of planning poker via the server*/
     PlanningPoker createPlanningPoker(ClientConnection_RMI client) throws RemoteException;
 
 
@@ -172,7 +174,7 @@ public interface ServerConnection_RMI extends Remote {
     PlanningPoker loadPlanningPokerGame(int planningPokerId, ClientConnection_RMI client, boolean addClientToGame) throws RemoteException;
 
 
-    // TODO: Source code comment/document
+    /** Adds user to its planning poker session's list of connected user, then broadcasts userlist to all users in that session */
     void addConnectedUserToSession(User user) throws RemoteException;
 
 
@@ -184,7 +186,7 @@ public interface ServerConnection_RMI extends Remote {
     ArrayList<Effort> getEffortList() throws RemoteException;
 
 
-    // TODO: Source code comment/document
+    /** Removes the user from the session, and broadcasts that update to the rest of the users in that session*/
     void removeUserFromSession(User user) throws RemoteException;
 
 
@@ -236,15 +238,19 @@ public interface ServerConnection_RMI extends Remote {
     void requestShowCards(int planningPokerId) throws RemoteException;
 
 
-    // TODO: Source code comment/document
+    /** Broadcasts userlist of senders planningpoker session to all users in that session*/
     void broadcastUserInSession(User user) throws RemoteException;
 
 
-    // TODO: Source code comment/document
+    /** Sets the product owner for the users planning poker session
+     * @param user the user that is intended to become product owner*/
     void setProductOwner(User user) throws RemoteException;
 
 
-    // TODO: Source code comment/document
+    /**
+     * Requests the list of all users.
+     * @return an ArrayList<User> containing all users.
+     */
     ArrayList<User> requestUserList() throws RemoteException;
 
 

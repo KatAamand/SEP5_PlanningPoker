@@ -15,18 +15,16 @@ import java.util.ArrayList;
  */
 public interface ChatClientInterface extends Remote {
 
-    // TODO: Source code comment/document
-    void sendMessage(Message message, User sender) throws RemoteException; //TODO: Method is never used. Should be removed from this interface.
 
-
-    // TODO: Source code comment/document
+    /** Lets the server send a message to the clients chat*/
     void receiveMessage(Message message)  throws RemoteException;
 
 
-    // TODO: Source code comment/document
+    /** Lets the server get the User object assigned to the client*/
     User getCurrentUser() throws RemoteException;
 
 
-    // TODO: Source code comment/document
+    /** Lets the server send a list of users to the client it's called on
+     * Used for the list of connected users in a game session*/
     void receiveUser(ArrayList<User> users) throws RemoteException;
 }

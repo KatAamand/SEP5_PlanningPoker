@@ -73,7 +73,6 @@ public class MainViewController
   public void onCreatePlanningPokerPressed() throws RemoteException
   {
     mainViewModel.requestCreatePlanningPokerID();
-
   }
 
   public void onConnectToPlanningPokerPressed() throws RemoteException
