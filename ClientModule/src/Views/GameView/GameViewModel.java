@@ -124,7 +124,7 @@ public class GameViewModel {
         ParallelTransition parallelTransition = new ParallelTransition(scaleTransition, fadeTransition);
         parallelTransition.setOnFinished( evt -> {
             try {
-                Thread.sleep(750);
+                Thread.sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

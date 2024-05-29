@@ -93,7 +93,6 @@ public class GameViewController
   {
     gameViewModel.requestShowCards();
   }
-
   public void finalEffortDropdown()
   {
     finalEffortDropdown.setItems(gameViewModel.getEffortObserverList());

@@ -117,7 +117,6 @@ public class GameModelImpl extends PlanningPokerModelImpl implements GameModel
 
   @Override public void requestPlacedCard(UserCardData userCardData)
   {
-    System.out.println("GameModelImpl: Requesting placed card");
     clientConnection.placeCard(userCardData);
   }
 

@@ -304,7 +304,7 @@ public class GameServerModelImpl implements GameServerModel {
         clientCardMap.clear();
     }
 
-    public void broadcastNewCard(UserCardData userCardData, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) {
+    private void broadcastNewCard(UserCardData userCardData, ArrayList<ClientConnection_RMI> connectedClients, ServerConnection_RMI server) {
         for (ClientConnection_RMI client : connectedClients) {
             Thread sendCardsThread = new Thread(() -> {
                 try {
